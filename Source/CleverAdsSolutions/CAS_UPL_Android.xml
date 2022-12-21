@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<init>
+		<log text="Clever Ads Solutions (CAS) Initialization"/>
+	</init>
+
+	<androidManifestUpdates>		
+	</androidManifestUpdates>
+	
+	<buildGradleAdditions>
+		<insert>
+			android {
+				compileOptions {
+					sourceCompatibility 1.8
+					targetCompatibility 1.8
+				}
+			}
+			
+			repositories {
+				google()
+				mavenCentral()
+
+				maven { url = "https://android-sdk.is.com/" } // IronSource
+
+				maven { url = "https://aa-sdk.s3-eu-west-1.amazonaws.com/android_repo" } // SuperAwesome
+
+				maven { url = "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" } // Mintegral
+
+				maven { url = "https://artifact.bytedance.com/repository/pangle" } // Pangle
+
+				maven { url = "https://sdk.tapjoy.com/" } // TapJoy
+			  }
+
+			dependencies {
+				// TODO: Full SDK build error: AAPT: error: resource android:attr/lStar not found.
+				// Use full later
+				// implementation 'com.cleveradssolutions:cas:2.9.8'
+			
+				implementation 'com.cleveradssolutions:cas-sdk:2.9.8'
+			}
+		</insert>
+	</buildGradleAdditions>
+
+	<proguardAdditions>
+		<insert>
+		</insert>
+	</proguardAdditions>
+
+	<prebuildCopies>
+		<copyDir src="$S(PluginDir)/External/Android/" dst="$S(BuildDir)/src"/>
+	</prebuildCopies>
+
+	<gameActivityImportAdditions>
+		<insert>
+			<![CDATA[
+				import com.unreal.cas.CASUnrealManager;
+			]]>
+		</insert>
+	</gameActivityImportAdditions>
+
+	<gameActivityOnCreateAdditions>
+		<insert>
+			<![CDATA[
+				CASUnrealManager.Init(this);
+			]]>
+		</insert>
+	</gameActivityOnCreateAdditions>
+
+</root>

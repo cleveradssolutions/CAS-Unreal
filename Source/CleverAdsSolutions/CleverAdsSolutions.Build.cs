@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class CleverAdsSolutions : ModuleRules
 {
@@ -49,5 +50,17 @@ public class CleverAdsSolutions : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+
+		if (Target.Platform == UnrealTargetPlatform.Android)
+		{
+			PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"Launch"
+			});
+
+			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "CAS_UPL_Android.xml"));
+		}
 	}
 }
