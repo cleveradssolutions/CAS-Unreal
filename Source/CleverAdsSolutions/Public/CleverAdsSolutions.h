@@ -15,13 +15,9 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-	// Create interface for supported platforms
-	void CreateInterface();
-
 	static inline FCleverAdsSolutionsModule& Get()
 	{
 		return FModuleManager::LoadModuleChecked<FCleverAdsSolutionsModule>("CleverAdsSolutions");
 	}
-
-	UCASInterface* CASInterface;
+	
 };

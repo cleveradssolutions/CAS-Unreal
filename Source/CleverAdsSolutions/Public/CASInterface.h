@@ -6,31 +6,15 @@
 #include "UObject/Object.h"
 #include "CASInterface.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCASEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASErrorEvent, FString, ErrorMessage);
+
 UCLASS(BlueprintType, Abstract)
 class CLEVERADSSOLUTIONS_API UCASInterface : public UObject
 {
 	GENERATED_BODY()
-
 public:
 
-	/** 
-	 * Returns platform specific CAS interface. Returns nullptr if CAS is not supported on this platform
-	 */
-	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="CAS"))
-	static UCASInterface* GetCAS();
-
-	/**
-	 * Shows interstitial ad.
-	 * Will do nothing if ad is not loaded.
-	 */
-	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
-	virtual void ShowInterstitial(){};
-
-	/**
-	 * Shows rewarded ad.
-	 * Will do nothing if ad is not loaded.
-	 */
-	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
-	virtual void ShowRewarded(){};
+	virtual void Init(){}
 	
 };
