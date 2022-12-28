@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CASInterface_ScreenAd.h"
-#include "CASInterface_Interstitial.generated.h"
+#include "CASInterface_Rewarded.generated.h"
 
-/** Abstract CAS interface class for Interstitials.
+/** Abstract CAS interface class for Rewarded.
  * Platform implementation inside derived classes
  */
 UCLASS()
-class CLEVERADSSOLUTIONS_API UCASInterface_Interstitial : public UCASInterface_ScreenAd
+class CLEVERADSSOLUTIONS_API UCASInterface_Rewarded : public UCASInterface_ScreenAd
 {
 	GENERATED_BODY()
 };

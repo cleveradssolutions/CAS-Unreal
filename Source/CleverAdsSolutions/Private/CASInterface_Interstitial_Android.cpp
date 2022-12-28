@@ -4,51 +4,23 @@
 
 #include "CASInterface_Interstitial_Android.h"
 
-#include "Android/AndroidApplication.h"
-#include "Android/AndroidJNI.h"
-#include <android_native_app_glue.h>
+#include "JNIHelpers.cpp"
 
 #include "Async/Async.h"
 
-UCASInterface_Interstitial_Android* CASIntestitialAndroid = nullptr;
+UCASInterface_Interstitial_Android* CASInterstitialAndroid = nullptr;
 
-// ---- JNI Helpers
-
-#define CLASSNAME_INTER "com/unreal/cas/CASUnrealInterstitial"
-
-struct FJNIMethodInfo
-{
-	JNIEnv* Env;
-	jclass Class;
-	jmethodID Method;
-};
-
-FJNIMethodInfo GetJNIMethodInfo(const char* ClassName, const char* MethodName, const char* MethodSignature)
-{
-	FJNIMethodInfo OutInfo;
-
-	OutInfo.Env = FAndroidApplication::GetJavaEnv();
-	if (OutInfo.Env)
-	{
-		OutInfo.Class = FAndroidApplication::FindJavaClassGlobalRef(ClassName);
-		if(OutInfo.Class)
-		{
-			OutInfo.Method = FJavaWrapper::FindStaticMethod(OutInfo.Env, OutInfo.Class, MethodName, MethodSignature, false);
-		}
-	}
-
-	return OutInfo;
-}
+#define INTER_CLASSNAME "com/unreal/cas/CASUnrealInterstitial"
 
 void UCASInterface_Interstitial_Android::Init()
 {
-	CASIntestitialAndroid = this;
+	CASInterstitialAndroid = this;
 }
 
 void UCASInterface_Interstitial_Android::Show()
 {
 	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(
-		CLASSNAME_INTER,
+		INTER_CLASSNAME,
 		"ShowInterstitial",
 		"()V");
 
@@ -58,7 +30,7 @@ void UCASInterface_Interstitial_Android::Show()
 bool UCASInterface_Interstitial_Android::IsReady()
 {
 	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(
-		CLASSNAME_INTER,
+		INTER_CLASSNAME,
 		"IsInterstitialReady",
 		"()Z");
 
@@ -69,75 +41,75 @@ bool UCASInterface_Interstitial_Android::IsReady()
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdLoadedThunkCpp(JNIEnv* jenv, jobject thiz)
 {
-	if(!CASIntestitialAndroid) return;
+	if(!CASInterstitialAndroid) return;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASIntestitialAndroid->OnInterstitialLoaded.Broadcast();
+		CASInterstitialAndroid->OnLoaded.Broadcast();
 	});
 }
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdShownThunkCpp(JNIEnv* jenv, jobject thiz)
 {
-	if(!CASIntestitialAndroid) return;
+	if(!CASInterstitialAndroid) return;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASIntestitialAndroid->OnInterstitialShown.Broadcast();
+		CASInterstitialAndroid->OnShown.Broadcast();
 	});
 }
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdClosedThunkCpp(JNIEnv* jenv, jobject thiz)
 {
-	if(!CASIntestitialAndroid) return;
+	if(!CASInterstitialAndroid) return;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASIntestitialAndroid->OnInterstitialClosed.Broadcast();
+		CASInterstitialAndroid->OnClosed.Broadcast();
 	});
 }
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdClickedThunkCpp(JNIEnv* jenv, jobject thiz)
 {
-	if(!CASIntestitialAndroid) return;
+	if(!CASInterstitialAndroid) return;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASIntestitialAndroid->OnInterstitialClicked.Broadcast();
+		CASInterstitialAndroid->OnClicked.Broadcast();
 	});
 }
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdCompletedThunkCpp(JNIEnv* jenv, jobject thiz)
 {
-	if(!CASIntestitialAndroid) return;
+	if(!CASInterstitialAndroid) return;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASIntestitialAndroid->OnInterstitialCompleted.Broadcast();
+		CASInterstitialAndroid->OnCompleted.Broadcast();
 	});
 }
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdLoadFailedThunkCpp(JNIEnv* jenv, jobject thiz, jstring errorMessage)
 {
-	if(!CASIntestitialAndroid) return;
+	if(!CASInterstitialAndroid) return;
 	
 	FString ErrorMsg = FJavaHelper::FStringFromParam(jenv, errorMessage);
 	
 	AsyncTask(ENamedThreads::GameThread, [ErrorMsg]()
 	{
-		CASIntestitialAndroid->OnInterstitialLoadError.Broadcast(ErrorMsg);
+		CASInterstitialAndroid->OnLoadError.Broadcast(ErrorMsg);
 	});
 }
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdShowFailedThunkCpp(JNIEnv* jenv, jobject thiz, jstring errorMessage)
 {
-	if(!CASIntestitialAndroid) return;
+	if(!CASInterstitialAndroid) return;
 	
 	FString ErrorMsg = FJavaHelper::FStringFromParam(jenv, errorMessage);
 	
 	AsyncTask(ENamedThreads::GameThread, [ErrorMsg]()
 	{
-		CASIntestitialAndroid->OnInterstitialShowError.Broadcast(ErrorMsg);
+		CASInterstitialAndroid->OnShowError.Broadcast(ErrorMsg);
 	});
 }
 
