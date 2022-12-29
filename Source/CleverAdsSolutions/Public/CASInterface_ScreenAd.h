@@ -14,35 +14,33 @@ class CLEVERADSSOLUTIONS_API UCASInterface_ScreenAd : public UCASInterface
 
 public: // Delegates
 
-	/** Called when Interstitial ad gets shown to a user */
+	/** Called when ad gets shown to a user */
 	UPROPERTY(BlueprintAssignable)
 	FCASEvent OnShown;
 
-	/** Called when Interstitial ad gets loaded and became ready to show.
-	 * Use IsInterstitialReady() to make additional checks
-	 */
+	/** Called when ad gets loaded and became ready to show. Use IsReady() to make additional check */
 	UPROPERTY(BlueprintAssignable)
 	FCASEvent OnLoaded;
 
-	/** Called when Interstitial ad gets closed by a user */
+	/** Called when ad gets closed by a user */
 	UPROPERTY(BlueprintAssignable)
 	FCASEvent OnClosed;
 
-	/** Called when user clicks on Interstitial ad. */
+	/** Called when user clicks on ad. */
 	UPROPERTY(BlueprintAssignable)
 	FCASEvent OnClicked;
 
-	/** Called when Interstitial ad completes to show */
+	/** Called when ad completes to show */
 	UPROPERTY(BlueprintAssignable)
 	FCASEvent OnCompleted;
 
-	/** Called when system fails to show an Interstitial ad.
+	/** Called when system fails to show an ad.
 	 *@param ErrorMessage - String with an error message of what happened wrong
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FCASErrorEvent OnShowError;
 
-	/** Called when system fails to load an Interstitial ad.
+	/** Called when system fails to load an ad.
 	 *@param ErrorMessage - String with an error message of what happened wrong
 	 */
 	UPROPERTY(BlueprintAssignable)
@@ -50,14 +48,13 @@ public: // Delegates
 
 public: // Functions
 
-	/** Shows interstitial ad.
-	 * Will do nothing if ad is not loaded. Use IsInterstitialReady() to check if it is ready.
+	/** Shows ad. Will do nothing if ad is not loaded. Use IsReady() to check if it is ready.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
 	virtual void Show(){}
 
-	/** Shows interstitial ad.
-	 * @return True if interstitial is ready
+	/** Checks if ad is loaded and ready to show
+	 * @return True if ad is loaded and is ready
 	 */
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions")
 	virtual bool IsReady(){return false;}

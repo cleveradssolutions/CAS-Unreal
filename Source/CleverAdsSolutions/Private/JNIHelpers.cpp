@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#if PLATFORM_ANDROID
+
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJNI.h"
 #include <android_native_app_glue.h>
@@ -27,3 +29,5 @@ FJNIMethodInfo GetJNIMethodInfo(const char* ClassName, const char* MethodName, c
 
 	return OutInfo;
 }
+
+#endif

@@ -2,8 +2,6 @@
 
 #include "CleverAdsSolutions.h"
 
-#include "CASInterface.h"
-
 #define LOCTEXT_NAMESPACE "FCleverAdsSolutionsModule"
 
 void FCleverAdsSolutionsModule::StartupModule()

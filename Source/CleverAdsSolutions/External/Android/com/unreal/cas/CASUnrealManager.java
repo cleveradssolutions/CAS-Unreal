@@ -7,6 +7,7 @@ import com.cleversolutions.ads.android.CAS;
 
 import com.unreal.cas.CASUnrealInterstitial;
 import com.unreal.cas.CASUnrealRewarded;
+import com.unreal.cas.CASUnrealBanner;
 
 public class CASUnrealManager {
     public static MediationManager manager;
@@ -24,5 +25,6 @@ public class CASUnrealManager {
         
         CASUnrealInterstitial.Init(manager, appActivity);
         CASUnrealRewarded.Init(manager, appActivity);
+        CASUnrealBanner.Init(manager, appActivity);
     }
 }
