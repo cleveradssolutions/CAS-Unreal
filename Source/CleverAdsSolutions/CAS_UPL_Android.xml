@@ -2,9 +2,23 @@
 <root xmlns:android="http://schemas.android.com/apk/res/android">
 	<init>
 		<log text="Clever Ads Solutions (CAS) Initialization"/>
+
+		<setStringFromProperty result="AppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidAppID"/>
+		<setBoolFromProperty result="TestMode" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="TestMode" default="true"/>
 	</init>
 
-	<androidManifestUpdates>		
+	<androidManifestUpdates>
+		<addElements tag="application">
+			<meta-data android:name="cas.sdk.appid" android:value="$S(AppID)"/>
+		</addElements>
+		
+		<if condition="TestMode">
+			<true>
+				<addElements tag="application">
+					<meta-data android:name="cas.sdk.testmode" android:value="true"/>
+				</addElements>
+			</true>
+		</if>
 	</androidManifestUpdates>
 	
 	<buildGradleAdditions>

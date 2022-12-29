@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+class UCASSettings;
 class UCASInterface;
 
 class FCleverAdsSolutionsModule : public IModuleInterface
@@ -19,5 +20,7 @@ public:
 	{
 		return FModuleManager::LoadModuleChecked<FCleverAdsSolutionsModule>("CleverAdsSolutions");
 	}
+
+	UCASSettings* CASSettings;
 	
 };

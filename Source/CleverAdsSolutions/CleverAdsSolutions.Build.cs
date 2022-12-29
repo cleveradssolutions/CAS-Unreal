@@ -39,6 +39,7 @@ public class CleverAdsSolutions : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"Settings"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
