@@ -5,6 +5,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "CASSubsystem.generated.h"
 
+class UCASInterface_General;
 class UCASInterface_Banner;
 class UCASInterface_Rewarded;
 class UCASInterface_Interstitial;
@@ -27,11 +28,23 @@ private:
 	UPROPERTY()
 	UCASInterface_Banner* BannerInterface;
 
+	UPROPERTY()
+	UCASInterface_General* GeneralInterface;
+
 public:
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	void InitCASInterfaces();
+
+	static UCAS* Get(UObject* WorldContext);
+
+	/** Returns General interface.
+	 * Returns base class without implementation if CAS ads not supported on this platform
+	 * @return CAS General Interface object
+	 */
+	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="General"))
+	UCASInterface_General* GetGeneralInterface() const {return GeneralInterface;}
 
 	/** Returns Interstitial interface.
 	 * Returns base class without implementation if CAS or Interstitial ads not supported on this platform

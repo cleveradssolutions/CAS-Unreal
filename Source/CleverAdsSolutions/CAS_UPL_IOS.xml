@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<init>
+		<log text="Clever Ads Solutions (CAS) Initialization"/>
+
+		<copyDir src="$S(EngineDir)/Intermediate/UnzippedFrameworks/CleverAdsSolutions/CleverAdsSolutions.embeddedframework/CleverAdsSolutions.framework" dst="$S(BuildDir)/Frameworks/CleverAdsSolutions.framework" />
+
+	</init>
+
+
+</root>

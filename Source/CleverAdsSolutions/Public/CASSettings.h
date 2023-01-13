@@ -11,7 +11,9 @@ UCLASS(Config = Engine, DefaultConfig)
 class CLEVERADSSOLUTIONS_API UCASSettings : public UObject
 {
 	GENERATED_BODY()
-
+	
+public:
+	
 	/** CAS App ID for Android */
 	UPROPERTY(Config, EditAnywhere)
 	FString AndroidAppID;
