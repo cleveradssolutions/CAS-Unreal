@@ -46,12 +46,8 @@
 			  }
 
 			dependencies {
-				// TODO: Full SDK build error: AAPT: error: resource android:attr/lStar not found.
-				// Use full later
-				// implementation 'com.cleveradssolutions:cas:2.9.8'
+				implementation 'com.cleveradssolutions:cas:2.9.8'
 			
-				implementation 'com.cleveradssolutions:cas-sdk:2.9.8'
-
 				implementation 'com.google.android.material:material:1.0.0'
 				implementation "androidx.constraintlayout:constraintlayout:1.1.3"
 			}
