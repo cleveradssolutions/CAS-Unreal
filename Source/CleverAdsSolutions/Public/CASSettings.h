@@ -14,13 +14,21 @@ class CLEVERADSSOLUTIONS_API UCASSettings : public UObject
 	
 public:
 	
-	/** CAS App ID for Android */
+	/** CAS App ID for Android. In most cases, a casID is the same as your application package name. */
 	UPROPERTY(Config, EditAnywhere)
-	FString AndroidAppID;
+	FString AndroidCASAppID;
 
-	/** CAS App ID for IOS */
+	/** CAS App ID for IOS. In most cases, a casID is the same as your application store ID. */
 	UPROPERTY(Config, EditAnywhere)
-	FString IOSAppID;
+	FString IOSCASAppID;
+	
+	/** Admob App ID for Android */
+	UPROPERTY(Config, EditAnywhere)
+	FString AndroidAdMobAppID;
+
+	/** Admob App ID for IOS */
+	UPROPERTY(Config, EditAnywhere)
+	FString IOSAdmobAppID;
 
 	/** Toggle test mode. When enabled, test ads will be served instead of real ones */
 	UPROPERTY(Config, EditAnywhere)

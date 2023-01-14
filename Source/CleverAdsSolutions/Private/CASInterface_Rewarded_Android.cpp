@@ -4,7 +4,7 @@
 
 #include "CASInterface_Rewarded_Android.h"
 
-#include "JNIHelpers.cpp"
+#include "JNIHelpers.h"
 
 #include "Async/Async.h"
 
@@ -19,7 +19,7 @@ void UCASInterface_Rewarded_Android::Init()
 
 void UCASInterface_Rewarded_Android::Show()
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
 		REWARDED_CLASSNAME,
 		"ShowRewarded",
 		"()V");
@@ -29,7 +29,7 @@ void UCASInterface_Rewarded_Android::Show()
 
 bool UCASInterface_Rewarded_Android::IsReady()
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
 		REWARDED_CLASSNAME,
 		"IsRewardedReady",
 		"()Z");

@@ -7,6 +7,7 @@
 #include "CASSubsystem.h"
 
 #include "Async/Async.h"
+#include "IOS/IOSAppDelegate.h"
 
 #import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
 
@@ -138,9 +139,9 @@ void UCASInterface_Rewarded_IOS::Init()
 
 void UCASInterface_Rewarded_IOS::Show()
 {
-	[[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:CASRewardedViewController animated:NO completion:nil];
-	
-	[CASRewardedViewController.manager presentRewardedAdFromRootViewController:CASRewardedViewController callback:CASRewardedViewController];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[CASRewardedViewController.manager presentRewardedAdFromRootViewController:[IOSAppDelegate GetDelegate].IOSController callback:CASRewardedViewController];
+	});
 }
 
 bool UCASInterface_Rewarded_IOS::IsReady()

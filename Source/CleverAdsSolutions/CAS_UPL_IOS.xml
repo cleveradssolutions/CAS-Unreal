@@ -5,7 +5,26 @@
 
 		<copyDir src="$S(EngineDir)/Intermediate/UnzippedFrameworks/CleverAdsSolutions/CleverAdsSolutions.embeddedframework/CleverAdsSolutions.framework" dst="$S(BuildDir)/Frameworks/CleverAdsSolutions.framework" />
 
+		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidAdmobAppID"/>
 	</init>
 
+	<iosPListUpdates>
+		<loopElements tag="$">
+			<setStringFromTag result="CurrentTag" tag="$"/>
+			<setBoolIsEqual   result="isRootDictionary" arg1="$S(CurrentTag)" arg2="dict"/>
+			<!-- Process root dict only -->
+			<if condition="isRootDictionary">
+				<true>
 
+					<!-- AdMob App ID -->
+					<setElement result="AdMobSdkKeyElem" value="key" text="GADApplicationIdentifier"/>
+					<addElement tag="$" name="AdMobSdkKeyElem"/>
+					<setElement result="AdMobSdkValueElem" value="string" text="$S(AdmobAppID)"/>
+					<addElement tag="$" name="AdMobSdkValueElem"/>
+					
+				</true>
+			</if>
+		</loopElements>
+
+	</iosPListUpdates>
 </root>

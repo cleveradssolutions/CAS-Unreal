@@ -3,22 +3,15 @@
 #pragma once
 
 #include "CASInterface_General.h"
-#include "CASInterface_General_IOS.generated.h"
+#include "CASInterface_General_Android.generated.h"
 
-#if PLATFORM_IOS
-#import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
-#endif
-
-/** CAS general interface class for IOS. */
+/** CAS general interface class for Android. */
 UCLASS()
-class CLEVERADSSOLUTIONS_API UCASInterface_General_IOS : public UCASInterface_General
+class CLEVERADSSOLUTIONS_API UCASInterface_General_Android : public UCASInterface_General
 {
 	GENERATED_BODY()
 
-#if PLATFORM_IOS
-public:
-	
-	static CASMediationManager* GetManager();
+#if PLATFORM_ANDROID
 	
 	virtual void Init() override;
 

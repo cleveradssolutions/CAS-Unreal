@@ -35,7 +35,22 @@ void UCASInterface_General_IOS::Init()
 	
 	// TODO: Completion handler
 	
-	CASUnrealIOS::Manager = [builder createWithCasId:[NSString stringWithFString:CASPluginSettings->IOSAppID]];
+	CASUnrealIOS::Manager = [builder createWithCasId:[NSString stringWithFString:CASPluginSettings->IOSCASAppID]];
+}
+
+FString UCASInterface_General_IOS::GetCASVersion() const
+{
+	return FString([CAS getSDKVersion]);
+}
+
+void UCASInterface_General_IOS::SetMuteAdSounds(bool Mute)
+{
+	[[CAS settings] setMuteAdSoundsTo:Mute];
+}
+
+void UCASInterface_General_IOS::SetLoadingMode(ECASLoadingMode Mode)
+{
+	[[CAS settings] setLoadingWithMode:(CASLoadingManagerMode)Mode];
 }
 
 #endif

@@ -3,15 +3,26 @@
 	<init>
 		<log text="Clever Ads Solutions (CAS) Initialization"/>
 
-		<setStringFromProperty result="AppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidAppID"/>
+		<setStringFromProperty result="CASAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidCASAppID"/>
+		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidAdmobAppID"/>
 		<setBoolFromProperty result="TestMode" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="TestMode" default="true"/>
 	</init>
 
 	<androidManifestUpdates>
-		<addElements tag="application">
-			<meta-data android:name="cas.sdk.appid" android:value="$S(AppID)"/>
-		</addElements>
 		
+		<!-- CAS App ID -->
+		<setElement result="CASKeyElem" value="meta-data" />
+		<addAttribute tag="$CASKeyElem" name="android:name" value="cas.sdk.appid" />
+		<addAttribute tag="$CASKeyElem" name="android:value" value="$S(CASAppID)" />
+		<addElement tag="application" name="CASKeyElem" />
+
+		<!-- AdMob App ID -->
+		<setElement result="AdmobKeyElem" value="meta-data" />
+		<addAttribute tag="$AdmobKeyElem" name="android:name" value="com.google.android.gms.ads.APPLICATION_ID" />
+		<addAttribute tag="$AdmobKeyElem" name="android:value" value="$S(AdmobAppID)" />
+		<addElement tag="application" name="AdmobKeyElem" />
+
+		<!-- Test mode -->
 		<if condition="TestMode">
 			<true>
 				<addElements tag="application">
@@ -19,6 +30,7 @@
 				</addElements>
 			</true>
 		</if>
+		
 	</androidManifestUpdates>
 	
 	<buildGradleAdditions>

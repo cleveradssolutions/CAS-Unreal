@@ -7,6 +7,7 @@
 #include "CASSubsystem.h"
 
 #include "Async/Async.h"
+#include "IOS/IOSAppDelegate.h"
 
 #import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
 
@@ -138,9 +139,9 @@ void UCASInterface_Interstitial_IOS::Init()
 
 void UCASInterface_Interstitial_IOS::Show()
 {
-	[[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:CASInterstitialViewController animated:NO completion:nil];
-	
-	[CASInterstitialViewController.manager presentInterstitialFromRootViewController:CASInterstitialViewController callback:CASInterstitialViewController];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[CASInterstitialViewController.manager presentInterstitialFromRootViewController:[IOSAppDelegate GetDelegate].IOSController callback:CASInterstitialViewController];
+	});
 }
 
 bool UCASInterface_Interstitial_IOS::IsReady()

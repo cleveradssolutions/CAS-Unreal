@@ -4,7 +4,7 @@
 
 #include "CASInterface_Banner_Android.h"
 
-#include "JNIHelpers.cpp"
+#include "JNIHelpers.h"
 
 #include "Async/Async.h"
 
@@ -19,42 +19,42 @@ void UCASInterface_Banner_Android::Init()
 
 void UCASInterface_Banner_Android::CreateBanner()
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(BANNER_CLASSNAME, "CreateBanner", "()V");
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "CreateBanner", "()V");
 
 	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
 bool UCASInterface_Banner_Android::IsReady() const
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(BANNER_CLASSNAME, "IsBannerReady", "()Z");
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "IsBannerReady", "()Z");
 
 	return MethodInfo.Env->CallStaticBooleanMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
 void UCASInterface_Banner_Android::ToggleBannerVisibility(bool Visible)
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(BANNER_CLASSNAME, "ToggleBannerVisibility", "(Z)V");
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "ToggleBannerVisibility", "(Z)V");
 
 	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, Visible);
 }
 
 void UCASInterface_Banner_Android::DestroyBanner()
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(BANNER_CLASSNAME, "DestroyBanner", "()V");
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "DestroyBanner", "()V");
 
 	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
 void UCASInterface_Banner_Android::LoadNextBanner()
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(BANNER_CLASSNAME, "LoadNextAd", "()V");
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "LoadNextAd", "()V");
 
 	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
 bool UCASInterface_Banner_Android::IsVisible() const
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(BANNER_CLASSNAME, "IsBannerVisible", "()Z");
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "IsBannerVisible", "()Z");
 
 	return MethodInfo.Env->CallStaticBooleanMethod(MethodInfo.Class, MethodInfo.Method);
 }

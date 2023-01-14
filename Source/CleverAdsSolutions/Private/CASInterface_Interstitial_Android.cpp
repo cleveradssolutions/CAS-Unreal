@@ -4,7 +4,7 @@
 
 #include "CASInterface_Interstitial_Android.h"
 
-#include "JNIHelpers.cpp"
+#include "JNIHelpers.h"
 
 #include "Async/Async.h"
 
@@ -19,7 +19,7 @@ void UCASInterface_Interstitial_Android::Init()
 
 void UCASInterface_Interstitial_Android::Show()
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
 		INTER_CLASSNAME,
 		"ShowInterstitial",
 		"()V");
@@ -29,7 +29,7 @@ void UCASInterface_Interstitial_Android::Show()
 
 bool UCASInterface_Interstitial_Android::IsReady()
 {
-	FJNIMethodInfo MethodInfo = GetJNIMethodInfo(
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
 		INTER_CLASSNAME,
 		"IsInterstitialReady",
 		"()Z");

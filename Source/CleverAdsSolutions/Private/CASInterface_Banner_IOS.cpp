@@ -7,6 +7,7 @@
 #include "CASSubsystem.h"
 
 #include "Async/Async.h"
+#include "IOS/IOSAppDelegate.h"
 
 #import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
 
@@ -23,7 +24,6 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 - (void)viewDidLoad;
 - (void)addBannerViewToView:(UIView *_Nonnull)bannerView;
 - (void)positionBannerViewAtBottomOfSafeArea:(UIView *_Nonnull)bannerView;
-- (void)positionBannerViewAtBottomOfView:(UIView *_Nonnull)bannerView;
 - (void)bannerAdViewDidLoad:(CASBannerView *)view;
 - (void)bannerAdView:(CASBannerView *)adView didFailWith:(NSString *)error;
 - (void)bannerAdView:(CASBannerView *)adView willPresent:(id<CASStatusHandler>)impression;
@@ -62,35 +62,19 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 
 -(void)addBannerViewToView:(UIView *_Nonnull)bannerView {
 	self.bannerView.translatesAutoresizingMaskIntoConstraints = NO;
-	[self.bannerView addSubview:self.bannerView];
+	[[IOSAppDelegate GetDelegate].IOSController.view addSubview:self.bannerView];
 	[self positionBannerViewAtBottomOfSafeArea:bannerView];
 }
 
 - (void)positionBannerViewAtBottomOfSafeArea:(UIView *_Nonnull)bannerView {
 	// Position the banner. Stick it to the bottom of the Safe Area.
 	// Centered horizontally.
-	UILayoutGuide *guide = self.view.safeAreaLayoutGuide;
+	UILayoutGuide *guide = [IOSAppDelegate GetDelegate].IOSController.view.safeAreaLayoutGuide;
+	
 	[NSLayoutConstraint activateConstraints:@[
 	  [bannerView.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor],
 	  [bannerView.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor]
 	]];
-}
-
-- (void)positionBannerViewAtBottomOfView:(UIView *_Nonnull)bannerView {
-	[self.view addConstraint:[NSLayoutConstraint constraintWithItem:bannerView
-														  attribute:NSLayoutAttributeCenterX
-														  relatedBy:NSLayoutRelationEqual
-															 toItem:self.view
-														  attribute:NSLayoutAttributeCenterX
-														 multiplier:1
-														   constant:0]];
-	[self.view addConstraint:[NSLayoutConstraint constraintWithItem:bannerView
-														  attribute:NSLayoutAttributeBottom
-														  relatedBy:NSLayoutRelationEqual
-															 toItem:self.bottomLayoutGuide
-														  attribute:NSLayoutAttributeTop
-														 multiplier:1
-														   constant:0]];
 }
 
 // ---- Callbacks
@@ -152,7 +136,7 @@ void UCASInterface_Banner_IOS::CreateBanner()
 	
 	CASBannerViewController = [[FCASBannerViewController alloc] initWithManager:Manager];
 	
-	[CASBannerViewController addBannerViewToView:CASBannerViewController.bannerView];
+//	[CASBannerViewController addBannerViewToView:CASBannerViewController.bannerView];
 }
 
 bool UCASInterface_Banner_IOS::IsReady() const

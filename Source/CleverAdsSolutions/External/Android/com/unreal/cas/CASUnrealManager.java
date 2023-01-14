@@ -39,4 +39,16 @@ public class CASUnrealManager {
                     
         } catch (NameNotFoundException e) {}
     }
+    
+    public static String GetCASVersion(){
+        return CAS.getSDKVersion();
+    }
+    
+    public static void ToggleAdSoundMute(boolean mute){
+        CAS.getSettings().setMutedAdSounds(mute);
+    }
+    
+    public static void SetLoadingMode(int mode){
+        CAS.getSettings().setLoadingMode(mode);
+    }
 }

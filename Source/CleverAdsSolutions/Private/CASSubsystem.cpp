@@ -8,6 +8,7 @@
 #include "CASInterface_General.h"
 
 #if PLATFORM_ANDROID
+#include "CASInterface_General_Android.h"
 #include "CASInterface_Interstitial_Android.h"
 #include "CASInterface_Rewarded_Android.h"
 #include "CASInterface_Banner_Android.h"
@@ -30,7 +31,9 @@ void UCAS::Initialize(FSubsystemCollectionBase& Collection)
 void UCAS::InitCASInterfaces()
 {
 	// General
-#if PLATFORM_IOS
+#if PLATFORM_ANDROID
+	GeneralInterface = NewObject<UCASInterface_General_Android>(this);
+#elif PLATFORM_IOS
 	GeneralInterface = NewObject<UCASInterface_General_IOS>(this);
 #else
 	GeneralInterface = NewObject<UCASInterface_General>(this);
