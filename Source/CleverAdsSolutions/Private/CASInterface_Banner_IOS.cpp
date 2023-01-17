@@ -50,30 +50,25 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 - (void)viewDidLoad {  
 	[super viewDidLoad];
 
-	// In this case, we instantiate the banner with desired ad size.
-	self.bannerView = [[CASBannerView alloc] initWithAdSize:CASSize.banner manager:self.manager];        
-	[self.bannerView setTranslatesAutoresizingMaskIntoConstraints:NO];
-	
-	// This view controller is used to present an overlay when the ad is clicked. 
-	self.bannerView.rootViewController = self; // Weak reference
-
-	[self addBannerViewToView:self.bannerView];
+	UE_LOG(LogTemp, Log, TEXT("CAS Banner viewDidLoad"));
 }
 
 -(void)addBannerViewToView:(UIView *_Nonnull)bannerView {
-	self.bannerView.translatesAutoresizingMaskIntoConstraints = NO;
-	[[IOSAppDelegate GetDelegate].IOSController.view addSubview:self.bannerView];
-	[self positionBannerViewAtBottomOfSafeArea:bannerView];
-}
 
-- (void)positionBannerViewAtBottomOfSafeArea:(UIView *_Nonnull)bannerView {
-	// Position the banner. Stick it to the bottom of the Safe Area.
-	// Centered horizontally.
-	UILayoutGuide *guide = [IOSAppDelegate GetDelegate].IOSController.view.safeAreaLayoutGuide;
+	// In this case, we instantiate the banner with desired ad size.
+	self.bannerView = [[CASBannerView alloc] initWithAdSize:CASSize.banner manager:self.manager];        
+	[self.bannerView setTranslatesAutoresizingMaskIntoConstraints:NO];
+
+	self.bannerView.adDelegate = self;
 	
+	// This view controller is used to present an overlay when the ad is clicked. 
+	self.bannerView.rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController; // Weak reference
+	
+	[self.bannerView.rootViewController.view addSubview:self.bannerView];
+
 	[NSLayoutConstraint activateConstraints:@[
-	  [bannerView.centerXAnchor constraintEqualToAnchor:guide.centerXAnchor],
-	  [bannerView.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor]
+		[self.bannerView.centerXAnchor constraintEqualToAnchor:self.bannerView.rootViewController.view.centerXAnchor],
+		[self.bannerView.bottomAnchor constraintEqualToAnchor:self.bannerView.rootViewController.view.bottomAnchor]
 	]];
 }
 
@@ -128,15 +123,17 @@ static FCASBannerViewController* CASBannerViewController;
 void UCASInterface_Banner_IOS::Init()
 {
 	CASBannerIOS = this;
+
+	CASMediationManager* Manager = UCASInterface_General_IOS::GetManager();
+
+	CASBannerViewController = [[FCASBannerViewController alloc] initWithManager:Manager];
 }
 
 void UCASInterface_Banner_IOS::CreateBanner()
 {
-	CASMediationManager* Manager = UCASInterface_General_IOS::GetManager();
-	
-	CASBannerViewController = [[FCASBannerViewController alloc] initWithManager:Manager];
-	
-//	[CASBannerViewController addBannerViewToView:CASBannerViewController.bannerView];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[CASBannerViewController addBannerViewToView:CASBannerViewController.bannerView];
+	});
 }
 
 bool UCASInterface_Banner_IOS::IsReady() const
@@ -146,7 +143,9 @@ bool UCASInterface_Banner_IOS::IsReady() const
 
 void UCASInterface_Banner_IOS::ToggleBannerVisibility(bool Visible)
 {
-	CASBannerViewController.bannerView.hidden = !Visible;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		CASBannerViewController.bannerView.hidden = !Visible;
+	});
 }
 
 void UCASInterface_Banner_IOS::DestroyBanner()

@@ -74,9 +74,6 @@
 	<prebuildCopies>
 		<!-- Copy custom java interfaces to call from JNI -->
 		<copyDir src="$S(PluginDir)/External/Android/" dst="$S(BuildDir)/src"/>
-
-		<!-- Copy custom ad layouts -->
-		<copyDir src="$S(PluginDir)/Layout/Android/" dst="$S(BuildDir)/res/layout"/> 
 	</prebuildCopies>
 
 	<gameActivityImportAdditions>

@@ -5,10 +5,10 @@ import android.app.NativeActivity;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import android.view.View;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
-import android.view.Gravity;
+import android.widget.RelativeLayout;
 import android.app.Activity;
+
+import java.lang.Runnable;
 
 import com.cleversolutions.ads.*;
 import com.cleversolutions.ads.android.CAS;
@@ -36,39 +36,7 @@ public class CASUnrealBanner {
         
         bannerView = new CASBannerView(activity, manager);
         
-// TODO: Load layout or move programmically a banner
-//        CASBannerView bannerView = (CASBannerView) activity.findViewById(R.id.bannerView);
-//        bannerView.setManager(manager);
-        
-            
-//        
-//        ConstraintLayout.LayoutParams layout = new ConstraintLayout.LayoutParams(
-//            ConstraintLayout.LayoutParams.WRAP_CONTENT, 
-//            ConstraintLayout.LayoutParams.WRAP_CONTENT);
-//        
-//        layout.addRule(ConstraintLayout.LayoutParams.BOTTOM);
-//        layout.bottomMargin = 4;
-//        
-//        ConstraintLayout layout = new ConstraintLayout();
-//        ConstraintSet set = new ConstraintSet();
-//        
-//        bannerView.setId(View.generateViewId());  // cannot set id after add
-//        layout.addView(bannerView,0);
-//        set.clone(layout);
-//        set.connect(bannerView.getId(), ConstraintSet.TOP, layout.getId(), ConstraintSet.TOP, 60);
-//        set.applyTo(layout);
-
-//        ConstraintLayout = findViewById<ConstraintLayout>(R.id.banner_layout);
-        
-        //
-        
-        // WRAP_CONTENT - Start
-        // MATCH_PARENT - Center
-        LayoutParams layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        
-        //bannerView = findViewById<CASBannerView>(R.id.bannerView);
-        
-        //layout.addRule(RelativeLayout.ALIGN_PARENT_END);
+        bannerView.setManager(manager);
         
         bannerView.setAdListener(new AdViewListener() {
             @Override
@@ -97,11 +65,21 @@ public class CASUnrealBanner {
               onBannerAdClickedThunkCpp();
             }
         });
+        
+        // Activity > RelativeLayout > Banner (with Relative params)
+        
+        RelativeLayout.LayoutParams layout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layout.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        layout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+
+        RelativeLayout rl = new RelativeLayout(activity);
+
+        rl.addView(bannerView, layout);
                 
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activity.addContentView(bannerView, layout);
+               activity.addContentView(rl, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT));
             }
         });
     }
