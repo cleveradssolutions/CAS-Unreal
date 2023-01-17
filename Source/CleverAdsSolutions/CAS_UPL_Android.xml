@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<init>
+		<log text="Clever Ads Solutions (CAS) Initialization"/>
+
+		<setStringFromProperty result="CASAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidCASAppID"/>
+		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidAdmobAppID"/>
+		<setBoolFromProperty result="TestMode" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="TestMode" default="true"/>
+	</init>
+
+	<androidManifestUpdates>
+		
+		<!-- CAS App ID -->
+		<setElement result="CASKeyElem" value="meta-data" />
+		<addAttribute tag="$CASKeyElem" name="android:name" value="cas.sdk.appid" />
+		<addAttribute tag="$CASKeyElem" name="android:value" value="$S(CASAppID)" />
+		<addElement tag="application" name="CASKeyElem" />
+
+		<!-- AdMob App ID -->
+		<setElement result="AdmobKeyElem" value="meta-data" />
+		<addAttribute tag="$AdmobKeyElem" name="android:name" value="com.google.android.gms.ads.APPLICATION_ID" />
+		<addAttribute tag="$AdmobKeyElem" name="android:value" value="$S(AdmobAppID)" />
+		<addElement tag="application" name="AdmobKeyElem" />
+
+		<!-- Test mode -->
+		<if condition="TestMode">
+			<true>
+				<addElements tag="application">
+					<meta-data android:name="cas.sdk.testmode" android:value="true"/>
+				</addElements>
+			</true>
+		</if>
+		
+	</androidManifestUpdates>
+	
+	<buildGradleAdditions>
+		<insert>
+			android {
+				compileOptions {
+					sourceCompatibility 1.8
+					targetCompatibility 1.8
+				}
+			}
+			
+			repositories {
+				google()
+				mavenCentral()
+
+				maven { url = "https://android-sdk.is.com/" } // IronSource
+
+				maven { url = "https://aa-sdk.s3-eu-west-1.amazonaws.com/android_repo" } // SuperAwesome
+
+				maven { url = "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" } // Mintegral
+
+				maven { url = "https://artifact.bytedance.com/repository/pangle" } // Pangle
+
+				maven { url = "https://sdk.tapjoy.com/" } // TapJoy
+			  }
+
+			dependencies {
+				implementation 'com.cleveradssolutions:cas:2.9.8'
+			
+				implementation 'com.google.android.material:material:1.0.0'
+				implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+			}
+		</insert>
+	</buildGradleAdditions>
+
+	<proguardAdditions>
+		<insert>
+		</insert>
+	</proguardAdditions>
+
+	<prebuildCopies>
+		<!-- Copy custom java interfaces to call from JNI -->
+		<copyDir src="$S(PluginDir)/External/Android/" dst="$S(BuildDir)/src"/>
+	</prebuildCopies>
+
+	<gameActivityImportAdditions>
+		<insert>
+			<![CDATA[
+				import com.unreal.cas.CASUnrealManager;
+			]]>
+		</insert>
+	</gameActivityImportAdditions>
+
+	<gameActivityOnCreateAdditions>
+		<insert>
+			<![CDATA[
+				CASUnrealManager.Init(this);
+			]]>
+		</insert>
+	</gameActivityOnCreateAdditions>
+
+</root>
