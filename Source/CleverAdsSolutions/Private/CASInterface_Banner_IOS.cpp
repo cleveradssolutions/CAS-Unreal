@@ -23,7 +23,6 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 
 - (void)viewDidLoad;
 - (void)addBannerViewToView:(UIView *_Nonnull)bannerView;
-- (void)positionBannerViewAtBottomOfSafeArea:(UIView *_Nonnull)bannerView;
 - (void)bannerAdViewDidLoad:(CASBannerView *)view;
 - (void)bannerAdView:(CASBannerView *)adView didFailWith:(NSString *)error;
 - (void)bannerAdView:(CASBannerView *)adView willPresent:(id<CASStatusHandler>)impression;

@@ -25,11 +25,12 @@ public class CleverAdsSolutions : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
-				"Settings"
+				"SlateCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
+		
+		PrivateIncludePathModuleNames.Add("Settings");
 
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{
