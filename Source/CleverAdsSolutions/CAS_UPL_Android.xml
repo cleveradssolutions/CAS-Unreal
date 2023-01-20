@@ -8,7 +8,7 @@
 		<setBoolFromProperty result="TestMode" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="TestMode" default="true"/>
 
 		<setStringFromProperty result="ConfigFile" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidSettingsFile" default=""/>
-		<setStringFromProperty result="ConfigFileName" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidSettingsFileName" default=""/>
+		<setStringFromProperty result="ConfigFileID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidSettingsFileID" default=""/>
 
 		<!-- Network flags from configs -->
 		<setBoolFromProperty result="EnableAppLovin" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableAppLovinAndroid" default="false"/>
@@ -141,7 +141,7 @@
 		<copyDir src="$S(PluginDir)/External/Android/" dst="$S(BuildDir)/src"/>
 
 		<!-- Copy CAS settings fie -->
-		<copyFile src="$S(PluginDir)/../../../../$S(ConfigFile)" dst="$S(BuildDir)/src/res/raw/cas_settings$S(ConfigFileName).json" force="false"/>
+		<copyFile src="$S(PluginDir)/../../../../$S(ConfigFile)" dst="$S(BuildDir)/res/raw/cas_settings$S(ConfigFileID).json" force="false"/>
 	</prebuildCopies>
 
 	<proguardAdditions>

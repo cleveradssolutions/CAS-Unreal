@@ -49,10 +49,10 @@ public:
 
 	// Enable Networks -----
 
-	UPROPERTY(Config, EditAnywhere)
+	UPROPERTY(Config, EditAnywhere, Category="Networks")
 	ECASAdsSolution AdsSolutionAndroid;
 
-	UPROPERTY(Config, EditAnywhere)
+	UPROPERTY(Config, EditAnywhere, Category="Networks")
 	ECASAdsSolution AdsSolutionIOS;
 
 	// IOS ---

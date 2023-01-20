@@ -14,7 +14,7 @@ enum class ECASGender : uint8
 	Female
 };
 
-/** Used to determine a gender in CAS > SetGender */
+/** User age category */
 UENUM(BlueprintType)
 enum class ECASChildrenAudience : uint8
 {
@@ -23,7 +23,7 @@ enum class ECASChildrenAudience : uint8
 	NotChildren
 };
 
-/** Used to determine a gender in CAS > SetGender */
+/** User Consent status */
 UENUM(BlueprintType)
 enum class ECASUserConsentStatus : uint8
 {
@@ -32,7 +32,7 @@ enum class ECASUserConsentStatus : uint8
 	Accepted
 };
 
-/** Used to determine a gender in CAS > SetGender */
+/** User CCPA status */
 UENUM(BlueprintType)
 enum class ECASUserCCPAStatus : uint8
 {
@@ -60,7 +60,9 @@ UCLASS()
 class CLEVERADSSOLUTIONS_API UCASInterface_General : public UCASInterface
 {
 	GENERATED_BODY()
-
+	
+public:
+	
 	/** Returns CAS library version.
 	 * @return String with version number
 	 */
