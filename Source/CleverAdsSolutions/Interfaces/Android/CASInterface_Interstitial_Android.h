@@ -19,5 +19,7 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Interstitial_Android : public UCASInt
 	
 	virtual bool IsReady() override;
 
+	virtual void Load() override;
+
 #endif
 };

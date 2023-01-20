@@ -37,6 +37,16 @@ bool UCASInterface_Interstitial_Android::IsReady()
 	return MethodInfo.Env->CallStaticBooleanMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
+void UCASInterface_Interstitial_Android::Load()
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		INTER_CLASSNAME,
+		"LoadInterstitial",
+		"()V");
+
+	MethodInfo.Env->CallStaticBooleanMethod(MethodInfo.Class, MethodInfo.Method);
+}
+
 // ---- JNI Callbacks
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdLoadedThunkCpp(JNIEnv* jenv, jobject thiz)

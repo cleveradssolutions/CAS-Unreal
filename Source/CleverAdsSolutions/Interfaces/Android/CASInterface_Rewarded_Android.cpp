@@ -37,6 +37,16 @@ bool UCASInterface_Rewarded_Android::IsReady()
 	return MethodInfo.Env->CallStaticBooleanMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
+void UCASInterface_Rewarded_Android::Load()
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		REWARDED_CLASSNAME,
+		"LoadRewarded",
+		"()V");
+
+	MethodInfo.Env->CallStaticBooleanMethod(MethodInfo.Class, MethodInfo.Method);
+}
+
 // ---- JNI Callbacks
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealRewarded_onRewardedAdLoadedThunkCpp(JNIEnv* jenv, jobject thiz)

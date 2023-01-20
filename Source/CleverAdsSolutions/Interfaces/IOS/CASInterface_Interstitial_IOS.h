@@ -18,6 +18,8 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Interstitial_IOS : public UCASInterfa
 	virtual void Show() override;
 	
 	virtual bool IsReady() override;
+	
+	virtual void Load() override;
 
 #endif
 };

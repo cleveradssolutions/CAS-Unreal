@@ -5,8 +5,7 @@
 #include "CASInterface.h"
 #include "CASInterface_ScreenAd.generated.h"
 
-/** Abstract CAS interface class for full screen ads, such as Interstitial and Rewarded.
- */
+/** Abstract CAS interface class for full screen ads, such as Interstitial and Rewarded. */
 UCLASS()
 class CLEVERADSSOLUTIONS_API UCASInterface_ScreenAd : public UCASInterface
 {
@@ -48,8 +47,7 @@ public: // Delegates
 
 public: // Functions
 
-	/** Shows ad. Will do nothing if ad is not loaded. Use IsReady() to check if it is ready.
-	 */
+	/** Shows ad. Will do nothing if ad is not loaded. Use IsReady() to check if it is ready. */
 	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
 	virtual void Show(){}
 
@@ -58,4 +56,8 @@ public: // Functions
 	 */
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions")
 	virtual bool IsReady(){return false;}
+
+	/** Manually loads a new ad. By default new ads load automatically. */
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
+	virtual void Load(){}
 };

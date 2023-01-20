@@ -148,4 +148,9 @@ bool UCASInterface_Rewarded_IOS::IsReady()
 {
 	return CASRewardedViewController.manager.isRewardedAdReady;
 }
+
+void UCASInterface_Rewarded_IOS::Load()
+{
+	[CASRewardedViewController.manager loadRewardedAd];
+}
 #endif

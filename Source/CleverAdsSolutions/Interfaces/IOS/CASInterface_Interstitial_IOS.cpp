@@ -149,4 +149,9 @@ bool UCASInterface_Interstitial_IOS::IsReady()
 	return CASInterstitialViewController.manager.isInterstitialReady;
 }
 
+void UCASInterface_Interstitial_IOS::Load()
+{
+	[CASInterstitialViewController.manager loadInterstitial];
+}
+
 #endif
