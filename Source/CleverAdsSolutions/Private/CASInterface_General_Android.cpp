@@ -29,6 +29,16 @@ FString UCASInterface_General_Android::GetCASVersion() const
 	return FJavaHelper::FStringFromParam(MethodInfo.Env, OutVersionString);
 }
 
+void UCASInterface_General_Android::ValidateIntegration()
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		MANAGER_CLASSNAME,
+		"ValidateIntegration",
+		"()V");
+
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
+}
+
 void UCASInterface_General_Android::SetMuteAdSounds(bool Mute)
 {
 	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(

@@ -15,10 +15,12 @@ import com.unreal.cas.CASUnrealBanner;
 
 public class CASUnrealManager {
     public static MediationManager manager;
+    public static NativeActivity activity;
     
     public static void Init(NativeActivity appActivity){
+        activity = appActivity;
         try {
-            ApplicationInfo info = appActivity.getPackageManager().getApplicationInfo(appActivity.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo info = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = info.metaData;
             String AppID = bundle.getString("cas.sdk.appid");
             Boolean TestMode = bundle.containsKey("cas.sdk.testmode");
@@ -31,11 +33,11 @@ public class CASUnrealManager {
                    .withAdTypes(AdType.Banner, AdType.Interstitial, AdType.Rewarded)
                    // Use Test ads or live ads
                    .withTestAdMode(TestMode)
-                   .initialize(appActivity);
+                   .initialize(activity);
             
-            CASUnrealInterstitial.Init(manager, appActivity);
-            CASUnrealRewarded.Init(manager, appActivity);
-            CASUnrealBanner.Init(manager, appActivity);
+            CASUnrealInterstitial.Init(manager, activity);
+            CASUnrealRewarded.Init(manager, activity);
+            CASUnrealBanner.Init(manager, activity);
                     
         } catch (NameNotFoundException e) {}
     }
@@ -50,5 +52,9 @@ public class CASUnrealManager {
     
     public static void SetLoadingMode(int mode){
         CAS.getSettings().setLoadingMode(mode);
+    }
+    
+    public static void ValidateIntegration(){
+        CAS.validateIntegration(activity);
     }
 }

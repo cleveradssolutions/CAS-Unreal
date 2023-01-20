@@ -3,9 +3,17 @@
 	<init>
 		<log text="Clever Ads Solutions (CAS) Initialization"/>
 
+		<!-- Copy CAS settings file -->
+		<setStringFromProperty result="ConfigFile" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="IOSSettingsFile" default=""/>
+		<setStringFromProperty result="ConfigFileName" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="IOSSettingsFileName" default=""/>
+		<copyFile src="$S(PluginDir)/../../../../$S(ConfigFile)" dst="$S(BuildDir)/cas_settings$S(ConfigFileName).json" force="false"/>
+		
+		<!-- Copy CAS framework -->
 		<copyDir src="$S(EngineDir)/Intermediate/UnzippedFrameworks/CleverAdsSolutions/CleverAdsSolutions.embeddedframework/CleverAdsSolutions.framework" dst="$S(BuildDir)/Frameworks/CleverAdsSolutions.framework" />
 
-		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidAdmobAppID"/>
+		<!-- AdMob App ID -->
+		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="IOSAdmobAppID"/>
+		<setBoolFromProperty result="EnableGoogleAdMob" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableGoogleAdMobAndroid" default="false"/>
 	</init>
 
 	<iosPListUpdates>
@@ -15,16 +23,17 @@
 			<!-- Process root dict only -->
 			<if condition="isRootDictionary">
 				<true>
-
 					<!-- AdMob App ID -->
-					<setElement result="AdMobSdkKeyElem" value="key" text="GADApplicationIdentifier"/>
-					<addElement tag="$" name="AdMobSdkKeyElem"/>
-					<setElement result="AdMobSdkValueElem" value="string" text="$S(AdmobAppID)"/>
-					<addElement tag="$" name="AdMobSdkValueElem"/>
-					
+					<if condition="EnableGoogleAdMobAndroid">
+						<true>
+							<setElement result="AdMobSdkKeyElem" value="key" text="GADApplicationIdentifier"/>
+							<addElement tag="$" name="AdMobSdkKeyElem"/>
+							<setElement result="AdMobSdkValueElem" value="string" text="$S(AdmobAppID)"/>
+							<addElement tag="$" name="AdMobSdkValueElem"/>
+						</true>
+					</if>
 				</true>
 			</if>
 		</loopElements>
-
 	</iosPListUpdates>
 </root>

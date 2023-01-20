@@ -28,5 +28,7 @@ public:
 
 	virtual void SetLoadingMode(ECASLoadingMode Mode) override;
 
+	virtual void ValidateIntegration() override;
+
 #endif
 };

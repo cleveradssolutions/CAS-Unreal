@@ -43,6 +43,11 @@ FString UCASInterface_General_IOS::GetCASVersion() const
 	return FString([CAS getSDKVersion]);
 }
 
+void UCASInterface_General_IOS::ValidateIntegration()
+{
+	[CAS validateIntegration];
+}
+
 void UCASInterface_General_IOS::SetMuteAdSounds(bool Mute)
 {
 	[[CAS settings] setMuteAdSoundsTo:Mute];

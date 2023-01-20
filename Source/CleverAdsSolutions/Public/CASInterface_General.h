@@ -38,14 +38,18 @@ class CLEVERADSSOLUTIONS_API UCASInterface_General : public UCASInterface
 	/** Returns CAS library version.
 	 * @return String with version number
 	 */
-	UFUNCTION(BlueprintCallable, Category="CAS|General")
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
 	virtual FString GetCASVersion() const {return "";}
+
+	/** Validates integration and outputs validating info in log files. */
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
+	virtual void ValidateIntegration() {};
 	
 	/** Indicates if the application’s audio is muted. Affects initial mute state for all ads.
 	 * Use this method only if your application has its own volume controls.
 	 * @param Mute - Mute ads audio by default
 	 */
-	UFUNCTION(BlueprintCallable, Category="CAS|General")
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
 	virtual void SetMuteAdSounds(bool Mute) {};
 
 	/** Sets loading mode for providing ads
@@ -58,6 +62,6 @@ class CLEVERADSSOLUTIONS_API UCASInterface_General : public UCASInterface
 	 *	Manual				Manual		Very low					Low				Depends on the frequency
 	 * @param Mode - New loading mode
 	 */
-	UFUNCTION(BlueprintCallable, Category="CAS|General")
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
 	virtual void SetLoadingMode(ECASLoadingMode Mode) {};
 };
