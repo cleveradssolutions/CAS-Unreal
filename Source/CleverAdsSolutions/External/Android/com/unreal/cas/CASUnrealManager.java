@@ -57,4 +57,18 @@ public class CASUnrealManager {
     public static void ValidateIntegration(){
         CAS.validateIntegration(activity);
     }
+    
+    public static void SetTaggedAudience(int audienceStatus){
+        if(audienceStatus == 0) CAS.getSettings().setTaggedAudience(Audience.UNDEFINED);
+        if(audienceStatus == 1) CAS.getSettings().setTaggedAudience(Audience.CHILDREN);
+        if(audienceStatus == 2) CAS.getSettings().setTaggedAudience(Audience.NOT_CHILDREN);
+    }
+    
+    public static void SetUserConsent(boolean accepted){
+        CAS.getSettings().setUserConsent(accepted ? ConsentStatus.ACCEPTED : ConsentStatus.DENIED);
+    }
+    
+    public static void SetCCPAStatus(boolean inSale){
+        CAS.getSettings().setCcpaStatus(inSale ? CCPAStatus.OPT_IN_SALE : CCPAStatus.OPT_OUT_SALE);
+    }
 }
