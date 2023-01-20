@@ -58,4 +58,34 @@ void UCASInterface_General_IOS::SetLoadingMode(ECASLoadingMode Mode)
 	[[CAS settings] setLoadingWithMode:(CASLoadingManagerMode)Mode];
 }
 
+void UCASInterface_General_IOS::SetTaggedAudience(ECASChildrenAudience ChildrenAudienceStatus)
+{
+	switch (ChildrenAudienceStatus)
+	{
+	case ECASChildrenAudience::Children: [CAS.settings setTaggedWithAudience: CASAudienceChildren]; break;
+	case ECASChildrenAudience::NotChildren: [CAS.settings setTaggedWithAudience: CASAudienceNotChildren]; break;
+	default: [CAS.settings setTaggedWithAudience: CASAudienceUndefined];
+	}
+}
+
+void UCASInterface_General_IOS::SetUserConsent(ECASUserConsentStatus ConsentStatus)
+{
+	switch (ConsentStatus)
+	{
+	case ECASUserConsentStatus::Accepted: [CAS.settings updateUserWithConsent: CASConsentStatusAccepted]; break;
+	case ECASUserConsentStatus::Denied: [CAS.settings updateUserWithConsent: CASConsentStatusDenied]; break;
+	default: break;
+	}
+}
+
+void UCASInterface_General_IOS::SetCCPAStatus(ECASUserCCPAStatus CCPAStatus)
+{
+	switch (CCPAStatus)
+	{
+	case ECASUserCCPAStatus::OptOutSale: [CAS.settings updateCCPAWithStatus: CASCCPAStatusOptOutSale]; break;
+	case ECASUserCCPAStatus::OptInSale: [CAS.settings updateCCPAWithStatus: CASCCPAStatusOptInSale]; break;
+	default: break;
+	}
+}
+
 #endif

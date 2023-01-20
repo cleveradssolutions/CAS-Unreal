@@ -14,6 +14,32 @@ enum class ECASGender : uint8
 	Female
 };
 
+/** Used to determine a gender in CAS > SetGender */
+UENUM(BlueprintType)
+enum class ECASChildrenAudience : uint8
+{
+	Undefined,
+	Children,
+	NotChildren
+};
+
+/** Used to determine a gender in CAS > SetGender */
+UENUM(BlueprintType)
+enum class ECASUserConsentStatus : uint8
+{
+	Undefined,
+	Denied,
+	Accepted
+};
+
+/** Used to determine a gender in CAS > SetGender */
+UENUM(BlueprintType)
+enum class ECASUserCCPAStatus : uint8
+{
+	Undefined,
+	OptInSale,
+	OptOutSale
+};
 
 /** Ads loading mode. Use CAS > SetLoadingMode to change the mode */
 UENUM(BlueprintType)
@@ -63,5 +89,27 @@ class CLEVERADSSOLUTIONS_API UCASInterface_General : public UCASInterface
 	 * @param Mode - New loading mode
 	 */
 	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
-	virtual void SetLoadingMode(ECASLoadingMode Mode) {};
+	virtual void SetLoadingMode(ECASLoadingMode Mode) {}
+
+	/** Sets users children audience category.
+	 * If you know that the user falls within an age-restricted category (i.e., under the age of 16), you must set the "Children" audience flag
+	 * @param ChildrenAudienceStatus - User children audience status
+	 */
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
+	virtual void SetTaggedAudience(ECASChildrenAudience ChildrenAudienceStatus) {}
+
+	/** Sets Consent Flag in GDPR and Other Regions
+	 * Use it if you are using your own or a third-party party consent mechanism.
+	 * @param ConsentStatus - User Consent Status
+	 */
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
+	virtual void SetUserConsent(ECASUserConsentStatus ConsentStatus) {}
+	
+	/** Sets California Consumer Privacy Act status for a user
+	 * If a user does NOT opt out of interest-based advertising, set the OptInSale flag
+	 * If a user does opt out of interest-based advertising, set the OptOutSale flag
+	 * @param CCPAStatus - User CCPA Status
+	 */
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
+	virtual void SetCCPAStatus(ECASUserCCPAStatus CCPAStatus) {}
 };

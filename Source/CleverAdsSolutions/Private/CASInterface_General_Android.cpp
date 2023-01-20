@@ -59,4 +59,37 @@ void UCASInterface_General_Android::SetLoadingMode(ECASLoadingMode Mode)
 	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, Mode);
 }
 
+void UCASInterface_General_Android::SetTaggedAudience(ECASChildrenAudience ChildrenAudienceStatus)
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		MANAGER_CLASSNAME,
+		"SetTaggedAudience",
+		"(I)V");
+
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, ChildrenAudienceStatus);
+}
+
+void UCASInterface_General_Android::SetUserConsent(ECASUserConsentStatus ConsentStatus)
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		MANAGER_CLASSNAME,
+		"SetUserConsent",
+		"(Z)V");
+
+	MethodInfo.Env->CallStaticVoidMethod(
+		MethodInfo.Class,
+		MethodInfo.Method,
+		ConsentStatus == ECASUserConsentStatus::Accepted);
+}
+
+void UCASInterface_General_Android::SetCCPAStatus(ECASUserCCPAStatus CCPAStatus)
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		MANAGER_CLASSNAME,
+		"SetCCPAStatus",
+		"(Z)V");
+
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, CCPAStatus == ECASUserCCPAStatus::OptInSale);
+}
+
 #endif
