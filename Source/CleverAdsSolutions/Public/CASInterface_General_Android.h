@@ -21,5 +21,7 @@ class CLEVERADSSOLUTIONS_API UCASInterface_General_Android : public UCASInterfac
 
 	virtual void SetLoadingMode(ECASLoadingMode Mode) override;
 
+	virtual void ValidateIntegration() override;
+
 #endif
 };
