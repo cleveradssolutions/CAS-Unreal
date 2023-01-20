@@ -32,6 +32,8 @@ public class CleverAdsSolutions : ModuleRules
 		);
 		
 		PrivateIncludePathModuleNames.Add("Settings");
+		
+		PrivateIncludePaths.Add("CleverAdsSolutions/Interfaces");
 
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{

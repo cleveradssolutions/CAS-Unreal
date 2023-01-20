@@ -8,17 +8,17 @@
 #include "CASInterface_General.h"
 
 #if PLATFORM_ANDROID
-#include "CASInterface_General_Android.h"
-#include "CASInterface_Interstitial_Android.h"
-#include "CASInterface_Rewarded_Android.h"
-#include "CASInterface_Banner_Android.h"
+#include "Android/CASInterface_General_Android.h"
+#include "Android/CASInterface_Interstitial_Android.h"
+#include "Android/CASInterface_Rewarded_Android.h"
+#include "Android/CASInterface_Banner_Android.h"
 #endif
 
 #if PLATFORM_IOS
-#include "CASInterface_General_IOS.h"
-#include "CASInterface_Interstitial_IOS.h"
-#include "CASInterface_Rewarded_IOS.h"
-#include "CASInterface_Banner_IOS.h"
+#include "IOS/CASInterface_General_IOS.h"
+#include "IOS/CASInterface_Interstitial_IOS.h"
+#include "IOS/CASInterface_Rewarded_IOS.h"
+#include "IOS/CASInterface_Banner_IOS.h"
 #endif
 
 void UCAS::Initialize(FSubsystemCollectionBase& Collection)
