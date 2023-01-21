@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<root xmlns:android="http://schemas.android.com/apk/res/android">
+<root>
 	<init>
 		<log text="Clever Ads Solutions (CAS) Initialization"/>
 
@@ -13,7 +13,7 @@
 
 		<!-- AdMob App ID -->
 		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="IOSAdmobAppID"/>
-		<setBoolFromProperty result="EnableGoogleAdMob" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableGoogleAdMobAndroid" default="false"/>
+		<setBoolFromProperty result="EnableGoogleAdMob" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableGoogleAdMobIOS" default="false"/>
 	</init>
 
 	<iosPListUpdates>
@@ -24,7 +24,7 @@
 			<if condition="isRootDictionary">
 				<true>
 					<!-- AdMob App ID -->
-					<if condition="EnableGoogleAdMobAndroid">
+					<if condition="EnableGoogleAdMob">
 						<true>
 							<setElement result="AdMobSdkKeyElem" value="key" text="GADApplicationIdentifier"/>
 							<addElement tag="$" name="AdMobSdkKeyElem"/>
