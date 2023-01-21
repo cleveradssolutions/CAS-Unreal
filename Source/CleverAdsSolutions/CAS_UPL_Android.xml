@@ -5,7 +5,8 @@
 
 		<setStringFromProperty result="CASAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidCASAppID"/>
 		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidAdmobAppID"/>
-		<setBoolFromProperty result="TestMode" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="TestMode" default="true"/>
+		<setBoolFromProperty result="TestMode" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="TestAds" default="true"/>
+		<setBoolFromProperty result="DebugMode" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="DebugMode" default="true"/>
 
 		<setStringFromProperty result="ConfigFile" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidSettingsFile" default=""/>
 		<setStringFromProperty result="ConfigFileID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="AndroidSettingsFileID" default=""/>
@@ -32,11 +33,20 @@
 		<addAttribute tag="$CASKeyElem" name="android:value" value="$S(CASAppID)" />
 		<addElement tag="application" name="CASKeyElem" />
 		
-		<!-- Test mode -->
+		<!-- Test ads mode -->
 		<if condition="TestMode">
 			<true>
 				<addElements tag="application">
 					<meta-data android:name="cas.sdk.testmode" android:value="true"/>
+				</addElements>
+			</true>
+		</if>
+
+		<!-- Debug mode -->
+		<if condition="DebugMode">
+			<true>
+				<addElements tag="application">
+					<meta-data android:name="cas.sdk.debugmode" android:value="true"/>
 				</addElements>
 			</true>
 		</if>
@@ -162,7 +172,7 @@
 	<gameActivityOnCreateAdditions>
 		<insert>
 			<![CDATA[
-				CASUnrealManager.Init(this);
+				CASUnrealManager.InitActivity(this);
 			]]>
 		</insert>
 	</gameActivityOnCreateAdditions>

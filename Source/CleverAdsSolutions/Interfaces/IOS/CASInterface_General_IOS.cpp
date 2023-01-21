@@ -27,6 +27,8 @@ void UCASInterface_General_IOS::Init()
 	if(!CASPluginSettings) return;
 
 	CASManagerBuilder* builder = [CAS buildManager];
+
+	[[CAS settings] setDebugMode:CASPluginSettings->DebugMode];
 	
 	// List Ad formats used in app
 	[builder withAdFlags:CASTypeFlagsBanner | CASTypeFlagsInterstitial | CASTypeFlagsRewarded];

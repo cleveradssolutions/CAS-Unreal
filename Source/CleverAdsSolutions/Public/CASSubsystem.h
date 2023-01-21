@@ -70,4 +70,9 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="Banner"))
 	UCASInterface_Banner* GetBannerInterface() const;
+
+private:
+
+	void DisableDevModesIfShipping();
+	
 };

@@ -2,6 +2,8 @@
 
 #include "CASSubsystem.h"
 
+#include "CASSettings.h"
+
 #include "CASInterface_Interstitial.h"
 #include "CASInterface_Rewarded.h"
 #include "CASInterface_Banner.h"
@@ -25,6 +27,8 @@ void UCAS::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
+	DisableDevModesIfShipping();
+
 	// General
 #if PLATFORM_ANDROID
 	GeneralInterface = NewObject<UCASInterface_General_Android>(this);
@@ -33,7 +37,6 @@ void UCAS::Initialize(FSubsystemCollectionBase& Collection)
 #else
 	GeneralInterface = NewObject<UCASInterface_General>(this);
 #endif
-
 }
 
 void UCAS::Init()
@@ -109,4 +112,17 @@ UCASInterface_Banner* UCAS::GetBannerInterface() const
 	checkf(Initialized, TEXT("Trying to get CAS Banner interface before initializing. Call 'CAS > Init' before using ads!"));
 
 	return BannerInterface;
+}
+
+void UCAS::DisableDevModesIfShipping()
+{
+#if UE_BUILD_SHIPPING
+	UCASSettings* CASSettings = GetMutableDefault<UCASSettings>();
+	
+	if(CASSettings->DisableDevModesInShipping)
+	{
+		CASSettings->DebugMode = false;
+		CASSettings->TestAds = false;
+	}
+#endif
 }

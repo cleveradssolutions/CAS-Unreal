@@ -139,9 +139,17 @@ public:
 
 	// Debug  -------
 	
-	/** Toggle test mode. When enabled, test ads will be served instead of real ones */
+	/** Toggle test ads mode. When enabled, test ads will be served instead of real ones */
 	UPROPERTY(Config, EditAnywhere, Category="Debug")
-	bool TestMode;
+	bool TestAds;
+
+	/** Toggle debug mode. When enabled, additional information will be printed to logs */
+	UPROPERTY(Config, EditAnywhere, Category="Debug")
+	bool DebugMode;
+
+	/** Disables TestAds and DebugMode when building shipping builds. */
+	UPROPERTY(Config, EditAnywhere, Category="Debug")
+	bool DisableDevModesInShipping = true;
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override

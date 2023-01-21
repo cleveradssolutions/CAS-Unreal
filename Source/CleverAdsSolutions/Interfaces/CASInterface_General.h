@@ -114,4 +114,5 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|General")
 	virtual void SetCCPAStatus(ECASUserCCPAStatus CCPAStatus) {}
+	
 };

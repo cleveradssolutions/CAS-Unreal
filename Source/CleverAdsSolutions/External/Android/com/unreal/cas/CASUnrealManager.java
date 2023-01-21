@@ -17,13 +17,19 @@ public class CASUnrealManager {
     public static MediationManager manager;
     public static NativeActivity activity;
     
-    public static void Init(NativeActivity appActivity){
+    public static void InitActivity(NativeActivity appActivity){
         activity = appActivity;
+    }
+    
+    public static void Init(NativeActivity appActivity){
         try {
             ApplicationInfo info = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = info.metaData;
             String AppID = bundle.getString("cas.sdk.appid");
             Boolean TestMode = bundle.containsKey("cas.sdk.testmode");
+            Boolean DebugMode = bundle.containsKey("cas.sdk.debugmode");
+            
+            CAS.getSettings().setDebugMode(DebugMode);
             
             manager = CAS.buildManager()
                    // Set your CAS ID

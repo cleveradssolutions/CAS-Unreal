@@ -14,7 +14,12 @@ void UCASInterface_General_Android::Init()
 {
 	Super::Init();
 
-	// We init everything on OnCreate in UPL > CASUnrealManager.java
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		MANAGER_CLASSNAME,
+		"Init",
+		"()V");
+
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
 FString UCASInterface_General_Android::GetCASVersion() const
