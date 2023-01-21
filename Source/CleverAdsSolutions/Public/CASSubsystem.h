@@ -31,11 +31,15 @@ private:
 	UPROPERTY()
 	UCASInterface_General* GeneralInterface;
 
+	bool Initialized;
+
 public:
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-	void InitCASInterfaces();
+	/** Initialize Clever Ads Solutions and its interfaces */
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
+	void Init();
 
 	static UCAS* Get(UObject* WorldContext);
 
@@ -51,19 +55,19 @@ public:
 	 * @return CAS Interstitial Interface object
 	 */
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="Interstitial"))
-	UCASInterface_Interstitial* GetInterstitialInterface() const {return InterstitialInterface;}
+	UCASInterface_Interstitial* GetInterstitialInterface() const;
 
 	/** Returns Rewarded interface.
 	 * Returns base class without implementation if CAS or Rewarded ads not supported on this platform
 	 * @return CAS Interstitial Interface object
 	 */
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="Rewarded"))
-	UCASInterface_Rewarded* GetRewardedInterface() const {return RewardedInterface;}
+	UCASInterface_Rewarded* GetRewardedInterface() const;
 
 	/** Returns Banner interface.
 	 * Returns base class without implementation if CAS or Banner ads not supported on this platform
 	 * @return CAS Interstitial Interface object
 	 */
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="Banner"))
-	UCASInterface_Banner* GetBannerInterface() const {return BannerInterface;}
+	UCASInterface_Banner* GetBannerInterface() const;
 };

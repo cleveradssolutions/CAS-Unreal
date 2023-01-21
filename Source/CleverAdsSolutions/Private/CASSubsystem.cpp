@@ -25,11 +25,6 @@ void UCAS::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	InitCASInterfaces();
-}
-
-void UCAS::InitCASInterfaces()
-{
 	// General
 #if PLATFORM_ANDROID
 	GeneralInterface = NewObject<UCASInterface_General_Android>(this);
@@ -38,11 +33,15 @@ void UCAS::InitCASInterfaces()
 #else
 	GeneralInterface = NewObject<UCASInterface_General>(this);
 #endif
-	
+
+}
+
+void UCAS::Init()
+{
 	if(GeneralInterface) GeneralInterface->Init();
 	
 	// Interstitial
-#if PLATFORM_ANDROID
+	#if PLATFORM_ANDROID
 	InterstitialInterface = NewObject<UCASInterface_Interstitial_Android>(this);
 #elif PLATFORM_IOS
 	InterstitialInterface = NewObject<UCASInterface_Interstitial_IOS>(this);
@@ -53,7 +52,7 @@ void UCAS::InitCASInterfaces()
 	if(InterstitialInterface) InterstitialInterface->Init();
 
 	// Rewarded
-#if PLATFORM_ANDROID
+	#if PLATFORM_ANDROID
 	RewardedInterface = NewObject<UCASInterface_Rewarded_Android>(this);
 #elif PLATFORM_IOS
 	RewardedInterface = NewObject<UCASInterface_Rewarded_IOS>(this);
@@ -64,7 +63,7 @@ void UCAS::InitCASInterfaces()
 	if(RewardedInterface) RewardedInterface->Init();
 
 	// Banner
-#if PLATFORM_ANDROID
+	#if PLATFORM_ANDROID
 	BannerInterface = NewObject<UCASInterface_Banner_Android>(this);
 #elif PLATFORM_IOS
 	BannerInterface = NewObject<UCASInterface_Banner_IOS>(this);
@@ -73,12 +72,14 @@ void UCAS::InitCASInterfaces()
 #endif
 	
 	if(BannerInterface) BannerInterface->Init();
+
+	Initialized = true;
 }
 
 UCAS* UCAS::Get(UObject* WorldContext)
 {
 	if(!WorldContext) return nullptr;
-	
+
 	if(const UCASInterface* CASInterface = Cast<UCASInterface>(WorldContext))
 	{
 		return Cast<UCAS>(CASInterface->GetOuter());
@@ -87,4 +88,25 @@ UCAS* UCAS::Get(UObject* WorldContext)
 	if(!WorldContext->GetWorld() || !WorldContext->GetWorld()->GetGameInstance()) return nullptr;
 
 	return WorldContext->GetWorld()->GetGameInstance()->GetSubsystem<UCAS>();
+}
+
+UCASInterface_Interstitial* UCAS::GetInterstitialInterface() const
+{
+	checkf(Initialized, TEXT("Trying to get CAS Interstitial interface before initializing. Call 'CAS > Init' before using ads!"));
+
+	return InterstitialInterface;
+}
+
+UCASInterface_Rewarded* UCAS::GetRewardedInterface() const
+{
+	checkf(Initialized, TEXT("Trying to get CAS Rewarded interface before initializing. Call 'CAS > Init' before using ads!"));
+
+	return RewardedInterface;
+}
+
+UCASInterface_Banner* UCAS::GetBannerInterface() const
+{
+	checkf(Initialized, TEXT("Trying to get CAS Banner interface before initializing. Call 'CAS > Init' before using ads!"));
+
+	return BannerInterface;
 }
