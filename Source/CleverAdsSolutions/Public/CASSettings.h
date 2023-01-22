@@ -80,6 +80,9 @@ public:
 	
 	UPROPERTY(Config, EditAnywhere, Category="Networks|InMobi", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
 	bool EnableInMobiIOS;
+
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Pangle", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
+	bool EnablePangleIOS;
 	
 	UPROPERTY(Config, EditAnywhere, Category="Networks|Tapjoy", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
 	bool EnableTapjoyIOS;
@@ -89,6 +92,9 @@ public:
 		
 	UPROPERTY(Config, EditAnywhere, Category="Networks|Vungle", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
 	bool EnableVungleIOS;
+
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Yandex", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
+	bool EnableYandexIOS;
 
 	// Android ---
 
@@ -115,6 +121,9 @@ public:
 	
 	UPROPERTY(Config, EditAnywhere, Category="Networks|InMobi", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
 	bool EnableInMobiAndroid;
+
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Pangle", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
+	bool EnablePangleAndroid;
 	
 	UPROPERTY(Config, EditAnywhere, Category="Networks|Tapjoy", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
 	bool EnableTapjoyAndroid;
@@ -124,6 +133,9 @@ public:
 		
 	UPROPERTY(Config, EditAnywhere, Category="Networks|Vungle", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
 	bool EnableVungleAndroid;
+
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Yandex", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
+	bool EnableYandexAndroid;
 
 	// Network settings  -------
 
@@ -184,9 +196,11 @@ public:
 				EnableMintegralAndroid = true;
 				EnableMyTargetAndroid = true;
 				EnableInMobiAndroid = true;
+				EnablePangleAndroid = true;
 				EnableTapjoyAndroid = true;
 				EnableUnityAdsAndroid = true;
 				EnableVungleAndroid = true;
+				EnableYandexAndroid = false;
 				break;
 				case ECASAdsSolution::Families:
 				EnableAppLovinAndroid = true;
@@ -197,9 +211,11 @@ public:
 				EnableMintegralAndroid = false;
 				EnableMyTargetAndroid = false;
 				EnableInMobiAndroid = true;
+				EnablePangleAndroid = false;
 				EnableTapjoyAndroid = false;
 				EnableUnityAdsAndroid = true;
 				EnableVungleAndroid = true;
+				EnableYandexAndroid = false;
 				break;
 				default: break;
 			}
@@ -214,9 +230,11 @@ public:
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableMintegralAndroid)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableMyTargetAndroid)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableInMobiAndroid)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnablePangleAndroid)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableTapjoyAndroid)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableUnityAdsAndroid)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableVungleAndroid)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableYandexAndroid)), GetDefaultConfigFilename());
 			}
 		}
 		// IOS Ads Solution preset 
@@ -233,9 +251,11 @@ public:
 				EnableMintegralIOS = true;
 				EnableMyTargetIOS = true;
 				EnableInMobiIOS = true;
+				EnablePangleIOS = true;
 				EnableTapjoyIOS = true;
 				EnableUnityAdsIOS = true;
 				EnableVungleIOS = true;
+				EnableYandexIOS = false;
 				break;
 				case ECASAdsSolution::Families:
 				EnableAppLovinIOS = true;
@@ -246,9 +266,11 @@ public:
 				EnableMintegralIOS = false;
 				EnableMyTargetIOS = false;
 				EnableInMobiIOS = true;
+				EnablePangleIOS = false;
 				EnableTapjoyIOS = false;
 				EnableUnityAdsIOS = true;
 				EnableVungleIOS = true;
+				EnableYandexIOS = false;
 				break;
 				default: break;
 			}
@@ -263,9 +285,11 @@ public:
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableMintegralIOS)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableMyTargetIOS)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableInMobiIOS)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnablePangleIOS)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableTapjoyIOS)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableUnityAdsIOS)), GetDefaultConfigFilename());
 				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableVungleIOS)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableYandexIOS)), GetDefaultConfigFilename());
 			}
 		}
 

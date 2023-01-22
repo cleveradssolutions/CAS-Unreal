@@ -20,9 +20,11 @@
 		<setBoolFromProperty result="EnableMintegral" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableMintegralAndroid" default="false"/>
 		<setBoolFromProperty result="EnableMyTarget" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableMyTargetAndroid" default="false"/>
 		<setBoolFromProperty result="EnableInMobi" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableInMobiAndroid" default="false"/>
+		<setBoolFromProperty result="EnablePangle" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnablePangleAndroid" default="false"/>
 		<setBoolFromProperty result="EnableTapjoy" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableTapjoyAndroid" default="false"/>
 		<setBoolFromProperty result="EnableUnityAds" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableUnityAdsAndroid" default="false"/>
 		<setBoolFromProperty result="EnableVungle" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableVungleAndroid" default="false"/>
+		<setBoolFromProperty result="EnableYandex" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableYandexAndroid" default="false"/>
 	</init>
 
 	<androidManifestUpdates>
@@ -128,6 +130,12 @@
 		<if condition="EnableInMobi"><true><insert>
 			dependencies { implementation 'com.cleveradssolutions:inmobi:10.1.2.0' }
 		</insert></true></if>
+		
+		<!-- Pangle -->
+		<if condition="EnablePangle"><true><insert>
+			dependencies { implementation 'com.cleveradssolutions:pangle:4.9.0.7' }
+			repositories { maven { url = "https://artifact.bytedance.com/repository/pangle" } }
+		</insert></true></if>
 
 		<!-- Tapjoy -->
 		<if condition="EnableTapjoy"><true><insert>
@@ -143,6 +151,11 @@
 		<!-- Vungle -->
 		<if condition="EnableVungle"><true><insert>
 			dependencies { implementation 'com.cleveradssolutions:vungle:6.12.0.6' }
+		</insert></true></if>
+		
+		<!-- Yandex -->
+		<if condition="EnableYandex"><true><insert>
+			dependencies { implementation 'com.cleveradssolutions:yandex:20.5.0.0' }
 		</insert></true></if>
 	</buildGradleAdditions>
 

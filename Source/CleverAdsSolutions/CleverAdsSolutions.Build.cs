@@ -50,6 +50,8 @@ public class CleverAdsSolutions : ModuleRules
 		{
 			AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "CAS_UPL_IOS.xml"));
 			
+			PrivateIncludePaths.Add("CleverAdsSolutions/External/IOS/Adapters");
+			
 			ConfigHierarchy EngineConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, DirectoryReference.FromFile(Target.ProjectFile), Target.Platform);
 			
 			bool EnableAppLovin = false;
@@ -60,9 +62,11 @@ public class CleverAdsSolutions : ModuleRules
 			bool EnableMintegral = false;
 			bool EnableMyTarget = false;
 			bool EnableInMobi = false;
+			bool EnablePangle = false;
 			bool EnableTapjoy = false;
 			bool EnableUnityAds = false;
 			bool EnableVungle = false;
+			bool EnableYandex = false;
             
 			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableAppLovinIOS", out EnableAppLovin);
 			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableFacebookIOS", out EnableFacebook);
@@ -72,9 +76,11 @@ public class CleverAdsSolutions : ModuleRules
 			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableMintegralIOS", out EnableMintegral);
 			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableMyTargetIOS", out EnableMyTarget);
 			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableInMobiIOS", out EnableInMobi);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnablePangleIOS", out EnablePangle);
 			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableTapjoyIOS", out EnableTapjoy);
 			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableUnityAdsIOS", out EnableUnityAds);
 			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableVungleIOS", out EnableVungle);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableYandexIOS", out EnableYandex);
 			
 			PublicFrameworks.AddRange(
 				new string[] {
@@ -353,7 +359,26 @@ public class CleverAdsSolutions : ModuleRules
 					)
 				);
 			}
+			
+			// Pangle --
 
+			if (EnablePangle)
+			{
+				PublicAdditionalFrameworks.Add(
+					new Framework(
+						"BUAdSDK",
+						"External/iOS/BUAdSDK.embeddedframework.zip"
+					)
+				);
+			
+				PublicAdditionalFrameworks.Add(
+					new Framework(
+						"BURelyFoundation_Global",
+						"External/iOS/BURelyFoundation_Global.embeddedframework.zip"
+					)
+				);
+			}
+			
 			// Tapjoy --
 
 			if (EnableTapjoy)
@@ -421,6 +446,18 @@ public class CleverAdsSolutions : ModuleRules
 					new Framework(
 						"VungleSDK",
 						"External/iOS/VungleSDK.embeddedframework.zip"
+					)
+				);
+			}			
+			
+			// Yandex --
+
+			if (EnableYandex)
+			{
+				PublicAdditionalFrameworks.Add(
+					new Framework(
+						"YandexMobileAds",
+						"External/iOS/YandexMobileAds.embeddedframework.zip"
 					)
 				);
 			}
