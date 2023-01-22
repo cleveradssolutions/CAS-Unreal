@@ -71,6 +71,10 @@ public:
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="Banner"))
 	UCASInterface_Banner* GetBannerInterface() const;
 
+	/** Returns whenever CAS was initialized or not */
+	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="General"))
+	bool IsInitialized() const {return Initialized;}
+
 private:
 
 	void DisableDevModesIfShipping();

@@ -4,6 +4,8 @@
 
 #include "CASSettings.h"
 
+#include "CASDefines.h"
+
 #include "CASInterface_Interstitial.h"
 #include "CASInterface_Rewarded.h"
 #include "CASInterface_Banner.h"
@@ -41,6 +43,12 @@ void UCAS::Initialize(FSubsystemCollectionBase& Collection)
 
 void UCAS::Init()
 {
+	if(Initialized)
+	{
+		UE_LOG(LogCAS, Warning, TEXT("Clever Ads Solutions system already initialized!"));
+		return;
+	}
+	
 	if(GeneralInterface) GeneralInterface->Init();
 	
 	// Interstitial

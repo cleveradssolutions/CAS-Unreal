@@ -13,13 +13,29 @@
 void UCASInterface_General_Android::Init()
 {
 	Super::Init();
+	{
+		CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		MANAGER_CLASSNAME,
+		"SetPluginPlatform",
+		"(Ljava/lang/String;)V");
+		
+		const FEngineVersion& EngineVersion = FEngineVersion::Current();
+		const FString VersionString = FString::Printf(TEXT("%u.%u"), EngineVersion.GetMajor(), EngineVersion.GetMinor());
 
-	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		jstring VersionParam = MethodInfo.Env->NewStringUTF(TCHAR_TO_UTF8(*VersionString));
+		
+		MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, VersionParam);
+
+		MethodInfo.Env->DeleteLocalRef(VersionParam);
+	}
+	{
+		CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
 		MANAGER_CLASSNAME,
 		"Init",
 		"()V");
 
-	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
+		MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
+	}
 }
 
 FString UCASInterface_General_Android::GetCASVersion() const

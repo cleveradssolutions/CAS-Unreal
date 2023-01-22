@@ -21,7 +21,7 @@ public class CASUnrealManager {
         activity = appActivity;
     }
     
-    public static void Init(NativeActivity appActivity){
+    public static void Init(){
         try {
             ApplicationInfo info = activity.getPackageManager().getApplicationInfo(activity.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = info.metaData;
@@ -76,5 +76,9 @@ public class CASUnrealManager {
     
     public static void SetCCPAStatus(boolean inSale){
         CAS.getSettings().setCcpaStatus(inSale ? CCPAStatus.OPT_IN_SALE : CCPAStatus.OPT_OUT_SALE);
+    }
+    
+    public static void SetPluginPlatform(String engineVersion){
+        CAS.getSettings().setPluginPlatform("Unreal", engineVersion);
     }
 }

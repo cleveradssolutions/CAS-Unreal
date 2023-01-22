@@ -28,12 +28,18 @@ void UCASInterface_General_IOS::Init()
 
 	CASManagerBuilder* builder = [CAS buildManager];
 
+	const FEngineVersion& EngineVersion = FEngineVersion::Current();
+	FString VersionString = FString::Printf(TEXT("%u"), EngineVersion.GetMajor());
+	VersionString += FString::Printf(TEXT(".%u"), EngineVersion.GetMinor());
+
+	[[CAS settings] setPluginPlatformWithName:@"Unreal" version:[NSString stringWithFString:VersionString]];
+
 	[[CAS settings] setDebugMode:CASPluginSettings->DebugMode];
 	
 	// List Ad formats used in app
 	[builder withAdFlags:CASTypeFlagsBanner | CASTypeFlagsInterstitial | CASTypeFlagsRewarded];
 	
-	[builder withTestAdMode:CASPluginSettings->TestMode];
+	[builder withTestAdMode:CASPluginSettings->TestAds];
 	
 	// TODO: Completion handler
 	
