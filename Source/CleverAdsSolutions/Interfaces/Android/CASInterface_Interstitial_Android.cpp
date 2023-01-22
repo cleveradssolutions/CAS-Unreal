@@ -44,7 +44,7 @@ void UCASInterface_Interstitial_Android::Load()
 		"LoadInterstitial",
 		"()V");
 
-	MethodInfo.Env->CallStaticBooleanMethod(MethodInfo.Class, MethodInfo.Method);
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
 // ---- JNI Callbacks
