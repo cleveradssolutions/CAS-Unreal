@@ -263,11 +263,11 @@ public:
 				EnableIronsourceIOS = true;
 				EnableGoogleAdMobIOS = true;
 				EnableAdColonyIOS = true;
-				EnableMintegralIOS = false;
-				EnableMyTargetIOS = false;
+				EnableMintegralIOS = true;
+				EnableMyTargetIOS = true;
 				EnableInMobiIOS = true;
-				EnablePangleIOS = false;
-				EnableTapjoyIOS = false;
+				EnablePangleIOS = true;
+				EnableTapjoyIOS = true;
 				EnableUnityAdsIOS = true;
 				EnableVungleIOS = true;
 				EnableYandexIOS = false;

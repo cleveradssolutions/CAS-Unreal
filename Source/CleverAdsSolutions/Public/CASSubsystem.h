@@ -72,7 +72,7 @@ public:
 	UCASInterface_Banner* GetBannerInterface() const;
 
 	/** Returns whenever CAS was initialized or not */
-	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="General"))
+	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions")
 	bool IsInitialized() const {return Initialized;}
 
 private:
