@@ -81,7 +81,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category="Networks|InMobi", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
 	bool EnableInMobiIOS;
 
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Pangle", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Pangle", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
 	bool EnablePangleIOS;
 	
 	UPROPERTY(Config, EditAnywhere, Category="Networks|Tapjoy", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
@@ -93,7 +93,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category="Networks|Vungle", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
 	bool EnableVungleIOS;
 
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Yandex", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Yandex", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
 	bool EnableYandexIOS;
 
 	// Android ---
