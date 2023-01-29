@@ -7,6 +7,7 @@
 #include "CASSettings.h"
 
 #import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
+#import <FBAudienceNetwork/FBAudienceNetwork.h>
 
 namespace CASUnrealIOS
 {
@@ -40,6 +41,9 @@ void UCASInterface_General_IOS::Init()
 	[builder withAdFlags:CASTypeFlagsBanner | CASTypeFlagsInterstitial | CASTypeFlagsRewarded];
 	
 	[builder withTestAdMode:CASPluginSettings->TestAds];
+
+	// Facebook AdvertiserTrackingEnabled flag
+	[FBAdSettings setAdvertiserTrackingEnabled:CASPluginSettings->IOSAdvertiserTrackingEnabled];
 	
 	// TODO: Completion handler
 	

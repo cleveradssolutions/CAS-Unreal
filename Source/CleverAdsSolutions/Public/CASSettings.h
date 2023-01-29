@@ -149,6 +149,12 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="EnableGoogleAdMobIOS"))
 	FString IOSAdmobAppID;
 
+	// Facebook ---
+
+	/** Facebook AdvertiserTrackingEnabled flag */
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Facebook", meta=(EditCondition="EnableFacebookIOS"))
+	bool IOSAdvertiserTrackingEnabled;
+
 	// Debug  -------
 	
 	/** Toggle test ads mode. When enabled, test ads will be served instead of real ones */
