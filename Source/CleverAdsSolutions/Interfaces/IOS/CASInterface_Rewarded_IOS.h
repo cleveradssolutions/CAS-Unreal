@@ -19,5 +19,7 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Rewarded_IOS : public UCASInterface_R
 	
 	virtual bool IsReady() override;
 
+	virtual void Load() override;
+
 #endif
 };

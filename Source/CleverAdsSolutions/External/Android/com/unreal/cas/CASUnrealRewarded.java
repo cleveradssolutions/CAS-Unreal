@@ -83,4 +83,8 @@ public class CASUnrealRewarded {
     public static boolean IsRewardedReady(){
         return manager.isRewardedAdReady();
     }
+    
+    public static void LoadRewarded(){
+        manager.loadRewardedAd();
+    }
 }

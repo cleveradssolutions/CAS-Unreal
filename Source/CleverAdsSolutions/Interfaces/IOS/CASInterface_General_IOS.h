@@ -28,5 +28,13 @@ public:
 
 	virtual void SetLoadingMode(ECASLoadingMode Mode) override;
 
+	virtual void ValidateIntegration() override;
+
+	virtual void SetTaggedAudience(ECASChildrenAudience ChildrenAudienceStatus) override;
+
+	virtual void SetUserConsent(ECASUserConsentStatus ConsentStatus) override;
+
+	virtual void SetCCPAStatus(ECASUserCCPAStatus CCPAStatus) override;
+
 #endif
 };

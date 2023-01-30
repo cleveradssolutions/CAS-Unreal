@@ -2,7 +2,7 @@
 
 #if PLATFORM_IOS
 
-#include "CASInterface_Interstitial_IOS.h"
+#include "CASInterface_Rewarded_IOS.h"
 #include "CASInterface_General_IOS.h"
 #include "CASSubsystem.h"
 
@@ -11,9 +11,9 @@
 
 #import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
 
-UCASInterface_Interstitial_IOS* CASInterstitialIOS = nullptr;
+UCASInterface_Rewarded_IOS* CASRewardedIOS = nullptr;
 
-@interface FCASInterstitialViewController : UIViewController<CASLoadDelegate, CASCallback>
+@interface FCASRewardedViewController : UIViewController<CASLoadDelegate, CASCallback>
 
 @property (nonatomic, strong) CASMediationManager *manager;
 
@@ -29,7 +29,7 @@ UCASInterface_Interstitial_IOS* CASInterstitialIOS = nullptr;
 - (void)didClosedAd;
 @end
 
-@implementation FCASInterstitialViewController
+@implementation FCASRewardedViewController
 
 - (id)initWithManager:(CASMediationManager *) manager
 {
@@ -50,24 +50,24 @@ UCASInterface_Interstitial_IOS* CASInterstitialIOS = nullptr;
 // ---- Callbacks
 
 - (void)onAdLoaded:(CASType)adType {
-	if (adType == CASTypeInterstitial) {
-		if(!CASInterstitialIOS) return;
+	if (adType == CASTypeRewarded) {
+		if(!CASRewardedIOS) return;
 	
 		AsyncTask(ENamedThreads::GameThread, []()
 		{
-			CASInterstitialIOS->OnLoaded.Broadcast();
+			CASRewardedIOS->OnLoaded.Broadcast();
 		});
 	}
 }
 - (void)onAdFailedToLoad:(CASType) adType withError:(NSString *)error {
-	if (adType == CASTypeInterstitial) {
-		if(!CASInterstitialIOS) return;
+	if (adType == CASTypeRewarded) {
+		if(!CASRewardedIOS) return;
 	
 		FString ErrorMsg = FString(error);
 	
 		AsyncTask(ENamedThreads::GameThread, [ErrorMsg]()
 		{
-			CASInterstitialIOS->OnLoadError.Broadcast(ErrorMsg);
+			CASRewardedIOS->OnLoadError.Broadcast(ErrorMsg);
 		});
 	}
 }
@@ -78,75 +78,79 @@ UCASInterface_Interstitial_IOS* CASInterstitialIOS = nullptr;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASInterstitialIOS->OnShown.Broadcast();
+		CASRewardedIOS->OnShown.Broadcast();
 	});
 }
 
 - (void)didShowAdFailedWithError:(NSString *)error
 {
-	if(!CASInterstitialIOS) return;
+	if(!CASRewardedIOS) return;
 	
 	FString ErrorMsg = FString(error);
 	
 	AsyncTask(ENamedThreads::GameThread, [ErrorMsg]()
 	{
-		CASInterstitialIOS->OnShowError.Broadcast(ErrorMsg);
+		CASRewardedIOS->OnShowError.Broadcast(ErrorMsg);
 	});
 }
 
 - (void)didClickedAd
 {
-	if(!CASInterstitialIOS) return;
+	if(!CASRewardedIOS) return;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASInterstitialIOS->OnClicked.Broadcast();
+		CASRewardedIOS->OnClicked.Broadcast();
 	});
 }
 
 - (void)didCompletedAd
 {
-	if(!CASInterstitialIOS) return;
+	if(!CASRewardedIOS) return;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASInterstitialIOS->OnCompleted.Broadcast();
+		CASRewardedIOS->OnCompleted.Broadcast();
 	});
 }
 
 - (void)didClosedAd
 {
-	if(!CASInterstitialIOS) return;
+	if(!CASRewardedIOS) return;
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
-		CASInterstitialIOS->OnClosed.Broadcast();
+		CASRewardedIOS->OnClosed.Broadcast();
 	});
 }
 
 @end
 
-static FCASInterstitialViewController* CASInterstitialViewController;
+static FCASRewardedViewController* CASRewardedViewController;
 
-void UCASInterface_Interstitial_IOS::Init()
+void UCASInterface_Rewarded_IOS::Init()
 {
-	CASInterstitialIOS = this;
+	CASRewardedIOS = this;
 
 	CASMediationManager* Manager = UCASInterface_General_IOS::GetManager();
-	
-	CASInterstitialViewController = [[FCASInterstitialViewController alloc] initWithManager:Manager];
+
+	CASRewardedViewController = [[FCASRewardedViewController alloc] initWithManager:Manager];
 }
 
-void UCASInterface_Interstitial_IOS::Show()
+void UCASInterface_Rewarded_IOS::Show()
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[CASInterstitialViewController.manager presentInterstitialFromRootViewController:[IOSAppDelegate GetDelegate].IOSController callback:CASInterstitialViewController];
+		[CASRewardedViewController.manager presentRewardedAdFromRootViewController:[IOSAppDelegate GetDelegate].IOSController callback:CASRewardedViewController];
 	});
 }
 
-bool UCASInterface_Interstitial_IOS::IsReady()
+bool UCASInterface_Rewarded_IOS::IsReady()
 {
-	return CASInterstitialViewController.manager.isInterstitialReady;
+	return CASRewardedViewController.manager.isRewardedAdReady;
 }
 
+void UCASInterface_Rewarded_IOS::Load()
+{
+	[CASRewardedViewController.manager loadRewardedAd];
+}
 #endif

@@ -3,21 +3,23 @@
 #pragma once
 
 #include "CASInterface_Interstitial.h"
-#include "CASInterface_Interstitial_Android.generated.h"
+#include "CASInterface_Interstitial_IOS.generated.h"
 
-/** CAS Interstitial interface class for Android. */
+/** CAS Interstitial interface class for IOS. */
 UCLASS()
-class CLEVERADSSOLUTIONS_API UCASInterface_Interstitial_Android : public UCASInterface_Interstitial
+class CLEVERADSSOLUTIONS_API UCASInterface_Interstitial_IOS : public UCASInterface_Interstitial
 {
 	GENERATED_BODY()
 
-#if PLATFORM_ANDROID
+#if PLATFORM_IOS
 	
 	virtual void Init();
 	
 	virtual void Show() override;
 	
 	virtual bool IsReady() override;
+	
+	virtual void Load() override;
 
 #endif
 };

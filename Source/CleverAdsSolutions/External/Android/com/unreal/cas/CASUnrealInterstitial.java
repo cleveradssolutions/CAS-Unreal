@@ -83,4 +83,8 @@ public class CASUnrealInterstitial {
     public static boolean IsInterstitialReady(){
         return manager.isInterstitialReady();
     }
+    
+    public static void LoadInterstitial(){
+        manager.loadInterstitial();
+    }
 }
