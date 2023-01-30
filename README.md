@@ -1,6 +1,5 @@
-# CAS-Unreal
-# CleverAdsSolutions-Unreal Integration
-The Clever Ads Solutions Unrea plugin enables Unity developers to easily serve Mobile Ads on Android and iOS apps without having to write Java or Objective-C code. The plugin provides a C++ and Blueprints interfaces for requesting ads in your Unity project.
+# CleverAdsSolutions Unreal Integration
+The Clever Ads Solutions Unreal plugin enables Unreal developers to easily serve Mobile Ads on Android and iOS apps without having to write Java or Objective-C code. The plugin provides a C++ and Blueprints interfaces for requesting ads in your Unity project.
 
 ## Getting Started
 To get started, here is the link to [Unreal plugin integration documentation](https://github.com/cleveradssolutions/CAS-Unreal/wiki).  
