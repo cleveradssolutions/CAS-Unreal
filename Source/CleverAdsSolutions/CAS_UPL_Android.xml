@@ -155,7 +155,7 @@
 		
 		<!-- Yandex -->
 		<if condition="EnableYandex"><true><insert>
-			dependencies { implementation 'com.cleveradssolutions:yandex:20.5.0.0' }
+			dependencies { implementation 'com.cleveradssolutions:yandex:5.5.0.1' }
 		</insert></true></if>
 	</buildGradleAdditions>
 
