@@ -3,6 +3,7 @@
 #include "CASSubsystem.h"
 
 #include "CASSettings.h"
+#include "Engine/World.h"
 
 #include "CASDefines.h"
 

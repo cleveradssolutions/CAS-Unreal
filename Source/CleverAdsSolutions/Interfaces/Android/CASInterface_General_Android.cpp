@@ -6,6 +6,7 @@
 
 #include "JNIHelpers.h"
 
+#include "Misc/EngineVersion.h"
 #include "Async/Async.h"
 
 #define MANAGER_CLASSNAME "com/unreal/cas/CASUnrealManager"

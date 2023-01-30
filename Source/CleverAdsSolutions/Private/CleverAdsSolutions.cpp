@@ -4,6 +4,7 @@
 
 #include "CASSettings.h"
 #include "ISettingsModule.h"
+#include "CoreMinimal.h"
 
 #define LOCTEXT_NAMESPACE "FCleverAdsSolutionsModule"
 
