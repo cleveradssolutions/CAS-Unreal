@@ -12,6 +12,7 @@ import com.cleversolutions.ads.android.CAS;
 import com.unreal.cas.CASUnrealInterstitial;
 import com.unreal.cas.CASUnrealRewarded;
 import com.unreal.cas.CASUnrealBanner;
+import com.unreal.cas.CASUnrealReturnAds;
 
 public class CASUnrealManager {
     public static MediationManager manager;
@@ -69,6 +70,7 @@ public class CASUnrealManager {
             CASUnrealInterstitial.Init(manager, activity);
             CASUnrealRewarded.Init(manager, activity);
             CASUnrealBanner.Init(manager, activity);
+            CASUnrealReturnAds.Init(manager, activity);
                     
         } catch (NameNotFoundException e) {}
     }
