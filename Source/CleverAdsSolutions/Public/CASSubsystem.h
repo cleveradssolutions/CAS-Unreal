@@ -3,9 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CASInterface.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "CASSubsystem.generated.h"
 
+class UCASSettingsAndroid;
+class UCASSettingsIOS;
+class UCASInterface_AudienceNetwork;
+class UCASInterface_ReturnAds;
 class UCASInterface_General;
 class UCASInterface_Banner;
 class UCASInterface_Rewarded;
@@ -31,10 +36,25 @@ private:
 
 	UPROPERTY()
 	UCASInterface_General* GeneralInterface;
+	
+	UPROPERTY()
+	UCASInterface_ReturnAds* ReturnAdsInterface;
+
+	UPROPERTY()
+	UCASInterface_AudienceNetwork* AudienceNetworkInterface;
+
+	UPROPERTY()
+	UCASSettingsIOS* CASSettingsIOS;
+	
+	UPROPERTY()
+	UCASSettingsAndroid* CASSettingsAndroid;
 
 	bool Initialized;
 
 public:
+
+	UPROPERTY(BlueprintAssignable)
+	FCASEvent OnInitialized;
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -71,6 +91,20 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="Banner"))
 	UCASInterface_Banner* GetBannerInterface() const;
+
+	/** Returns ReturnAds interface.
+	 * Returns base class without implementation if CAS or ReturnAds ads not supported on this platform
+	 * @return CAS ReturnAds Interface object
+	 */
+	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="ReturnAds"))
+	UCASInterface_ReturnAds* GetReturnAdsInterface() const;
+
+	/** Returns AudienceNetwork interface.
+	 * Returns base class without implementation if CAS or AudienceNetwork not supported or disabled on this platform
+	 * @return CAS AudienceNetwork Interface object
+	 */
+	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions", meta=(CompactNodeTitle="AudienceNetwork"))
+	UCASInterface_AudienceNetwork* GetAudienceNetworkInterface() const;
 
 	/** Returns whenever CAS was initialized or not */
 	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions")

@@ -16,10 +16,9 @@ public: // Delegates
 
 	/** Called when Banner ad gets created and shown to a user */
 	UPROPERTY(BlueprintAssignable)
-	FCASEvent OnCreated;
+	FCASImpressionEvent OnShow;
 
-	/** Called when Banner ad gets loaded and became ready to show. Use IsReady() to make additional checks
-	 */
+	/** Called when Banner ad gets loaded and became ready to show. Use IsReady() to make additional checks */
 	UPROPERTY(BlueprintAssignable)
 	FCASEvent OnLoaded;
 
@@ -39,40 +38,48 @@ public: // Delegates
 	 *@param ErrorMessage - String with an error message of what happened wrong
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FCASErrorEvent OnShowError;
+	FCASErrorEvent OnFail;
 
 public: // Functions
 
 	/** Shows ad.
 	 * Will do nothing if ad is not loaded. Use IsReady() to check if it is ready.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|Banner")
 	virtual void CreateBanner(){}
 
 	/** Loads next banner and discards current one.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|Banner")
 	virtual void LoadNextBanner(){}
 
 	/** Destroys banner completely. If you want to hide it, use ToggleBannerVisibility. */
-	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|Banner")
 	virtual void DestroyBanner(){}
 
 	/** Toggles Banner visibility
 	 * @param Visible - Reveal or hide the Banner
 	 */
-	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions")
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|Banner")
 	virtual void ToggleBannerVisibility(bool Visible){}
 
 	/** Checks if Banner ad is visible or not. Use ToggleBannerVisibility to toggle visibility.
 	 * @return True if Banner ad is visible
 	 */
-	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions")
+	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions|Banner")
 	virtual bool IsVisible() const {return false;}
 
 	/** Checks if Banner ad is ready.
 	 * @return True if Banner ad is ready
 	 */
-	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions")
+	UFUNCTION(BlueprintPure, Category="CleverAdsSolutions|Banner")
 	virtual bool IsReady() const {return false;}
+
+	/** Change the banner automatic refresh rate. */
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|Banner")
+	virtual void SetRefreshInterval(int Interval){}
+
+	/** Disables the banner automatic refresh rate. */
+	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|Banner")
+	virtual void DisableRefreshInterval(){}
 };

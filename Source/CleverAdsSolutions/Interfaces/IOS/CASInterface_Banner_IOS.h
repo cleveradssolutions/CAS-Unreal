@@ -26,5 +26,9 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Banner_IOS : public UCASInterface_Ban
 	virtual bool IsVisible() const override;
 	
 	virtual bool IsReady() const override;
+	
+	virtual void SetRefreshInterval(int Interval) override;
+	
+	virtual void DisableRefreshInterval() override;
 #endif
 };

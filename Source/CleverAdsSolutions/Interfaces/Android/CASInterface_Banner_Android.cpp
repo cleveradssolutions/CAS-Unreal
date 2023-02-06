@@ -6,6 +6,8 @@
 
 #include "JNIHelpers.h"
 
+#include "CASSettings.h"
+
 #include "Async/Async.h"
 
 UCASInterface_Banner_Android* CASBannerAndroid = nullptr;
@@ -22,6 +24,10 @@ void UCASInterface_Banner_Android::CreateBanner()
 	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "CreateBanner", "()V");
 
 	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
+
+	const UCASSettingsAndroid* CASSettings = GetDefault<UCASSettingsAndroid>();
+	
+	if(CASSettings) SetRefreshInterval(CASSettings->BannerDefaultRefreshInterval);
 }
 
 bool UCASInterface_Banner_Android::IsReady() const
@@ -59,6 +65,20 @@ bool UCASInterface_Banner_Android::IsVisible() const
 	return MethodInfo.Env->CallStaticBooleanMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
+void UCASInterface_Banner_Android::SetRefreshInterval(int Interval)
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "setBannerRefreshInterval", "(I)V");
+
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, FMath::Max(Interval, 10));
+}
+
+void UCASInterface_Banner_Android::DisableRefreshInterval()
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "disableBannerRefresh", "()V");
+
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
+}
+
 // ---- JNI Callbacks
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealBanner_onBannerAdLoadedThunkCpp(JNIEnv* jenv, jobject thiz)
@@ -71,13 +91,15 @@ JNI_METHOD void Java_com_unreal_cas_CASUnrealBanner_onBannerAdLoadedThunkCpp(JNI
 	});
 }
 
-JNI_METHOD void Java_com_unreal_cas_CASUnrealBanner_onBannerAdShownThunkCpp(JNIEnv* jenv, jobject thiz)
+JNI_METHOD void Java_com_unreal_cas_CASUnrealBanner_onBannerAdShownThunkCpp(JNIEnv* jenv, jobject thiz, jobject impression)
 {
 	if(!CASBannerAndroid) return;
+
+	FCASImpressionInfo ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
 	
-	AsyncTask(ENamedThreads::GameThread, []()
+	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{
-		CASBannerAndroid->OnCreated.Broadcast();
+		CASBannerAndroid->OnShow.Broadcast(ImpressionInfo);
 	});
 }
 
@@ -109,7 +131,7 @@ JNI_METHOD void Java_com_unreal_cas_CASUnrealBanner_onBannerAdShowFailedThunkCpp
 	
 	AsyncTask(ENamedThreads::GameThread, [ErrorMsg]()
 	{
-		CASBannerAndroid->OnShowError.Broadcast(ErrorMsg);
+		CASBannerAndroid->OnFail.Broadcast(ErrorMsg);
 	});
 }
 

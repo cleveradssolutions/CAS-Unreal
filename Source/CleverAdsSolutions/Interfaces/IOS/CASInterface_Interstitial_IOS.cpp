@@ -9,6 +9,8 @@
 #include "Async/Async.h"
 #include "IOS/IOSAppDelegate.h"
 
+#include "CASSettings.h"
+
 #import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
 
 UCASInterface_Interstitial_IOS* CASInterstitialIOS = nullptr;
@@ -22,7 +24,7 @@ UCASInterface_Interstitial_IOS* CASInterstitialIOS = nullptr;
 - (void)viewDidLoad;
 - (void)onAdLoaded:(CASType)adType;
 - (void)onAdFailedToLoad:(CASType) adType withError:(NSString *)error;
-- (void)willShownWithAd:(id<CASStatusHandler>)adStatus;
+- (void)willShownWithAd:(id<CASStatusHandler>)impression;
 - (void)didShowAdFailedWithError:(NSString *)error;
 - (void)didClickedAd;
 - (void)didCompletedAd;
@@ -72,13 +74,15 @@ UCASInterface_Interstitial_IOS* CASInterstitialIOS = nullptr;
 	}
 }
 
-- (void)willShownWithAd:(id<CASStatusHandler>)adStatus
+- (void)willShownWithAd:(id<CASStatusHandler>)impression
 {
 	if(!CASInterstitialIOS) return;
+
+	FCASImpressionInfo ImpressionInfo = CASIOSHelpers::ParseImpressionInfo(impression);
 	
-	AsyncTask(ENamedThreads::GameThread, []()
+	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{
-		CASInterstitialIOS->OnShown.Broadcast();
+		CASInterstitialIOS->OnShown.Broadcast(ImpressionInfo);
 	});
 }
 
@@ -128,6 +132,12 @@ UCASInterface_Interstitial_IOS* CASInterstitialIOS = nullptr;
 
 static FCASInterstitialViewController* CASInterstitialViewController;
 
+void UCASInterface_Interstitial_IOS::PreInit()
+{
+	const UCASSettingsIOS* CASSettings = GetDefault<UCASSettingsIOS>();
+	SetMinimumInterval(CASSettings->MinimumInterstitialInterval);
+}
+
 void UCASInterface_Interstitial_IOS::Init()
 {
 	CASInterstitialIOS = this;
@@ -152,6 +162,16 @@ bool UCASInterface_Interstitial_IOS::IsReady()
 void UCASInterface_Interstitial_IOS::Load()
 {
 	[CASInterstitialViewController.manager loadInterstitial];
+}
+
+void UCASInterface_Interstitial_IOS::SetMinimumInterval(int Interval)
+{
+	[[CAS settings] setInterstitialWithInterval:Interval];
+}
+
+void UCASInterface_Interstitial_IOS::RestartInterval()
+{
+	[[CAS settings] restartInterstitialInterval];
 }
 
 #endif

@@ -8,13 +8,18 @@
 
 #include "Async/Async.h"
 
+#include "CASSettings.h"
+
 UCASInterface_Interstitial_Android* CASInterstitialAndroid = nullptr;
 
 #define INTER_CLASSNAME "com/unreal/cas/CASUnrealInterstitial"
 
-void UCASInterface_Interstitial_Android::Init()
+void UCASInterface_Interstitial_Android::PreInit()
 {
 	CASInterstitialAndroid = this;
+
+	const UCASSettingsAndroid* CASSettings = GetDefault<UCASSettingsAndroid>();
+	SetMinimumInterval(CASSettings->MinimumInterstitialInterval);
 }
 
 void UCASInterface_Interstitial_Android::Show()
@@ -47,6 +52,26 @@ void UCASInterface_Interstitial_Android::Load()
 	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
 }
 
+void UCASInterface_Interstitial_Android::SetMinimumInterval(int Interval)
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		INTER_CLASSNAME,
+		"setMinimumInterval",
+		"(I)V");
+
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, Interval);
+}
+
+void UCASInterface_Interstitial_Android::RestartInterval()
+{
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+		INTER_CLASSNAME,
+		"restartInterval",
+		"()V");
+
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
+}
+
 // ---- JNI Callbacks
 
 JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdLoadedThunkCpp(JNIEnv* jenv, jobject thiz)
@@ -59,13 +84,15 @@ JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdLoaded
 	});
 }
 
-JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdShownThunkCpp(JNIEnv* jenv, jobject thiz)
+JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdShownThunkCpp(JNIEnv* jenv, jobject thiz, jobject impression)
 {
 	if(!CASInterstitialAndroid) return;
+
+	FCASImpressionInfo ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
 	
-	AsyncTask(ENamedThreads::GameThread, []()
+	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{
-		CASInterstitialAndroid->OnShown.Broadcast();
+		CASInterstitialAndroid->OnShown.Broadcast(ImpressionInfo);
 	});
 }
 

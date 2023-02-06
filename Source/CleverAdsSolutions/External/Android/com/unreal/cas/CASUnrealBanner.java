@@ -21,7 +21,7 @@ public class CASUnrealBanner {
     
     // CPP callbacks
     private native static void onBannerAdLoadedThunkCpp();
-    private native static void onBannerAdShownThunkCpp();
+    private native static void onBannerAdShownThunkCpp(AdStatusHandler impression);
     private native static void onBannerAdClickedThunkCpp();
     private native static void onBannerAdDestroyedThunkCpp();
     private native static void onBannerAdShowFailedThunkCpp(String errorMessage);
@@ -54,9 +54,9 @@ public class CASUnrealBanner {
             }
         
             @Override
-            public void onAdViewPresented(@NonNull CASBannerView view, @NonNull AdStatusHandler info) {
+            public void onAdViewPresented(@NonNull CASBannerView view, @NonNull AdStatusHandler impression) {
               // Invokes this callback when the ad did present for a user with info about the impression.
-              onBannerAdShownThunkCpp();
+              onBannerAdShownThunkCpp(impression);
             }
         
             @Override
@@ -127,4 +127,16 @@ public class CASUnrealBanner {
             }
         });
     }
+    
+    public static void setBannerRefreshInterval(int interval){
+        if(bannerView == null) return;
+        
+        bannerView.setRefreshInterval(interval);
+    }
+    
+    public static void disableBannerRefresh(){
+        if(bannerView == null) return;
+        
+        bannerView.disableAdRefresh();
+    } 
 }

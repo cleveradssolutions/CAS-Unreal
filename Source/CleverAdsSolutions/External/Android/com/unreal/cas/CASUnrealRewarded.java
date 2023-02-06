@@ -14,7 +14,7 @@ public class CASUnrealRewarded {
     
     // CPP callbacks
     private native static void onRewardedAdLoadedThunkCpp();
-    private native static void onRewardedAdShownThunkCpp();
+    private native static void onRewardedAdShownThunkCpp(AdStatusHandler impression);
     private native static void onRewardedAdClosedThunkCpp();
     private native static void onRewardedAdClickedThunkCpp();
     private native static void onRewardedAdCompletedThunkCpp();
@@ -47,9 +47,9 @@ public class CASUnrealRewarded {
     public static void ShowRewarded(){
         AdCallback callback = new AdCallback() {  
             @Override  
-            public void onShown(@NonNull AdStatusHandler ad) {  
+            public void onShown(@NonNull AdStatusHandler impression) {  
                 // Called when ad is shown.
-                onRewardedAdShownThunkCpp();
+                onRewardedAdShownThunkCpp(impression);
             }  
           
             @Override  

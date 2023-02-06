@@ -4,16 +4,18 @@
 		<log text="Clever Ads Solutions (CAS) Initialization"/>
 
 		<!-- Copy CAS settings file -->
-		<setStringFromProperty result="ConfigFile" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="IOSSettingsFile" default=""/>
-		<setStringFromProperty result="ConfigFileID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="IOSSettingsFileID" default=""/>
+		<setStringFromProperty result="ConfigFile" ini="Engine" section="/Script/CleverAdsSolutions.CASSettingsIOS" property="SettingsFile" default=""/>
+		<setStringFromProperty result="ConfigFileID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettingsIOS" property="SettingsFileID" default=""/>
 		<copyFile src="$S(PluginDir)/../../../../$S(ConfigFile)" dst="$S(BuildDir)/cas_settings$S(ConfigFileID).json" force="false"/>
 		
 		<!-- Copy CAS framework -->
 		<copyDir src="$S(EngineDir)/Intermediate/UnzippedFrameworks/CleverAdsSolutions/CleverAdsSolutions.embeddedframework/CleverAdsSolutions.framework" dst="$S(BuildDir)/Frameworks/CleverAdsSolutions.framework" />
 
 		<!-- AdMob App ID -->
-		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="IOSAdmobAppID"/>
-		<setBoolFromProperty result="EnableGoogleAdMob" ini="Engine" section="/Script/CleverAdsSolutions.CASSettings" property="EnableGoogleAdMobIOS" default="false"/>
+		<setStringFromProperty result="AdmobAppID" ini="Engine" section="/Script/CleverAdsSolutions.CASSettingsIOS" property="AdmobAppID"/>
+		<setBoolFromProperty result="EnableGoogleAdMob" ini="Engine" section="/Script/CleverAdsSolutions.CASSettingsIOS" property="EnableGoogleAdMob" default="false"/>
+		
+		<setStringFromProperty result="UserTrackingUsageDescription" ini="Engine" section="/Script/CleverAdsSolutions.CASSettingsIOS" property="UserTrackingUsageDescription" default=""/>
 	</init>
 
 	<iosPListUpdates>
@@ -32,6 +34,11 @@
 							<addElement tag="$" name="AdMobSdkValueElem"/>
 						</true>
 					</if>
+
+					<setElement result="UserTrackingUsageDescriptionKey" value="key" text="NSUserTrackingUsageDescription"/>
+					<addElement tag="$" name="UserTrackingUsageDescriptionKey"/>
+					<setElement result="UserTrackingUsageDescriptionValue" value="string" text="$S(UserTrackingUsageDescription)"/>
+					<addElement tag="$" name="UserTrackingUsageDescriptionValue"/>
 				</true>
 			</if>
 		</loopElements>

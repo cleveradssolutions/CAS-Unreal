@@ -11,12 +11,20 @@
 #include "CASInterface_Rewarded.h"
 #include "CASInterface_Banner.h"
 #include "CASInterface_General.h"
+#include "CASInterface_ReturnAds.h"
+#include "CASInterface_AudienceNetwork.h"
 
 #if PLATFORM_ANDROID
 #include "Android/CASInterface_General_Android.h"
 #include "Android/CASInterface_Interstitial_Android.h"
 #include "Android/CASInterface_Rewarded_Android.h"
 #include "Android/CASInterface_Banner_Android.h"
+#include "Android/CASInterface_ReturnAds_Android.h"
+
+#if WITH_CAS_FACEBOOK
+#include "Android/CASInterface_AudienceNetwork_Android.h"
+#endif
+
 #endif
 
 #if PLATFORM_IOS
@@ -24,11 +32,20 @@
 #include "IOS/CASInterface_Interstitial_IOS.h"
 #include "IOS/CASInterface_Rewarded_IOS.h"
 #include "IOS/CASInterface_Banner_IOS.h"
+#include "IOS/CASInterface_ReturnAds_IOS.h"
+
+#if WITH_CAS_FACEBOOK
+#include "IOS/CASInterface_AudienceNetwork_IOS.h"
+#endif
+
 #endif
 
 void UCAS::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+
+	CASSettingsIOS = GetMutableDefault<UCASSettingsIOS>();
+	CASSettingsAndroid = GetMutableDefault<UCASSettingsAndroid>();
 
 	DisableDevModesIfShipping();
 
@@ -40,6 +57,11 @@ void UCAS::Initialize(FSubsystemCollectionBase& Collection)
 #else
 	GeneralInterface = NewObject<UCASInterface_General>(this);
 #endif
+
+	GeneralInterface->OnInitialized.BindLambda([&]
+	{
+		OnInitialized.Broadcast();
+	});
 }
 
 void UCAS::Init()
@@ -50,8 +72,6 @@ void UCAS::Init()
 		return;
 	}
 	
-	if(GeneralInterface) GeneralInterface->Init();
-	
 	// Interstitial
 	#if PLATFORM_ANDROID
 	InterstitialInterface = NewObject<UCASInterface_Interstitial_Android>(this);
@@ -60,8 +80,6 @@ void UCAS::Init()
 #else
 	InterstitialInterface = NewObject<UCASInterface_Interstitial>(this);
 #endif
-	
-	if(InterstitialInterface) InterstitialInterface->Init();
 
 	// Rewarded
 	#if PLATFORM_ANDROID
@@ -72,8 +90,6 @@ void UCAS::Init()
 	RewardedInterface = NewObject<UCASInterface_Rewarded>(this);
 #endif
 	
-	if(RewardedInterface) RewardedInterface->Init();
-
 	// Banner
 	#if PLATFORM_ANDROID
 	BannerInterface = NewObject<UCASInterface_Banner_Android>(this);
@@ -83,7 +99,35 @@ void UCAS::Init()
 	BannerInterface = NewObject<UCASInterface_Banner>(this);
 #endif
 	
+	// ReturnAds
+	#if PLATFORM_ANDROID
+	ReturnAdsInterface = NewObject<UCASInterface_ReturnAds_Android>(this);
+#elif PLATFORM_IOS
+	ReturnAdsInterface = NewObject<UCASInterface_ReturnAds_IOS>(this);
+#else
+	ReturnAdsInterface = NewObject<UCASInterface_ReturnAds>(this);
+#endif
+
+	// AudienceNetwork
+#if PLATFORM_ANDROID && WITH_CAS_FACEBOOK
+	AudienceNetworkInterface = NewObject<UCASInterface_AudienceNetwork_Android>(this);
+#elif PLATFORM_IOS && WITH_CAS_FACEBOOK
+	AudienceNetworkInterface = NewObject<UCASInterface_AudienceNetwork_IOS>(this);
+#else
+	AudienceNetworkInterface = NewObject<UCASInterface_AudienceNetwork>(this);
+#endif
+	
+	if(GeneralInterface) GeneralInterface->PreInit();
+	if(InterstitialInterface) InterstitialInterface->PreInit();
+	if(RewardedInterface) RewardedInterface->PreInit();
+	if(BannerInterface) BannerInterface->PreInit();
+	if(ReturnAdsInterface) ReturnAdsInterface->PreInit();
+	
+	if(GeneralInterface) GeneralInterface->Init();
+	if(InterstitialInterface) InterstitialInterface->Init();
+	if(RewardedInterface) RewardedInterface->Init();
 	if(BannerInterface) BannerInterface->Init();
+	if(ReturnAdsInterface) ReturnAdsInterface->Init();
 
 	Initialized = true;
 }
@@ -123,15 +167,36 @@ UCASInterface_Banner* UCAS::GetBannerInterface() const
 	return BannerInterface;
 }
 
+UCASInterface_ReturnAds* UCAS::GetReturnAdsInterface() const
+{
+	checkf(Initialized, TEXT("Trying to get CAS ReturnAds interface before initializing. Call 'CAS > Init' before using ads!"));
+
+	return ReturnAdsInterface;
+}
+
+UCASInterface_AudienceNetwork* UCAS::GetAudienceNetworkInterface() const
+{
+	checkf(Initialized, TEXT("Trying to get CAS AudienceNetwork interface before initializing. Call 'CAS > Init' before using ads!"));
+
+	return AudienceNetworkInterface;
+}
+
 void UCAS::DisableDevModesIfShipping()
 {
 #if UE_BUILD_SHIPPING
-	UCASSettings* CASSettings = GetMutableDefault<UCASSettings>();
-	
-	if(CASSettings->DisableDevModesInShipping)
 	{
-		CASSettings->DebugMode = false;
-		CASSettings->TestAds = false;
+		if(CASSettingsIOS->DisableDevModesInShipping)
+		{
+			CASSettings->DebugMode = false;
+			CASSettings->TestAds = false;
+		}
+	}
+	{
+		if(CASSettingsAndroid->DisableDevModesInShipping)
+		{
+			CASSettings->DebugMode = false;
+			CASSettings->TestAds = false;
+		}
 	}
 #endif
 }

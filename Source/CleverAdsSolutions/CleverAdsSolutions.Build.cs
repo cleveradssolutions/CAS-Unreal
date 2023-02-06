@@ -34,7 +34,29 @@ public class CleverAdsSolutions : ModuleRules
 		
 		PrivateIncludePathModuleNames.Add("Settings");
 		
-		PrivateIncludePaths.Add("CleverAdsSolutions/Interfaces");
+//		PublicIncludePaths.Add("CleverAdsSolutions/Interfaces");
+		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Interfaces"));
+
+		PublicDefinitions.Add("WITH_CAS=1");
+		
+		bool EnableCrossPromo = false;
+		
+		bool EnableAppLovin = false;
+		bool EnableFacebook = false;
+		bool EnableIronsource = false;
+		bool EnableGoogleAdMob = false;
+		bool EnableAdColony = false;
+		bool EnableMintegral = false;
+		bool EnableMyTarget = false;
+		bool EnableInMobi = false;
+		bool EnablePangle = false;
+		bool EnableTapjoy = false;
+		bool EnableUnityAds = false;
+		bool EnableVungle = false;
+		bool EnableYandex = false;
+
+		ConfigHierarchy EngineConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, DirectoryReference.FromFile(Target.ProjectFile), Target.Platform);
 
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{
@@ -45,42 +67,76 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				"Launch"
 			});
+
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableCrossPromo", out EnableCrossPromo);
+			
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableAppLovin", out EnableAppLovin);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableFacebook", out EnableFacebook);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableIronsource", out EnableIronsource);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableGoogleAdMob", out EnableGoogleAdMob);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableAdColony", out EnableAdColony);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableMintegral", out EnableMintegral);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableMyTarget", out EnableMyTarget);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableInMobi", out EnableInMobi);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnablePangle", out EnablePangle);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableTapjoy", out EnableTapjoy);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableUnityAds", out EnableUnityAds);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableVungle", out EnableVungle);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsAndroid", "EnableYandex", out EnableYandex);
+
+			PublicDefinitions.Add("WITH_CAS_CROSSPROMO="+(EnableCrossPromo?"1":"0"));
+			
+			PublicDefinitions.Add("WITH_CAS_APPLOVIN="+(EnableAppLovin?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_FACEBOOK="+(EnableFacebook?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_IRONSOURCE="+(EnableIronsource?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_ADCOLONY="+(EnableAdColony?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_MINTEGRAL="+(EnableMintegral?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_MYTARGET="+(EnableMyTarget?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_INMOBI="+(EnableInMobi?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_PANGLE="+(EnablePangle?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_TAPJOY="+(EnableTapjoy?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_UNITYADS="+(EnableUnityAds?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_GOOGLEADS="+(EnableGoogleAdMob?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_VUNGLE="+(EnableVungle?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_YANDEXADS="+(EnableYandex?"1":"0"));
 		}
 
 		if (Target.Platform == UnrealTargetPlatform.IOS)
 		{
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableCrossPromo", out EnableCrossPromo);
+			
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableAppLovin", out EnableAppLovin);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableFacebook", out EnableFacebook);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableIronsource", out EnableIronsource);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableGoogleAdMob", out EnableGoogleAdMob);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableAdColony", out EnableAdColony);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableMintegral", out EnableMintegral);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableMyTarget", out EnableMyTarget);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableInMobi", out EnableInMobi);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnablePangle", out EnablePangle);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableTapjoy", out EnableTapjoy);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableUnityAds", out EnableUnityAds);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableVungle", out EnableVungle);
+			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettingsIOS", "EnableYandex", out EnableYandex);
+
+			PublicDefinitions.Add("WITH_CAS_CROSSPROMO="+(EnableCrossPromo?"1":"0"));
+			
+			PublicDefinitions.Add("WITH_CAS_APPLOVIN="+(EnableAppLovin?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_FACEBOOK="+(EnableFacebook?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_IRONSOURCE="+(EnableIronsource?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_ADCOLONY="+(EnableAdColony?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_MINTEGRAL="+(EnableMintegral?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_MYTARGET="+(EnableMyTarget?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_INMOBI="+(EnableInMobi?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_PANGLE="+(EnablePangle?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_TAPJOY="+(EnableTapjoy?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_UNITYADS="+(EnableUnityAds?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_GOOGLEADS="+(EnableGoogleAdMob?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_VUNGLE="+(EnableVungle?"1":"0"));
+			PublicDefinitions.Add("WITH_CAS_YANDEXADS="+(EnableYandex?"1":"0"));
+			
 			AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "CAS_UPL_IOS.xml"));
-			
-			ConfigHierarchy EngineConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, DirectoryReference.FromFile(Target.ProjectFile), Target.Platform);
-			
-			bool EnableAppLovin = false;
-			bool EnableFacebook = false;
-			bool EnableIronsource = false;
-			bool EnableGoogleAdMob = false;
-			bool EnableAdColony = false;
-			bool EnableMintegral = false;
-			bool EnableMyTarget = false;
-			bool EnableInMobi = false;
-			bool EnablePangle = false;
-			bool EnableTapjoy = false;
-			bool EnableUnityAds = false;
-			bool EnableVungle = false;
-			bool EnableYandex = false;
-            
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableAppLovinIOS", out EnableAppLovin);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableFacebookIOS", out EnableFacebook);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableIronsourceIOS", out EnableIronsource);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableGoogleAdMobIOS", out EnableGoogleAdMob);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableAdColonyIOS", out EnableAdColony);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableMintegralIOS", out EnableMintegral);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableMyTargetIOS", out EnableMyTarget);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableInMobiIOS", out EnableInMobi);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnablePangleIOS", out EnablePangle);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableTapjoyIOS", out EnableTapjoy);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableUnityAdsIOS", out EnableUnityAds);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableVungleIOS", out EnableVungle);
-			EngineConfig.TryGetValue("/Script/CleverAdsSolutions.CASSettings", "EnableYandexIOS", out EnableYandex);
-			
+
 			PublicFrameworks.AddRange(
 				new string[] {
 					"AdSupport",
@@ -122,58 +178,57 @@ public class CleverAdsSolutions : ModuleRules
 
 			Dictionary<string, string> Libraries = new Dictionary<string, string>{};
 			
-			Libraries.Add("CleverAdsSolutions", "");
+			Libraries.Add("CleverAdsSolutions", "CASBaseResources.bundle");
+			
+			if (EnableCrossPromo)
+			{
+				Libraries.Add("CASPromo", "");
+			}
 
 			// Adapters -------
 
 			if (EnableAppLovin)
 			{
-				Libraries.Add("AppLovinSDK", "AppLovinSDKResources");
-				Libraries.Add("CASAdapterApplovin", "");
+				Libraries.Add("AppLovinSDK", "AppLovinSDKResources.bundle");
+				Libraries.Add("CASAppLovin", "");
 			}
 
 			if (EnableFacebook)
 			{
 				Libraries.Add("FBAudienceNetwork", "");
-				Libraries.Add("CASAdapterAudienceNetwork", "");
+				Libraries.Add("CASAudienceNetwork", "");
 			}
 
 			if (EnableIronsource)
 			{
 				Libraries.Add("IronSource", "");
-				Libraries.Add("CASAdapterIronsource", "");
+				Libraries.Add("CASIronsource", "");
 			}
 
 			if (EnableGoogleAdMob)
 			{
 				Libraries.Add("GoogleMobileAds", "");
-				Libraries.Add("CASAdapterGoogleAds", "");
+				Libraries.Add("CASGoogleAds", "");
 				Libraries.Add("GoogleAppMeasurement", "");
 				Libraries.Add("GoogleAppMeasurementIdentitySupport", "");
 				Libraries.Add("GoogleUtilities", "");
 				Libraries.Add("nanopb", "");
-				Libraries.Add("PromisesObjC", "");
+				Libraries.Add("FBLPromises", "");
 			}
 
 			if (EnableAdColony)
 			{
-				Libraries.Add("CASmAdColonyAdapter", "");
-				Libraries.Add("CASiAdColonyAdapter", "");
-				Libraries.Add("CASAdapterAdColony", "");
+				Libraries.Add("CASAdColony", "");
 				Libraries.Add("AdColony", "");
 			}
 
 			if (EnableMintegral)
 			{
-				Libraries.Add("CASmMintegralAdapter", "");
-				Libraries.Add("CASAdapterMintegral", "");
+				Libraries.Add("CASMintegral", "");
 				Libraries.Add("MTGSDK", "");
 				Libraries.Add("MTGSDKBanner", "");
 				Libraries.Add("MTGSDKBidding", "");
-				Libraries.Add("MTGSDKCNAddition", "");
-				Libraries.Add("MTGSDKInterstitial", "");
 				Libraries.Add("MTGSDKInterstitialVideo", "");
-				Libraries.Add("MTGSDKNativeAdvanced", "");
 				Libraries.Add("MTGSDKNewInterstitial", "");
 				Libraries.Add("MTGSDKReward", "");
 				Libraries.Add("MTGSDKSplash", "");
@@ -181,18 +236,14 @@ public class CleverAdsSolutions : ModuleRules
 
 			if (EnableMyTarget)
 			{
-				Libraries.Add("CASmMyTargetAdapter", "");
-				Libraries.Add("CASiMyTargetAdapter", "");
-				Libraries.Add("CASAdapterMyTarget", "");
+				Libraries.Add("CASMyTarget", "");
 				Libraries.Add("MyTargetSDK", "");
 				Libraries.Add("MyTrackerSDK", "");
 			}
 
 			if (EnableInMobi)
 			{
-				Libraries.Add("CASmInMobiAdapter", "");
-				Libraries.Add("CASiInMobiAdapter", "");
-				Libraries.Add("CASAdapterInMobi", "");
+				Libraries.Add("CASInMobi", "");
 				Libraries.Add("InMobiSDK", "");
 			}
 
@@ -210,42 +261,47 @@ public class CleverAdsSolutions : ModuleRules
 				Libraries.Add("BURelyFoundationGlobalYYModel", "");
 				Libraries.Add("BURelyFoundationGlobalZFPlayer", "");
 				Libraries.Add("BURelyFoundationGlobalZip", "");
-				Libraries.Add("RARegisterKit-Pangle", "");
-				Libraries.Add("RangersAPM-Pangle", "");
-				Libraries.Add("OneKit-Pangle", "");
-				Libraries.Add("CASAdapterPangle", "");
-				Libraries.Add("CASiPangleAdapter", "");
+				Libraries.Add("RARegisterKit", "");
+				Libraries.Add("RangersAPM_Pangle", "");
+				Libraries.Add("OneKit_Pangle", "");
+				Libraries.Add("CASPangle", "");
 			}
 
 			if (EnableTapjoy)
 			{
-				Libraries.Add("CASmTapjoyAdapter", "");
-				Libraries.Add("CASiTapjoyAdapter", "");
-				Libraries.Add("CASAdapterTapjoy", "");
+				Libraries.Add("CASTapjoy", "");
 				Libraries.Add("Tapjoy", "");
 			}
 
 			if (EnableUnityAds)
 			{
-				Libraries.Add("CASiUnityAdsAdapter", "");
-				Libraries.Add("CASAdapterUnityAds", "");
+				Libraries.Add("CASUnityAds", "");
 				Libraries.Add("UnityAds", "");
 			}
 
 			if (EnableVungle)
 			{
-				Libraries.Add("CASmVungleAdapter", "");
-				Libraries.Add("CASiVungleAdapter", "");
-				Libraries.Add("CASAdapterVungle", "");
+				Libraries.Add("CASVungle", "");
 				Libraries.Add("VungleSDK", "");
 			}			
 
 			if (EnableYandex)
 			{
-				Libraries.Add("CASAdapterYandexAds", "");
+				Libraries.Add("CASYandexAds", "");
 				Libraries.Add("YandexMobileAds", "YandexMobileAdsBundle.bundle");
 				Libraries.Add("YandexMobileMetrica", "");
 				Libraries.Add("YandexMobileMetricaCrashes", "");
+				
+				Libraries.Add("Base", "");
+				Libraries.Add("BaseTiny", "");
+				Libraries.Add("BaseUI", "");
+				Libraries.Add("CommonCore", "");
+				Libraries.Add("DivKit", "");
+				Libraries.Add("LayoutKit", "");
+				Libraries.Add("LayoutKitInterface", "");
+				Libraries.Add("Networking", "");
+				Libraries.Add("Serialization", "");
+				Libraries.Add("TemplatesSupport", "");
 			}
 			
 			string LibsPath = "External/iOS/";

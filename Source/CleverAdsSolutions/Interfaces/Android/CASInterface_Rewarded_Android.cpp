@@ -59,13 +59,15 @@ JNI_METHOD void Java_com_unreal_cas_CASUnrealRewarded_onRewardedAdLoadedThunkCpp
 	});
 }
 
-JNI_METHOD void Java_com_unreal_cas_CASUnrealRewarded_onRewardedAdShownThunkCpp(JNIEnv* jenv, jobject thiz)
+JNI_METHOD void Java_com_unreal_cas_CASUnrealRewarded_onRewardedAdShownThunkCpp(JNIEnv* jenv, jobject thiz, jobject impression)
 {
 	if(!CASRewardedAndroid) return;
+
+	FCASImpressionInfo ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
 	
-	AsyncTask(ENamedThreads::GameThread, []()
+	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{
-		CASRewardedAndroid->OnShown.Broadcast();
+		CASRewardedAndroid->OnShown.Broadcast(ImpressionInfo);
 	});
 }
 

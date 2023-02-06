@@ -10,34 +10,46 @@
 
 void FCleverAdsSolutionsModule::StartupModule()
 {
-	CASSettings = NewObject<UCASSettings>(GetTransientPackage(), "CASSettings", RF_Standalone);
-	CASSettings->AddToRoot();
+	ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings");
+	if(!SettingsModule) return;
+	
+	CASSettingsIOS = NewObject<UCASSettingsIOS>(GetTransientPackage(), "CASSettingsIOS", RF_Standalone);
+	CASSettingsIOS->AddToRoot();
 
-	// Register settings
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-	{
-		SettingsModule->RegisterSettings("Project", "Plugins", "CleverAdsSolutions",
-			LOCTEXT("RuntimeSettingsName", "Clever Ads Solutions"),
-			LOCTEXT("RuntimeSettingsDescription", "Configure Clever Ads Solutions plugin"),
-			CASSettings);
-	}
+	// IOS
+	SettingsModule->RegisterSettings("Project", "Plugins", "CleverAdsSolutionsIOS",
+		LOCTEXT("CASSettingsNameIOS", "Clever Ads Solutions IOS"),
+		LOCTEXT("CASSettingsDescriptionIOS", "Configure Clever Ads Solutions plugin"),
+		CASSettingsIOS);
+
+	// Android
+	CASSettingsAndroid = NewObject<UCASSettingsAndroid>(GetTransientPackage(), "CASSettingsAndroid", RF_Standalone);
+	CASSettingsAndroid->AddToRoot();
+	
+	SettingsModule->RegisterSettings("Project", "Plugins", "CleverAdsSolutionsAndroid",
+		LOCTEXT("CASSettingsNameAndroid", "Clever Ads Solutions Android"),
+		LOCTEXT("CASSettingsDescriptionAndroid", "Configure Clever Ads Solutions plugin"),
+		CASSettingsAndroid);
 }
 
 void FCleverAdsSolutionsModule::ShutdownModule()
 {
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
-		SettingsModule->UnregisterSettings("Project", "Plugins", "CleverAdsSolutions");
+		SettingsModule->UnregisterSettings("Project", "Plugins", "CleverAdsSolutionsAndroid");
+		SettingsModule->UnregisterSettings("Project", "Plugins", "CleverAdsSolutionsIOS");
 	}
 
 	if (!GExitPurge)
 	{
 		// If we're in exit purge, this object has already been destroyed
-		CASSettings->RemoveFromRoot();
+		CASSettingsAndroid->RemoveFromRoot();
+		CASSettingsIOS->RemoveFromRoot();
 	}
 	else
 	{
-		CASSettings = nullptr;
+		CASSettingsAndroid = nullptr;
+		CASSettingsIOS = nullptr;
 	}
 }
 

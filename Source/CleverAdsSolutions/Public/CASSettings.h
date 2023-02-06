@@ -15,145 +15,115 @@ enum class ECASAdsSolution : uint8
 	Families
 };
 
-/** Clever Ads Solutions config object for Project Settings tab */
+// TODO: One base config class
+
+/** Clever Ads Solutions Android config object for Project Settings tab */
 UCLASS(Config = Engine, DefaultConfig)
-class CLEVERADSSOLUTIONS_API UCASSettings : public UObject
+class CLEVERADSSOLUTIONS_API UCASSettingsAndroid : public UObject
 {
 	GENERATED_BODY()
 	
 public:
 
-	/** Admob App ID for Android */
-	UPROPERTY(Config, EditAnywhere)
-	FString AndroidSettingsFile;
+	/** CAS Settings file path. Project relative.
+	 * It is recommended to place it in Config folder, so your path would look like 'Config/cas_settings***.json'
+	 */
+	UPROPERTY(Config, EditAnywhere, Category="Integration")
+	FString SettingsFile;
 
-	/** Admob App ID for Android */
-	UPROPERTY(Config, VisibleAnywhere)
-	FString AndroidSettingsFileID;
-
-	/** Admob App ID for IOS */
-	UPROPERTY(Config, EditAnywhere)
-	FString IOSSettingsFile;
-		
-	/** Admob App ID for IOS */
-	UPROPERTY(Config, VisibleAnywhere)
-	FString IOSSettingsFileID;
+	/** CAS Settings file id */
+	UPROPERTY(Config, VisibleAnywhere, Category="Integration")
+	FString SettingsFileID;
 	
-	/** CAS App ID for Android. In most cases, a casID is the same as your application package name. */
-	UPROPERTY(Config, EditAnywhere)
-	FString AndroidCASAppID;
+	/** CAS App ID. */
+	UPROPERTY(Config, EditAnywhere, Category="Integration")
+	FString CASAppID;
+	
+	/** Enable Cross Promo ads */
+	UPROPERTY(Config, EditAnywhere, Category="Integration")
+	bool EnableCrossPromo;
 
-	/** CAS App ID for IOS. In most cases, a casID is the same as your application store ID. */
-	UPROPERTY(Config, EditAnywhere)
-	FString IOSCASAppID;
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+	bool BannerAds;
 
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+	bool InterstitialAds;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+	bool RewardedAds;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+	bool ReturnAds;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdSettings", meta = (UIMin = 10, ClampMin = 10))
+	float BannerDefaultRefreshInterval = 30.f;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdSettings", meta = (UIMin = 0, ClampMin = 0))
+	float MinimumInterstitialInterval = 0.f;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdSettings")
+	bool AllowInterstitialWhenRewardsCostAreLower;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Privacy")
+	bool ConsentFlow;
+
+	/** Removes permission to use Advertisement ID (AD_ID) */
+	UPROPERTY(Config, EditAnywhere, Category="Privacy", meta=(EditCondition="AdsSolution == ECASAdsSolution::Families"))
+	bool RemoveAdIdPermission;
+	
 	// Enable Networks -----
 
 	UPROPERTY(Config, EditAnywhere, Category="Networks")
-	ECASAdsSolution AdsSolutionAndroid;
-
-	UPROPERTY(Config, EditAnywhere, Category="Networks")
-	ECASAdsSolution AdsSolutionIOS;
+	ECASAdsSolution AdsSolution;
 
 	// IOS ---
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|AppLovin", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableAppLovinIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|AppLovin", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableAppLovin;
 
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Facebook", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableFacebookIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Facebook", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableFacebook;
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Ironsource", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableIronsourceIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Ironsource", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableIronsource;
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableGoogleAdMobIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableGoogleAdMob;
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|AdColony", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableAdColonyIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|AdColony", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableAdColony;
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Mintegral", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableMintegralIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Mintegral", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableMintegral;
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|MyTarget", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableMyTargetIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|MyTarget", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableMyTarget;
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|InMobi", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableInMobiIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|InMobi", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableInMobi;
 
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Pangle", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnablePangleIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Pangle", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnablePangle;
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Tapjoy", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableTapjoyIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Tapjoy", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableTapjoy;
 	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|UnityAds", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableUnityAdsIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|UnityAds", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableUnityAds;
 		
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Vungle", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableVungleIOS;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Vungle", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableVungle;
 
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Yandex", meta=(EditCondition="AdsSolutionIOS == ECASAdsSolution::Custom"))
-	bool EnableYandexIOS;
-
-	// Android ---
-
-	UPROPERTY(Config, EditAnywhere, Category="Networks|AppLovin", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableAppLovinAndroid;
-
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Facebook", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableFacebookAndroid;
-	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Ironsource", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableIronsourceAndroid;
-	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableGoogleAdMobAndroid;
-	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|AdColony", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableAdColonyAndroid;
-	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Mintegral", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableMintegralAndroid;
-	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|MyTarget", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableMyTargetAndroid;
-	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|InMobi", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableInMobiAndroid;
-
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Pangle", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnablePangleAndroid;
-	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Tapjoy", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableTapjoyAndroid;
-	
-	UPROPERTY(Config, EditAnywhere, Category="Networks|UnityAds", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableUnityAdsAndroid;
-		
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Vungle", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableVungleAndroid;
-
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Yandex", meta=(EditCondition="AdsSolutionAndroid == ECASAdsSolution::Custom"))
-	bool EnableYandexAndroid;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Yandex", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableYandex;
 
 	// Network settings  -------
 
 	// Admob ---
 
 	/** Admob App ID for Android */
-	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="EnableGoogleAdMobAndroid"))
-	FString AndroidAdMobAppID;
-
-	/** Admob App ID for IOS */
-	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="EnableGoogleAdMobIOS"))
-	FString IOSAdmobAppID;
-
-	// Facebook ---
-
-	/** Facebook AdvertiserTrackingEnabled flag */
-	UPROPERTY(Config, EditAnywhere, Category="Networks|Facebook", meta=(EditCondition="EnableFacebookIOS"))
-	bool IOSAdvertiserTrackingEnabled;
+	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="EnableGoogleAdMob"))
+	FString AdMobAppID;
 
 	// Debug  -------
 	
@@ -165,142 +135,335 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category="Debug")
 	bool DebugMode;
 
+	/** List of test devices to show tests ads to, even with TestAds disabled */
+	UPROPERTY(Config, EditAnywhere, Category="Debug")
+	TArray<FString> TestDevices;
+
 	/** Disables TestAds and DebugMode when building shipping builds. */
 	UPROPERTY(Config, EditAnywhere, Category="Debug")
 	bool DisableDevModesInShipping = true;
 
+	// Last Page Ad -------
+
+	//** The message that you want users to see */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString Headline;
+
+	//** A description for the app being promoted */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString AdText;
+
+	//** The URL that CAS will direct users to when they click the ad */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString DestinationURL;
+
+	//** The direct URL of the image to be used as the ad file */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString ImageURL;
+
+	//** The direct URL of the icon or logo (Small square picture) */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString IconURL;
+
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override
 	{
+		Super::PostEditChangeProperty(PropertyChangedEvent);
 
-		if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UCASSettings, IOSSettingsFile))
+		if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, SettingsFile))
 		{
 			FString StrRef;
-			IOSSettingsFile.Split(".json", &IOSSettingsFileID, &StrRef, ESearchCase::IgnoreCase);
-			IOSSettingsFileID.Split("cas_settings", &StrRef, &IOSSettingsFileID, ESearchCase::IgnoreCase);
-			UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, IOSSettingsFileID)), GetDefaultConfigFilename());
-		}
-		if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UCASSettings, AndroidSettingsFile))
-		{
-			FString StrRef;
-			AndroidSettingsFile.Split(".json", &AndroidSettingsFileID, &StrRef, ESearchCase::IgnoreCase);
-			AndroidSettingsFileID.Split("cas_settings", &StrRef, &AndroidSettingsFileID, ESearchCase::IgnoreCase);
-			UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, AndroidSettingsFileID)), GetDefaultConfigFilename());
+			SettingsFile.Split(".json", &SettingsFileID, &StrRef, ESearchCase::IgnoreCase);
+			SettingsFileID.Split("cas_settings", &StrRef, &SettingsFileID, ESearchCase::IgnoreCase);
+			UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, SettingsFileID)), GetDefaultConfigFilename());
 		}
 		
 		// Android Ads Solution preset 
-		if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UCASSettings, AdsSolutionAndroid))
+		if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, AdsSolution))
 		{
-			switch (AdsSolutionAndroid)
+			switch (AdsSolution)
 			{
-				case ECASAdsSolution::Optimal:
-				EnableAppLovinAndroid = true;
-				EnableFacebookAndroid = true;
-				EnableIronsourceAndroid = true;
-				EnableGoogleAdMobAndroid = true;
-				EnableAdColonyAndroid = true;
-				EnableMintegralAndroid = true;
-				EnableMyTargetAndroid = true;
-				EnableInMobiAndroid = true;
-				EnablePangleAndroid = true;
-				EnableTapjoyAndroid = true;
-				EnableUnityAdsAndroid = true;
-				EnableVungleAndroid = true;
-				EnableYandexAndroid = false;
+			case ECASAdsSolution::Optimal:
+				EnableAppLovin = true;
+				EnableFacebook = true;
+				EnableIronsource = true;
+				EnableGoogleAdMob = true;
+				EnableAdColony = true;
+				EnableMintegral = true;
+				EnableMyTarget = true;
+				EnableInMobi = true;
+				EnablePangle = true;
+				EnableTapjoy = true;
+				EnableUnityAds = true;
+				EnableVungle = true;
+				EnableYandex = true;
 				break;
-				case ECASAdsSolution::Families:
-				EnableAppLovinAndroid = true;
-				EnableFacebookAndroid = false;
-				EnableIronsourceAndroid = true;
-				EnableGoogleAdMobAndroid = true;
-				EnableAdColonyAndroid = true;
-				EnableMintegralAndroid = false;
-				EnableMyTargetAndroid = false;
-				EnableInMobiAndroid = true;
-				EnablePangleAndroid = false;
-				EnableTapjoyAndroid = false;
-				EnableUnityAdsAndroid = true;
-				EnableVungleAndroid = true;
-				EnableYandexAndroid = false;
+			case ECASAdsSolution::Families:
+				EnableAppLovin = true;
+				EnableFacebook = false;
+				EnableIronsource = true;
+				EnableGoogleAdMob = true;
+				EnableAdColony = true;
+				EnableMintegral = false;
+				EnableMyTarget = false;
+				EnableInMobi = true;
+				EnablePangle = false;
+				EnableTapjoy = false;
+				EnableUnityAds = true;
+				EnableVungle= true;
+				EnableYandex = false;
+
+				RemoveAdIdPermission = false;
 				break;
-				default: break;
+			default: break;
 			}
 
-			if(AdsSolutionAndroid != ECASAdsSolution::Custom)
+			if(AdsSolution != ECASAdsSolution::Custom)
 			{
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableAppLovinAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableFacebookAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableIronsourceAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableGoogleAdMobAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableAdColonyAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableMintegralAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableMyTargetAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableInMobiAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnablePangleAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableTapjoyAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableUnityAdsAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableVungleAndroid)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableYandexAndroid)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableAppLovin)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableFacebook)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableIronsource)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableGoogleAdMob)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableAdColony)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableMintegral)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableMyTarget)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableInMobi)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnablePangle)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableTapjoy)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableUnityAds)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableVungle)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, EnableYandex)), GetDefaultConfigFilename());
+				
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsAndroid, RemoveAdIdPermission)), GetDefaultConfigFilename());
 			}
 		}
-		// IOS Ads Solution preset 
-		if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UCASSettings, AdsSolutionIOS))
-		{
-			switch (AdsSolutionIOS)
-			{
-				case ECASAdsSolution::Optimal:
-				EnableAppLovinIOS = true;
-				EnableFacebookIOS = true;
-				EnableIronsourceIOS = true;
-				EnableGoogleAdMobIOS = true;
-				EnableAdColonyIOS = true;
-				EnableMintegralIOS = true;
-				EnableMyTargetIOS = true;
-				EnableInMobiIOS = true;
-				EnablePangleIOS = true;
-				EnableTapjoyIOS = true;
-				EnableUnityAdsIOS = true;
-				EnableVungleIOS = true;
-				EnableYandexIOS = false;
-				break;
-				case ECASAdsSolution::Families:
-				EnableAppLovinIOS = true;
-				EnableFacebookIOS = false;
-				EnableIronsourceIOS = true;
-				EnableGoogleAdMobIOS = true;
-				EnableAdColonyIOS = true;
-				EnableMintegralIOS = true;
-				EnableMyTargetIOS = true;
-				EnableInMobiIOS = true;
-				EnablePangleIOS = true;
-				EnableTapjoyIOS = true;
-				EnableUnityAdsIOS = true;
-				EnableVungleIOS = true;
-				EnableYandexIOS = false;
-				break;
-				default: break;
-			}
-
-			if(AdsSolutionIOS != ECASAdsSolution::Custom)
-			{
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableAppLovinIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableFacebookIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableIronsourceIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableGoogleAdMobIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableAdColonyIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableMintegralIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableMyTargetIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableInMobiIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnablePangleIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableTapjoyIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableUnityAdsIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableVungleIOS)), GetDefaultConfigFilename());
-				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettings, EnableYandexIOS)), GetDefaultConfigFilename());
-			}
-		}
-
-		Super::PostEditChangeProperty(PropertyChangedEvent);
 	}
 #endif
 };
 
+/** Clever Ads Solutions IOS config object for Project Settings tab */
+UCLASS(Config = Engine, DefaultConfig)
+class CLEVERADSSOLUTIONS_API UCASSettingsIOS : public UObject
+{
+	
+public:
+
+	/** CAS Settings file path. Project relative.
+	 * It is recommended to place it in Config folder, so your path would look like 'Config/cas_settings***.json'
+	 */
+	UPROPERTY(Config, EditAnywhere, Category="Integration")
+	FString SettingsFile;
+
+	/** CAS Settings file id */
+	UPROPERTY(Config, VisibleAnywhere, Category="Integration")
+	FString SettingsFileID;
+	
+	/** CAS App ID. */
+	UPROPERTY(Config, EditAnywhere, Category="Integration")
+	FString CASAppID;
+		
+	/** Enable Cross Promo ads */
+	UPROPERTY(Config, EditAnywhere, Category="Integration")
+	bool EnableCrossPromo;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+	bool BannerAds;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+	bool InterstitialAds;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+	bool RewardedAds;
+	
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+    bool ReturnAds;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdSettings", meta = (UIMin = 10, ClampMin = 10))
+	float BannerDefaultRefreshInterval = 30.f;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdSettings", meta = (UIMin = 0, ClampMin = 0))
+	float MinimumInterstitialInterval = 0.f;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdSettings")
+	bool AllowInterstitialWhenRewardsCostAreLower;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Privacy")
+	bool ConsentFlow;
+
+	UPROPERTY(Config, EditAnywhere, Category="Privacy")
+	FString ConsentFlowURL;
+
+	UPROPERTY(Config, EditAnywhere, Category="Privacy")
+	FString UserTrackingUsageDescription;
+	
+	// Enable Networks -----
+
+	UPROPERTY(Config, EditAnywhere, Category="Networks")
+	ECASAdsSolution AdsSolution;
+
+	// IOS ---
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|AppLovin", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableAppLovin;
+
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Facebook", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableFacebook;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Ironsource", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableIronsource;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableGoogleAdMob;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|AdColony", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableAdColony;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Mintegral", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableMintegral;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|MyTarget", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableMyTarget;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|InMobi", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableInMobi;
+
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Pangle", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnablePangle;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Tapjoy", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableTapjoy;
+	
+	UPROPERTY(Config, EditAnywhere, Category="Networks|UnityAds", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableUnityAds;
+		
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Vungle", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableVungle;
+
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Yandex", meta=(EditCondition="AdsSolution == ECASAdsSolution::Custom"))
+	bool EnableYandex;
+
+	// Network settings  -------
+
+	// Admob ---
+
+	/** Admob App ID for Android */
+	UPROPERTY(Config, EditAnywhere, Category="Networks|GoogleAdMob", meta=(EditCondition="EnableGoogleAdMob"))
+	FString AdMobAppID;
+
+	/** Facebook AdvertiserTrackingEnabled flag */
+	UPROPERTY(Config, EditAnywhere, Category="Networks|Facebook", meta=(EditCondition="EnableFacebook"))
+	bool AdvertiserTrackingEnabled;
+
+	// Debug  -------
+	
+	/** Toggle test ads mode. When enabled, test ads will be served instead of real ones */
+	UPROPERTY(Config, EditAnywhere, Category="Debug")
+	bool TestAds;
+
+	/** Toggle debug mode. When enabled, additional information will be printed to logs */
+	UPROPERTY(Config, EditAnywhere, Category="Debug")
+	bool DebugMode;
+
+	/** List of test devices to show tests ads to, even with TestAds disabled */
+	UPROPERTY(Config, EditAnywhere, Category="Debug")
+	TArray<FString> TestDevices;
+
+	/** Disables TestAds and DebugMode when building shipping builds. */
+	UPROPERTY(Config, EditAnywhere, Category="Debug")
+	bool DisableDevModesInShipping = true;
+
+	// Last Page Ad -------
+	
+	//** The message that you want users to see */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString Headline;
+
+	//** A description for the app being promoted */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString AdText;
+
+	//** The URL that CAS will direct users to when they click the ad */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString DestinationURL;
+
+	//** The direct URL of the image to be used as the ad file */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString ImageURL;
+
+	//** The direct URL of the icon or logo (Small square picture) */
+	UPROPERTY(Config, EditAnywhere, Category="LastPageAd")
+	FString IconURL;
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override
+	{
+		Super::PostEditChangeProperty(PropertyChangedEvent);
+
+		if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, SettingsFile))
+		{
+			FString StrRef;
+			SettingsFile.Split(".json", &SettingsFileID, &StrRef, ESearchCase::IgnoreCase);
+			SettingsFileID.Split("cas_settings", &StrRef, &SettingsFileID, ESearchCase::IgnoreCase);
+			UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, SettingsFileID)), GetDefaultConfigFilename());
+		}
+		
+		// Android Ads Solution preset 
+		if (PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, AdsSolution))
+		{
+			switch (AdsSolution)
+			{
+			case ECASAdsSolution::Optimal:
+				EnableAppLovin = true;
+				EnableFacebook = true;
+				EnableIronsource = true;
+				EnableGoogleAdMob = true;
+				EnableAdColony = true;
+				EnableMintegral = true;
+				EnableMyTarget = true;
+				EnableInMobi = true;
+				EnablePangle = true;
+				EnableTapjoy = true;
+				EnableUnityAds = true;
+				EnableVungle = true;
+				EnableYandex = true;
+				break;
+			case ECASAdsSolution::Families:
+				EnableAppLovin = true;
+				EnableFacebook = false;
+				EnableIronsource = true;
+				EnableGoogleAdMob = true;
+				EnableAdColony = true;
+				EnableMintegral = true;
+				EnableMyTarget = true;
+				EnableInMobi = true;
+				EnablePangle = true;
+				EnableTapjoy = true;
+				EnableUnityAds = true;
+				EnableVungle= true;
+				EnableYandex = false;
+				break;
+			default: break;
+			}
+
+			if(AdsSolution != ECASAdsSolution::Custom)
+			{
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableAppLovin)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableFacebook)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableIronsource)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableGoogleAdMob)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableAdColony)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableMintegral)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableMyTarget)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableInMobi)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnablePangle)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableTapjoy)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableUnityAds)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableVungle)), GetDefaultConfigFilename());
+				UpdateSinglePropertyInConfigFile(GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UCASSettingsIOS, EnableYandex)), GetDefaultConfigFilename());
+			}
+		}
+	}
+#endif
+
+	GENERATED_BODY()
+};

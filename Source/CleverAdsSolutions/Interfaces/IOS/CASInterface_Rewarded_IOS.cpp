@@ -22,7 +22,7 @@ UCASInterface_Rewarded_IOS* CASRewardedIOS = nullptr;
 - (void)viewDidLoad;
 - (void)onAdLoaded:(CASType)adType;
 - (void)onAdFailedToLoad:(CASType) adType withError:(NSString *)error;
-- (void)willShownWithAd:(id<CASStatusHandler>)adStatus;
+- (void)willShownWithAd:(id<CASStatusHandler>)impression;
 - (void)didShowAdFailedWithError:(NSString *)error;
 - (void)didClickedAd;
 - (void)didCompletedAd;
@@ -72,13 +72,15 @@ UCASInterface_Rewarded_IOS* CASRewardedIOS = nullptr;
 	}
 }
 
-- (void)willShownWithAd:(id<CASStatusHandler>)adStatus
+- (void)willShownWithAd:(id<CASStatusHandler>)impression
 {
 	if(!CASInterstitialIOS) return;
+
+	FCASImpressionInfo ImpressionInfo = CASIOSHelpers::ParseImpressionInfo(impression);
 	
-	AsyncTask(ENamedThreads::GameThread, []()
+	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{
-		CASRewardedIOS->OnShown.Broadcast();
+		CASRewardedIOS->OnShown.Broadcast(ImpressionInfo);
 	});
 }
 

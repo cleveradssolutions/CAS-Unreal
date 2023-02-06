@@ -7,7 +7,6 @@
 #include "CASSettings.h"
 
 #import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
-#import <FBAudienceNetwork/FBAudienceNetwork.h>
 
 namespace CASUnrealIOS
 {
@@ -23,31 +22,69 @@ void UCASInterface_General_IOS::Init()
 {
 	Super::Init();
 
-	const UCASSettings* CASPluginSettings = GetDefault<UCASSettings>();
+	const UCASSettingsIOS* CASSettings = GetDefault<UCASSettingsIOS>();
 
-	if(!CASPluginSettings) return;
+	if(!CASSettings) return;
 
 	CASManagerBuilder* builder = [CAS buildManager];
 
+	// Test devices
+	NSMutableArray *testDevices = [[NSMutableArray alloc] init];
+	for(const FString& DeviceId : CASSettings->TestDevices)
+	{
+		[testDevices addObject:[NSString stringWithFString:DeviceId]];
+	}
+
+	[[CAS settings] setTestDeviceWithIds:testDevices];
+
+	[[CAS settings] setDebugMode:CASSettings->DebugMode];
+
+	[[CAS settings] setInterstitialAdsWhenVideoCostAreLowerWithAllow:CASSettings->AllowInterstitialWhenRewardsCostAreLower];
+	
+	// List Ad formats used in app
+	int enableAdTypes = CASTypeFlagsNone;
+            
+	if (CASSettings->BannerAds)
+		enableAdTypes |= CASTypeFlagsBanner;
+
+	if (CASSettings->InterstitialAds)
+		enableAdTypes |= CASTypeFlagsInterstitial;
+
+	if (CASSettings->RewardedAds)
+		enableAdTypes |= CASTypeFlagsRewarded;
+	
+	[builder withAdFlags:CASTypeFlagsBanner | CASTypeFlagsInterstitial | CASTypeFlagsRewarded];
+	
+	[builder withTestAdMode:CASSettings->TestAds];
+
+	// Framework Unreal info
 	const FEngineVersion& EngineVersion = FEngineVersion::Current();
 	FString VersionString = FString::Printf(TEXT("%u"), EngineVersion.GetMajor());
 	VersionString += FString::Printf(TEXT(".%u"), EngineVersion.GetMinor());
 
-	[[CAS settings] setPluginPlatformWithName:@"Unreal" version:[NSString stringWithFString:VersionString]];
+	[builder withFramework:@"Unreal" version:[NSString stringWithFString:VersionString]];
 
-	[[CAS settings] setDebugMode:CASPluginSettings->DebugMode];
+	// Consent Flow
+	CASConsentFlow *flow = [[CASConsentFlow alloc] initWithEnabled:CASSettings->ConsentFlow];
+	flow.privacyPolicyUrl = [NSString stringWithFString:CASSettings->ConsentFlowURL];
+	[builder withConsentFlow:flow];
 	
-	// List Ad formats used in app
-	[builder withAdFlags:CASTypeFlagsBanner | CASTypeFlagsInterstitial | CASTypeFlagsRewarded];
+	[builder withCompletionHandler:^(CASInitialConfig *config) {
+		if (config.error != nil) {
+			OnInitialized.Execute();
+		}
+	}];
 	
-	[builder withTestAdMode:CASPluginSettings->TestAds];
+	CASUnrealIOS::Manager = [builder createWithCasId:[NSString stringWithFString:CASSettings->CASAppID]];
 
-	// Facebook AdvertiserTrackingEnabled flag
-	[FBAdSettings setAdvertiserTrackingEnabled:CASPluginSettings->IOSAdvertiserTrackingEnabled];
-	
-	// TODO: Completion handler
-	
-	CASUnrealIOS::Manager = [builder createWithCasId:[NSString stringWithFString:CASPluginSettings->IOSCASAppID]];
+	CASUnrealIOS::Manager.lastPageAdContent =
+		[[CASLastPageAdContent alloc]
+			initWithHeadline:[NSString stringWithFString:CASSettings->Headline]
+			adText:[NSString stringWithFString:CASSettings->AdText]
+			destinationURL:[NSString stringWithFString:CASSettings->DestinationURL]
+			imageURL:[NSString stringWithFString:CASSettings->ImageURL]
+			iconURL:[NSString stringWithFString:CASSettings->IconURL]
+		];
 }
 
 FString UCASInterface_General_IOS::GetCASVersion() const

@@ -6,18 +6,43 @@
 
 #include "JNIHelpers.h"
 
+#include "CASSettings.h"
+
 #include "Misc/EngineVersion.h"
 #include "Async/Async.h"
 
 #define MANAGER_CLASSNAME "com/unreal/cas/CASUnrealManager"
 
+UCASInterface_General_Android* CASGeneralAndroid = nullptr;
+
 void UCASInterface_General_Android::Init()
 {
 	Super::Init();
-	{
+
+	CASGeneralAndroid = this;
+
+	const UCASSettingsAndroid* CASSettings = GetDefault<UCASSettingsAndroid>();
+	
+	{ // Test devices
+		CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
+			MANAGER_CLASSNAME,
+			"addTestDevice",
+			"(Ljava/lang/String;)V"
+		);
+		
+		for(const FString& DeviceId : CASSettings->TestDevices)
+		{
+			jstring IDParam = MethodInfo.Env->NewStringUTF(TCHAR_TO_UTF8(*DeviceId));
+			
+			MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, IDParam);
+
+			MethodInfo.Env->DeleteLocalRef(IDParam);
+		}
+	}
+	{ // Init
 		CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
 		MANAGER_CLASSNAME,
-		"SetPluginPlatform",
+		"Init",
 		"(Ljava/lang/String;)V");
 		
 		const FEngineVersion& EngineVersion = FEngineVersion::Current();
@@ -29,13 +54,32 @@ void UCASInterface_General_Android::Init()
 
 		MethodInfo.Env->DeleteLocalRef(VersionParam);
 	}
-	{
+	{ // Last page ad
 		CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(
-		MANAGER_CLASSNAME,
-		"Init",
-		"()V");
+			MANAGER_CLASSNAME,
+			"setLastPageAdInfo",
+			"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"
+		);
 
-		MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
+		jstring HeadlineParam = MethodInfo.Env->NewStringUTF(TCHAR_TO_UTF8(*CASSettings->Headline));
+		jstring AdTextParam = MethodInfo.Env->NewStringUTF(TCHAR_TO_UTF8(*CASSettings->AdText));
+		jstring DestinationParam = MethodInfo.Env->NewStringUTF(TCHAR_TO_UTF8(*CASSettings->DestinationURL));
+		jstring ImageParam = MethodInfo.Env->NewStringUTF(TCHAR_TO_UTF8(*CASSettings->ImageURL));
+		jstring IconParam = MethodInfo.Env->NewStringUTF(TCHAR_TO_UTF8(*CASSettings->IconURL));
+
+		MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method,
+			HeadlineParam,
+			AdTextParam,
+			DestinationParam,
+			ImageParam,
+			IconParam
+		);
+
+		MethodInfo.Env->DeleteLocalRef(HeadlineParam);
+		MethodInfo.Env->DeleteLocalRef(AdTextParam);
+		MethodInfo.Env->DeleteLocalRef(DestinationParam);
+		MethodInfo.Env->DeleteLocalRef(ImageParam);
+		MethodInfo.Env->DeleteLocalRef(IconParam);
 	}
 }
 
@@ -112,6 +156,18 @@ void UCASInterface_General_Android::SetCCPAStatus(ECASUserCCPAStatus CCPAStatus)
 		"(Z)V");
 
 	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, CCPAStatus == ECASUserCCPAStatus::OptInSale);
+}
+
+// ---- JNI Callbacks
+
+JNI_METHOD void Java_com_unreal_cas_CASUnrealManager_onCASInitThunkCpp(JNIEnv* jenv, jobject thiz)
+{
+	if(!CASGeneralAndroid) return;
+	
+	AsyncTask(ENamedThreads::GameThread, []()
+	{
+		CASGeneralAndroid->OnInitialized.Execute();
+	});
 }
 
 #endif
