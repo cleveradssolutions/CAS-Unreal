@@ -187,15 +187,15 @@ void UCAS::DisableDevModesIfShipping()
 	{
 		if(CASSettingsIOS->DisableDevModesInShipping)
 		{
-			CASSettings->DebugMode = false;
-			CASSettings->TestAds = false;
+			CASSettingsIOS->DebugMode = false;
+			CASSettingsIOS->TestAds = false;
 		}
 	}
 	{
 		if(CASSettingsAndroid->DisableDevModesInShipping)
 		{
-			CASSettings->DebugMode = false;
-			CASSettings->TestAds = false;
+			CASSettingsAndroid->DebugMode = false;
+			CASSettingsAndroid->TestAds = false;
 		}
 	}
 #endif

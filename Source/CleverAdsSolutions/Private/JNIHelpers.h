@@ -37,8 +37,12 @@ namespace CASJNIHelpers
 	inline FCASImpressionInfo ParseImpressionInfo(JNIEnv* Env, jobject Impression)
 	{
 		FCASImpressionInfo ImpressionInfo;
+
+		if(!Env || Impression == NULL) return ImpressionInfo;
 		
 		jclass Class = Env->GetObjectClass(Impression);
+
+		if(!Class) return ImpressionInfo;
 
 		{
 			jmethodID Method = FJavaWrapper::FindMethod(Env, Class, "getCpm", "()D", false);
