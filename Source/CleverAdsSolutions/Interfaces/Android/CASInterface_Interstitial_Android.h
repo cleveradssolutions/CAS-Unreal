@@ -13,13 +13,17 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Interstitial_Android : public UCASInt
 
 #if PLATFORM_ANDROID
 	
-	virtual void Init();
+	virtual void PreInit();
 	
 	virtual void Show() override;
 	
 	virtual bool IsReady() override;
 
 	virtual void Load() override;
+
+	virtual void SetMinimumInterval(int Interval) override;
+	
+	virtual void RestartInterval() override;
 
 #endif
 };

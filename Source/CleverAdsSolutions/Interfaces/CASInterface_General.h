@@ -53,6 +53,8 @@ enum class ECASLoadingMode : uint8
 	Manual
 };
 
+DECLARE_DELEGATE(FCASInitEvent);
+
 /** Abstract CAS interface class for general stuff.
  * Platform implementation inside derived classes
  */
@@ -62,6 +64,8 @@ class CLEVERADSSOLUTIONS_API UCASInterface_General : public UCASInterface
 	GENERATED_BODY()
 	
 public:
+
+	FCASInitEvent OnInitialized;
 	
 	/** Returns CAS library version.
 	 * @return String with version number

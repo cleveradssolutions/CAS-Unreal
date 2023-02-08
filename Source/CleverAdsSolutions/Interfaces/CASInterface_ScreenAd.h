@@ -15,7 +15,7 @@ public: // Delegates
 
 	/** Called when ad gets shown to a user */
 	UPROPERTY(BlueprintAssignable)
-	FCASEvent OnShown;
+	FCASImpressionEvent OnShown;
 
 	/** Called when ad gets loaded and became ready to show. Use IsReady() to make additional check */
 	UPROPERTY(BlueprintAssignable)

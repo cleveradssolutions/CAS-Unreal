@@ -21,7 +21,7 @@ public class CASUnrealBanner {
     
     // CPP callbacks
     private native static void onBannerAdLoadedThunkCpp();
-    private native static void onBannerAdShownThunkCpp();
+    private native static void onBannerAdShownThunkCpp(AdStatusHandler impression);
     private native static void onBannerAdClickedThunkCpp();
     private native static void onBannerAdDestroyedThunkCpp();
     private native static void onBannerAdShowFailedThunkCpp(String errorMessage);
@@ -31,7 +31,7 @@ public class CASUnrealBanner {
         activity = appActivity;
     }
     
-    public static void CreateBanner(){
+    public static void CreateBanner(int bannerSize){
         if(bannerView != null) return;
         
         bannerView = new CASBannerView(activity, manager);
@@ -54,9 +54,9 @@ public class CASUnrealBanner {
             }
         
             @Override
-            public void onAdViewPresented(@NonNull CASBannerView view, @NonNull AdStatusHandler info) {
+            public void onAdViewPresented(@NonNull CASBannerView view, @NonNull AdStatusHandler impression) {
               // Invokes this callback when the ad did present for a user with info about the impression.
-              onBannerAdShownThunkCpp();
+              onBannerAdShownThunkCpp(impression);
             }
         
             @Override
@@ -65,6 +65,30 @@ public class CASUnrealBanner {
               onBannerAdClickedThunkCpp();
             }
         });
+        
+        AdSize adSize = AdSize.BANNER; // Default is banner
+        
+        switch (bannerSize)
+        {
+            // Banner
+            case 0: adSize = AdSize.BANNER; break; 
+            
+            // Leaderboard
+            case 1: adSize = AdSize.LEADERBOARD; break;
+            
+            // Rectangle
+            case 2: adSize = AdSize.MEDIUM_RECTANGLE; break;
+            
+            // Adaptive
+            case 3: adSize = AdSize.getAdaptiveBannerInScreen(activity); break;
+            
+            // Smart
+            case 4: adSize = AdSize.getSmartBanner(activity); break;
+            
+            default: break;
+        }
+        
+        bannerView.setSize(adSize);
         
         // Activity > RelativeLayout > Banner (with Relative params)
         
@@ -127,4 +151,16 @@ public class CASUnrealBanner {
             }
         });
     }
+    
+    public static void setBannerRefreshInterval(int interval){
+        if(bannerView == null) return;
+        
+        bannerView.setRefreshInterval(interval);
+    }
+    
+    public static void disableBannerRefresh(){
+        if(bannerView == null) return;
+        
+        bannerView.disableAdRefresh();
+    } 
 }

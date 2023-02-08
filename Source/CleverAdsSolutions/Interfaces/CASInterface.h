@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "CASDefines.h"
 #include "CASInterface.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCASEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASErrorEvent, FString, ErrorMessage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASImpressionEvent, FCASImpressionInfo, ImpressionInfo);
 
 UCLASS(BlueprintType, Abstract)
 class CLEVERADSSOLUTIONS_API UCASInterface : public UObject
@@ -16,5 +18,7 @@ class CLEVERADSSOLUTIONS_API UCASInterface : public UObject
 public:
 
 	virtual void Init(){}
+	
+	virtual void PreInit(){}
 	
 };

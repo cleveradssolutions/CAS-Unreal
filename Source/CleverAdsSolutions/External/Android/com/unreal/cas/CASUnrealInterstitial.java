@@ -14,7 +14,7 @@ public class CASUnrealInterstitial {
     
     // CPP callbacks
     private native static void onInterstitialAdLoadedThunkCpp();
-    private native static void onInterstitialAdShownThunkCpp();
+    private native static void onInterstitialAdShownThunkCpp(AdStatusHandler impression);
     private native static void onInterstitialAdClosedThunkCpp();
     private native static void onInterstitialAdClickedThunkCpp();
     private native static void onInterstitialAdCompletedThunkCpp();
@@ -47,9 +47,9 @@ public class CASUnrealInterstitial {
     public static void ShowInterstitial(){
         AdCallback callback = new AdCallback() {  
             @Override  
-            public void onShown(@NonNull AdStatusHandler ad) {  
+            public void onShown(@NonNull AdStatusHandler impression) {  
                 // Called when ad is shown.
-                onInterstitialAdShownThunkCpp();
+                onInterstitialAdShownThunkCpp(impression);
             }  
           
             @Override  
@@ -86,5 +86,13 @@ public class CASUnrealInterstitial {
     
     public static void LoadInterstitial(){
         manager.loadInterstitial();
+    }
+    
+    public static void setMinimumInterval(int interval){
+        CAS.getSettings().setInterstitialInterval(interval);
+    }
+    
+    public static void restartInterval(){
+        CAS.getSettings().restartInterstitialInterval();
     }
 }

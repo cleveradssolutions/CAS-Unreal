@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+class UCASSettingsAndroid;
+class UCASSettingsIOS;
 class UCASSettings;
 class UCASInterface;
 
@@ -21,6 +23,8 @@ public:
 		return FModuleManager::LoadModuleChecked<FCleverAdsSolutionsModule>("CleverAdsSolutions");
 	}
 
-	UCASSettings* CASSettings;
+	UCASSettingsAndroid* CASSettingsAndroid;
+	UCASSettingsIOS* CASSettingsIOS;
+	
 	
 };

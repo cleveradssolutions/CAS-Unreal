@@ -6,8 +6,12 @@
 #include "CASInterface_General_IOS.h"
 #include "CASSubsystem.h"
 
+#include "CASSettings.h"
+
 #include "Async/Async.h"
 #include "IOS/IOSAppDelegate.h"
+
+#include "IOSHelpers.h"
 
 #import <CleverAdsSolutions/CleverAdsSolutions-Swift.h>
 
@@ -22,9 +26,10 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 - (void)dealloc;
 
 - (void)viewDidLoad;
-- (void)addBannerViewToView:(UIView *_Nonnull)bannerView;
+- (void)addBannerViewToView:(UIView *_Nonnull)bannerView withSize:(int)size;
+- (CASSize *)getSizeByCode:(int)sizeId with:(UIViewController *)controller;
 - (void)bannerAdViewDidLoad:(CASBannerView *)view;
-- (void)bannerAdView:(CASBannerView *)adView didFailWith:(NSString *)error;
+- (void)bannerAdView:(CASBannerView *)adView didFailWith:(enum CASError)error;
 - (void)bannerAdView:(CASBannerView *)adView willPresent:(id<CASStatusHandler>)impression;
 - (void)bannerAdViewDidRecordClick:(CASBannerView *)adView;
 @end
@@ -52,10 +57,12 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("CAS Banner viewDidLoad"));
 }
 
--(void)addBannerViewToView:(UIView *_Nonnull)bannerView {
+-(void)addBannerViewToView:(UIView *_Nonnull)bannerView withSize:(int)size {
 
 	// In this case, we instantiate the banner with desired ad size.
-	self.bannerView = [[CASBannerView alloc] initWithAdSize:CASSize.banner manager:self.manager];        
+	CASSize * adSize = [self getSizeByCode:size with:[UIApplication sharedApplication].keyWindow.rootViewController];
+	
+	self.bannerView = [[CASBannerView alloc] initWithAdSize:adSize manager:self.manager];        
 	[self.bannerView setTranslatesAutoresizingMaskIntoConstraints:NO];
 
 	self.bannerView.adDelegate = self;
@@ -71,11 +78,34 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 	]];
 }
 
+- (CASSize *)getSizeByCode:(int)sizeId with:(UIViewController *)controller {
+	switch (sizeId) {
+		// Banner
+		case 0: return CASSize.banner;
+		// Leaderboard
+		case 1: return CASSize.leaderboard;
+		// Rectangle
+		case 2: return CASSize.mediumRectangle;
+		// Adaptive
+		case 3: {
+				CGRect screenRect = [controller.view bounds];
+				CGFloat width = MIN(CGRectGetWidth(screenRect), CASSize.leaderboard.width);
+				return [CASSize getAdaptiveBannerForMaxWidth:width];
+		}
+		// Smart
+		case 4: return [CASSize getSmartBanner];
+		
+		default: return CASSize.banner;
+	}
+}
+
 // ---- Callbacks
 
 - (void)bannerAdViewDidLoad:(CASBannerView *)view
 {
 	if(!CASBannerIOS) return;
+	
+	UE_LOG(LogTemp, Log, TEXT("CAS Banner Ad Did Load"));
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
@@ -83,15 +113,29 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 	});
 }
 
-- (void)bannerAdView:(CASBannerView *)adView didFailWith:(NSString *)error
+- (void)bannerAdView:(CASBannerView *)adView didFailWith:(enum CASError)error
 {
 	if(!CASBannerIOS) return;
 	
-	FString ErrorMsg = FString(error);
+	FString ErrorMsg("Unknown");
+	
+	switch((int)error)
+	{
+	case CASErrorNoConnection: ErrorMsg = FString("No internet connection detected"); break;
+	case CASErrorNoFill: ErrorMsg = FString("No Fill"); break;
+	case CASErrorNotReady: ErrorMsg = FString("Ad are not ready. You need to call Load ads or use one of the automatic cache mode."); break;
+	case CASErrorManagerIsDisabled: ErrorMsg = FString("Manager is disabled"); break;
+	case CASErrorReachedCap: ErrorMsg = FString("Reached cap for user"); break;
+	case CASErrorNotEnoughSpace: ErrorMsg = FString("Not enough space to display ads"); break;
+	case CASErrorIntervalNotYetPassed: ErrorMsg = FString("The interval between impressions Ad has not yet passed."); break;
+	case CASErrorAlreadyDisplayed: ErrorMsg = FString("Ad already displayed"); break;
+	case CASErrorAppIsPaused: ErrorMsg = FString("Application is paused"); break;
+	default: break;
+	}
 	
 	AsyncTask(ENamedThreads::GameThread, [ErrorMsg]()
 	{
-		CASBannerIOS->OnShowError.Broadcast(ErrorMsg);
+		CASBannerIOS->OnFail.Broadcast(FString(ErrorMsg));
 	});
 }
 
@@ -99,15 +143,21 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 {
 	if(!CASBannerIOS) return;
 	
-	AsyncTask(ENamedThreads::GameThread, []()
+	UE_LOG(LogTemp, Log, TEXT("CAS Banner Ad Presented"));
+
+	FCASImpressionInfo ImpressionInfo = CASIOSHelpers::ParseImpressionInfo(impression);
+	
+	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{
-		CASBannerIOS->OnCreated.Broadcast();
+		CASBannerIOS->OnShow.Broadcast(ImpressionInfo);
 	});
 }
 
 - (void)bannerAdViewDidRecordClick:(CASBannerView *)adView
 {
 	if(!CASBannerIOS) return;
+	
+	UE_LOG(LogTemp, Log, TEXT("CAS Banner Clicked"));
 	
 	AsyncTask(ENamedThreads::GameThread, []()
 	{
@@ -128,10 +178,14 @@ void UCASInterface_Banner_IOS::Init()
 	CASBannerViewController = [[FCASBannerViewController alloc] initWithManager:Manager];
 }
 
-void UCASInterface_Banner_IOS::CreateBanner()
+void UCASInterface_Banner_IOS::CreateBanner(ECASBannerSize BannerSize)
 {
+	const UCASSettingsIOS* CASSettings = GetDefault<UCASSettingsIOS>();
+	
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[CASBannerViewController addBannerViewToView:CASBannerViewController.bannerView];
+		[CASBannerViewController addBannerViewToView:CASBannerViewController.bannerView withSize:(int)BannerSize];
+
+		if(!CASSettings) SetRefreshInterval(CASSettings->BannerDefaultRefreshInterval);
 	});
 }
 
@@ -160,6 +214,16 @@ void UCASInterface_Banner_IOS::LoadNextBanner()
 bool UCASInterface_Banner_IOS::IsVisible() const
 {
 	return !CASBannerViewController.bannerView.isHidden;
+}
+
+void UCASInterface_Banner_IOS::SetRefreshInterval(int Interval)
+{
+	CASBannerViewController.bannerView.refreshInterval = FMath::Max(Interval, 10);
+}
+
+void UCASInterface_Banner_IOS::DisableRefreshInterval()
+{
+	[CASBannerViewController.bannerView disableAdRefresh];
 }
 
 #endif

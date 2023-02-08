@@ -13,6 +13,8 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Interstitial_IOS : public UCASInterfa
 
 #if PLATFORM_IOS
 	
+	virtual void PreInit();
+	
 	virtual void Init();
 	
 	virtual void Show() override;
@@ -20,6 +22,10 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Interstitial_IOS : public UCASInterfa
 	virtual bool IsReady() override;
 	
 	virtual void Load() override;
+	
+	virtual void SetMinimumInterval(int Interval) override;
+	
+	virtual void RestartInterval() override;
 
 #endif
 };
