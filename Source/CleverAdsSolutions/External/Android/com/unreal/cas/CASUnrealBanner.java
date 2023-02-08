@@ -31,7 +31,7 @@ public class CASUnrealBanner {
         activity = appActivity;
     }
     
-    public static void CreateBanner(){
+    public static void CreateBanner(int bannerSize){
         if(bannerView != null) return;
         
         bannerView = new CASBannerView(activity, manager);
@@ -65,6 +65,30 @@ public class CASUnrealBanner {
               onBannerAdClickedThunkCpp();
             }
         });
+        
+        AdSize adSize = AdSize.BANNER; // Default is banner
+        
+        switch (bannerSize)
+        {
+            // Banner
+            case 0: adSize = AdSize.BANNER; break; 
+            
+            // Leaderboard
+            case 1: adSize = AdSize.LEADERBOARD; break;
+            
+            // Rectangle
+            case 2: adSize = AdSize.MEDIUM_RECTANGLE; break;
+            
+            // Adaptive
+            case 3: adSize = AdSize.getAdaptiveBannerInScreen(activity); break;
+            
+            // Smart
+            case 4: adSize = AdSize.getSmartBanner(activity); break;
+            
+            default: break;
+        }
+        
+        bannerView.setSize(adSize);
         
         // Activity > RelativeLayout > Banner (with Relative params)
         

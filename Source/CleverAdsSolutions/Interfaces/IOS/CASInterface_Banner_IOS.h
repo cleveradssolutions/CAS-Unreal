@@ -15,7 +15,7 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Banner_IOS : public UCASInterface_Ban
 	
 	virtual void Init();
 	
-	virtual void CreateBanner() override;
+	virtual void CreateBanner(ECASBannerSize BannerSize) override;
 	
 	virtual void LoadNextBanner() override;
 

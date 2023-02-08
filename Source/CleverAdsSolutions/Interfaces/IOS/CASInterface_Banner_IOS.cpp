@@ -26,7 +26,8 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 - (void)dealloc;
 
 - (void)viewDidLoad;
-- (void)addBannerViewToView:(UIView *_Nonnull)bannerView;
+- (void)addBannerViewToView:(UIView *_Nonnull)bannerView withSize:(int)size;
+- (CASSize *)getSizeByCode:(int)sizeId with:(UIViewController *)controller;
 - (void)bannerAdViewDidLoad:(CASBannerView *)view;
 - (void)bannerAdView:(CASBannerView *)adView didFailWith:(enum CASError)error;
 - (void)bannerAdView:(CASBannerView *)adView willPresent:(id<CASStatusHandler>)impression;
@@ -56,10 +57,12 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("CAS Banner viewDidLoad"));
 }
 
--(void)addBannerViewToView:(UIView *_Nonnull)bannerView {
+-(void)addBannerViewToView:(UIView *_Nonnull)bannerView withSize:(int)size {
 
 	// In this case, we instantiate the banner with desired ad size.
-	self.bannerView = [[CASBannerView alloc] initWithAdSize:CASSize.banner manager:self.manager];        
+	CASSize * adSize = [self getSizeByCode:size with:[UIApplication sharedApplication].keyWindow.rootViewController];
+	
+	self.bannerView = [[CASBannerView alloc] initWithAdSize:adSize manager:self.manager];        
 	[self.bannerView setTranslatesAutoresizingMaskIntoConstraints:NO];
 
 	self.bannerView.adDelegate = self;
@@ -73,6 +76,27 @@ UCASInterface_Banner_IOS* CASBannerIOS = nullptr;
 		[self.bannerView.centerXAnchor constraintEqualToAnchor:self.bannerView.rootViewController.view.centerXAnchor],
 		[self.bannerView.bottomAnchor constraintEqualToAnchor:self.bannerView.rootViewController.view.bottomAnchor]
 	]];
+}
+
+- (CASSize *)getSizeByCode:(int)sizeId with:(UIViewController *)controller {
+	switch (sizeId) {
+		// Banner
+		case 0: return CASSize.banner;
+		// Leaderboard
+		case 1: return CASSize.leaderboard;
+		// Rectangle
+		case 2: return CASSize.mediumRectangle;
+		// Adaptive
+		case 3: {
+				CGRect screenRect = [controller.view bounds];
+				CGFloat width = MIN(CGRectGetWidth(screenRect), CASSize.leaderboard.width);
+				return [CASSize getAdaptiveBannerForMaxWidth:width];
+		}
+		// Smart
+		case 4: return [CASSize getSmartBanner];
+		
+		default: return CASSize.banner;
+	}
 }
 
 // ---- Callbacks
@@ -154,12 +178,12 @@ void UCASInterface_Banner_IOS::Init()
 	CASBannerViewController = [[FCASBannerViewController alloc] initWithManager:Manager];
 }
 
-void UCASInterface_Banner_IOS::CreateBanner()
+void UCASInterface_Banner_IOS::CreateBanner(ECASBannerSize BannerSize)
 {
 	const UCASSettingsIOS* CASSettings = GetDefault<UCASSettingsIOS>();
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[CASBannerViewController addBannerViewToView:CASBannerViewController.bannerView];
+		[CASBannerViewController addBannerViewToView:CASBannerViewController.bannerView withSize:(int)BannerSize];
 
 		if(!CASSettings) SetRefreshInterval(CASSettings->BannerDefaultRefreshInterval);
 	});

@@ -5,6 +5,16 @@
 #include "CASInterface.h"
 #include "CASInterface_Banner.generated.h"
 
+UENUM()
+enum ECASBannerSize
+{
+	Banner,
+	Leaderboard,
+	MediumRectangle,
+	Adaptive,
+	Smart
+};
+
 /** Abstract CAS interface class for Banner ads.
  */
 UCLASS()
@@ -44,9 +54,10 @@ public: // Functions
 
 	/** Shows ad.
 	 * Will do nothing if ad is not loaded. Use IsReady() to check if it is ready.
+	 * @param BannerSize - Size of the banner
 	 */
 	UFUNCTION(BlueprintCallable, Category="CleverAdsSolutions|Banner")
-	virtual void CreateBanner(){}
+	virtual void CreateBanner(ECASBannerSize BannerSize){}
 
 	/** Loads next banner and discards current one.
 	 */

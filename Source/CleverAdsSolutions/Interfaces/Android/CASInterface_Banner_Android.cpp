@@ -19,11 +19,11 @@ void UCASInterface_Banner_Android::Init()
 	CASBannerAndroid = this;
 }
 
-void UCASInterface_Banner_Android::CreateBanner()
+void UCASInterface_Banner_Android::CreateBanner(ECASBannerSize BannerSize)
 {
-	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "CreateBanner", "()V");
+	CASJNIHelpers::FJNIMethodInfo MethodInfo = CASJNIHelpers::GetJNIMethodInfo(BANNER_CLASSNAME, "CreateBanner", "(I)V");
 
-	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method);
+	MethodInfo.Env->CallStaticVoidMethod(MethodInfo.Class, MethodInfo.Method, (int)BannerSize);
 
 	const UCASSettingsAndroid* CASSettings = GetDefault<UCASSettingsAndroid>();
 	

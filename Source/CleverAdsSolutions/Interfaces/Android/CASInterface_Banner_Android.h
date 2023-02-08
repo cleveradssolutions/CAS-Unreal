@@ -15,7 +15,7 @@ class CLEVERADSSOLUTIONS_API UCASInterface_Banner_Android : public UCASInterface
 	
 	virtual void Init();
 	
-	virtual void CreateBanner() override;
+	virtual void CreateBanner(ECASBannerSize BannerSize) override;
 	
 	virtual void LoadNextBanner() override;
 
