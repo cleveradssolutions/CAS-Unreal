@@ -38,7 +38,7 @@ namespace CASJNIHelpers
 	{
 		FCASImpressionInfo ImpressionInfo;
 
-		if(!Env || Impression == NULL) return ImpressionInfo;
+		if(!Env || !Impression) return ImpressionInfo;
 		
 		jclass Class = Env->GetObjectClass(Impression);
 
@@ -71,13 +71,16 @@ namespace CASJNIHelpers
 		{
 			jmethodID Method = FJavaWrapper::FindMethod(Env, Class, "getAdType", "()Lcom/cleversolutions/ads/AdType;", false);
 			jobject AdTypeObj = FJavaWrapper::CallObjectMethod(Env, Impression, Method);
-			jclass AdTypeClass = Env->GetObjectClass(AdTypeObj);
+			if(AdTypeObj)
+			{
+				jclass AdTypeClass = Env->GetObjectClass(AdTypeObj);
 			
-			jmethodID AdTypeMethod = FJavaWrapper::FindMethod(Env, AdTypeClass, "name", "()Ljava/lang/String;", false);
+				jmethodID AdTypeMethod = FJavaWrapper::FindMethod(Env, AdTypeClass, "name", "()Ljava/lang/String;", false);
 			
-			jstring OutString = static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, AdTypeObj, AdTypeMethod));
+				jstring OutString = static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, AdTypeObj, AdTypeMethod));
 			
-			ImpressionInfo.PlacementType = FJavaHelper::FStringFromParam(Env, OutString);
+				ImpressionInfo.PlacementType = FJavaHelper::FStringFromParam(Env, OutString);
+			}
 		}
 		{
 			jmethodID Method = FJavaWrapper::FindMethod(Env, Class, "getImpressionDepth", "()I", false);
