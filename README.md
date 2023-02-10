@@ -1,11 +1,11 @@
-# CAS-Unreal
-Clever Ads Solutions Unreal Engine plugin
+# CleverAdsSolutions Unreal Integration
+The Clever Ads Solutions Unreal plugin enables Unreal developers to easily serve Mobile Ads on Android and iOS apps without having to write Java or Objective-C code. The plugin provides a C++ and Blueprints interfaces for requesting ads in your Unreal project.
 
-## Errors:
+## Getting Started
+To get started, here is the link to [Unreal plugin integration documentation](https://github.com/cleveradssolutions/CAS-Unreal/wiki).  
 
-### Android
+## GitHub issue tracker
+To file bugs, make feature requests, or suggest improvements for the Unreal Plugin SDK, please use [GitHub's issue tracker](https://github.com/cleveradssolutions/CAS-Unreal/issues).
 
-`AAPT: error: resource android:attr/lStar not found.`
-
-In Project Settings > Android SDK set your SDK API Level to 31.
-Also in Project Settings > Android set Target SDK Version to 31.
+## Support
+mailto:support@cleveradssolutions.com
