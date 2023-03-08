@@ -250,6 +250,9 @@
 		<insert>
 			-dontwarn com.unreal.cas.**
 			-keep class com.unreal.cas.** { *; }
+
+			-dontwarn com.cleveradssolutions.**
+			-keep class com.cleveradssolutions.** { *; }
 		</insert>
 	</proguardAdditions>
 
