@@ -12,30 +12,30 @@ struct FCASImpressionInfo
 
 public:
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	float RevenueCPM;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	FString CurrencyCode = "USD";
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	FString Network;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	FString NetworkSDKVersion;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	FString UnitID;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	FString PlacementType;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	FString CreativeID;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	int TotalImpressions;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="CleverAdsSolutions|Impression")
 	float LifetimeRevenue;
 };
