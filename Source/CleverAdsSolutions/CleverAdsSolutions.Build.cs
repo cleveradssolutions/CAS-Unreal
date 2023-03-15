@@ -156,7 +156,6 @@ public class CleverAdsSolutions : ModuleRules
 					"CoreMotion",
 					"SafariServices",
 					"FileProvider",
-					"DataDetection",
 					"JavaScriptCore"
 				}
 			);
