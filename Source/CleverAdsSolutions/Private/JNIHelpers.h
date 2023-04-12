@@ -22,10 +22,10 @@ namespace CASJNIHelpers
 		FJNIMethodInfo OutInfo;
 
 		OutInfo.Env = FAndroidApplication::GetJavaEnv();
-		if (OutInfo.Env)
+		if (OutInfo.Env != NULL)
 		{
 			OutInfo.Class = FAndroidApplication::FindJavaClassGlobalRef(ClassName);
-			if(OutInfo.Class)
+			if(OutInfo.Class != NULL)
 			{
 				OutInfo.Method = FJavaWrapper::FindStaticMethod(OutInfo.Env, OutInfo.Class, MethodName, MethodSignature, false);
 			}
@@ -38,19 +38,19 @@ namespace CASJNIHelpers
 	{
 		FCASImpressionInfo ImpressionInfo;
 
-		if(!Env || !Impression) return ImpressionInfo;
+		if(Env == NULL || Impression == NULL) return ImpressionInfo;
 		
 		jclass Class = Env->GetObjectClass(Impression);
 
-		if(!Class) return ImpressionInfo;
+		if(Class == NULL) return ImpressionInfo;
 
 		{
 			jmethodID Method = Env->GetMethodID(Class, "getCpm", "()D");
-			if(Method) ImpressionInfo.RevenueCPM = FJavaWrapper::CallDoubleMethod(Env, Impression, Method);
+			if(Method != NULL) ImpressionInfo.RevenueCPM = FJavaWrapper::CallDoubleMethod(Env, Impression, Method);
 		}
 		{
 			jmethodID Method = Env->GetMethodID(Class, "getCreativeIdentifier", "()Ljava/lang/String;");
-			if(Method)
+			if(Method != NULL)
 			{
 				jstring OutString = static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, Impression, Method));
 				ImpressionInfo.CreativeID = FJavaHelper::FStringFromParam(Env, OutString);
@@ -58,7 +58,7 @@ namespace CASJNIHelpers
 		}
 		{
 			jmethodID Method = Env->GetMethodID(Class, "getNetwork", "()Ljava/lang/String;");
-			if(Method)
+			if(Method != NULL)
 			{
 				jstring OutString = static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, Impression, Method));
 				ImpressionInfo.Network = FJavaHelper::FStringFromParam(Env, OutString);
@@ -66,7 +66,7 @@ namespace CASJNIHelpers
 		}
 		{
 			jmethodID Method = Env->GetMethodID(Class, "getVersionInfo", "()Ljava/lang/String;");
-			if(Method)
+			if(Method != NULL)
 			{
 				jstring OutString = static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, Impression, Method));
 				ImpressionInfo.NetworkSDKVersion = FJavaHelper::FStringFromParam(Env, OutString);
@@ -74,7 +74,7 @@ namespace CASJNIHelpers
 		}
 		{
 			jmethodID Method = Env->GetMethodID(Class, "getIdentifier", "()Ljava/lang/String;");
-			if(Method)
+			if(Method != NULL)
 			{
 				jstring OutString = static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, Impression, Method));
 				ImpressionInfo.UnitID = FJavaHelper::FStringFromParam(Env, OutString);
@@ -83,14 +83,14 @@ namespace CASJNIHelpers
 		{
 			jmethodID Method = Env->GetMethodID(Class, "getAdType", "()Lcom/cleversolutions/ads/AdType;");
 			jobject AdTypeObj = nullptr;
-			if(Method) AdTypeObj = FJavaWrapper::CallObjectMethod(Env, Impression, Method);
-			if(AdTypeObj)
+			if(Method != NULL) AdTypeObj = FJavaWrapper::CallObjectMethod(Env, Impression, Method);
+			if(AdTypeObj != NULL)
 			{
 				jclass AdTypeClass = Env->GetObjectClass(AdTypeObj);
 			
 				jmethodID AdTypeMethod = Env->GetMethodID(AdTypeClass, "name", "()Ljava/lang/String;");
 
-				if(AdTypeMethod) {
+				if(AdTypeMethod != NULL) {
 					jstring OutString = static_cast<jstring>(FJavaWrapper::CallObjectMethod(Env, AdTypeObj, AdTypeMethod));
 					ImpressionInfo.PlacementType = FJavaHelper::FStringFromParam(Env, OutString);
 				}
@@ -98,11 +98,11 @@ namespace CASJNIHelpers
 		}
 		{
 			jmethodID Method = Env->GetMethodID(Class, "getImpressionDepth", "()I");
-			if(Method) ImpressionInfo.TotalImpressions = FJavaWrapper::CallIntMethod(Env, Impression, Method);
+			if(Method != NULL) ImpressionInfo.TotalImpressions = FJavaWrapper::CallIntMethod(Env, Impression, Method);
 		}
 		{
 			jmethodID Method = Env->GetMethodID(Class, "getLifetimeRevenue", "()D");
-			if(Method) ImpressionInfo.LifetimeRevenue = FJavaWrapper::CallDoubleMethod(Env, Impression, Method);
+			if(Method != NULL) ImpressionInfo.LifetimeRevenue = FJavaWrapper::CallDoubleMethod(Env, Impression, Method);
 		}
 
 		return ImpressionInfo;
