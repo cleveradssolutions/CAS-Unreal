@@ -14,6 +14,9 @@ import com.cleversolutions.ads.*;
 import com.cleversolutions.ads.android.CAS;
 import com.cleversolutions.ads.android.CASBannerView;
 
+import android.util.Log;
+import java.lang.reflect.Method;
+
 public class CASUnrealBanner {
     private static MediationManager manager;
     private static NativeActivity activity;
@@ -56,6 +59,17 @@ public class CASUnrealBanner {
             @Override
             public void onAdViewPresented(@NonNull CASBannerView view, @NonNull AdStatusHandler impression) {
               // Invokes this callback when the ad did present for a user with info about the impression.
+
+                Class<?> objectClass = impression.getClass();
+                Log.d("CASLog", "Class: " + objectClass.getName());
+
+                // Get and print all methods
+                Method[] methods = objectClass.getDeclaredMethods();
+                Log.d("CASLog", "\nMethods:");
+                for (Method method : methods) {
+                    Log.d("CASLog", " - " + method.toString());
+                }
+
               onBannerAdShownThunkCpp(impression);
             }
         

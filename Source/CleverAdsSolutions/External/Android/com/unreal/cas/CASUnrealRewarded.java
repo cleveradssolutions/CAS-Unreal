@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import com.cleversolutions.ads.*;
 import com.cleversolutions.ads.android.CAS;
 
+import android.util.Log;
+import java.lang.reflect.Method;
+
 public class CASUnrealRewarded {
     private static MediationManager manager;
     private static NativeActivity activity;
@@ -49,6 +52,17 @@ public class CASUnrealRewarded {
             @Override  
             public void onShown(@NonNull AdStatusHandler impression) {  
                 // Called when ad is shown.
+
+                Class<?> objectClass = impression.getClass();
+                Log.d("CASLog", "Class: " + objectClass.getName());
+
+                // Get and print all methods
+                Method[] methods = objectClass.getDeclaredMethods();
+                Log.d("CASLog", "\nMethods:");
+                for (Method method : methods) {
+                    Log.d("CASLog", " - " + method.toString());
+                }
+
                 onRewardedAdShownThunkCpp(impression);
             }  
           
