@@ -63,6 +63,9 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category="AdSettings")
 	bool AllowInterstitialWhenRewardsCostAreLower;
+
+	UPROPERTY(Config, EditAnywhere, Category="AdTypes")
+	bool DisableReadingImpressionData;
 	
 	UPROPERTY(Config, EditAnywhere, Category="Privacy")
 	bool ConsentFlow;

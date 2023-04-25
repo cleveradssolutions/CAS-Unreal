@@ -8,6 +8,8 @@
 
 #include "Async/Async.h"
 
+#include "CASSettings.h"
+
 UCASInterface_Rewarded_Android* CASRewardedAndroid = nullptr;
 
 #define REWARDED_CLASSNAME "com/unreal/cas/CASUnrealRewarded"
@@ -63,7 +65,14 @@ JNI_METHOD void Java_com_unreal_cas_CASUnrealRewarded_onRewardedAdShownThunkCpp(
 {
 	if(!CASRewardedAndroid) return;
 
-	FCASImpressionInfo ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
+	const UCASSettingsAndroid* CASSettings = GetDefault<UCASSettingsAndroid>();
+
+	FCASImpressionInfo ImpressionInfo;
+	
+	if(!CASSettings->DisableReadingImpressionData)
+	{
+		ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
+	}
 	
 	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{

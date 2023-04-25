@@ -88,7 +88,14 @@ JNI_METHOD void Java_com_unreal_cas_CASUnrealInterstitial_onInterstitialAdShownT
 {
 	if(!CASInterstitialAndroid) return;
 
-	FCASImpressionInfo ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
+	const UCASSettingsAndroid* CASSettings = GetDefault<UCASSettingsAndroid>();
+
+	FCASImpressionInfo ImpressionInfo;
+	
+	if(!CASSettings->DisableReadingImpressionData)
+	{
+		ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
+	}
 	
 	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{

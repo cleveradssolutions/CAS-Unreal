@@ -53,7 +53,14 @@ JNI_METHOD void Java_com_unreal_cas_CASUnrealReturnAds_onReturnAdsAdShownThunkCp
 {
 	if(!CASReturnAdsAndroid) return;
 
-	FCASImpressionInfo ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
+	const UCASSettingsAndroid* CASSettings = GetDefault<UCASSettingsAndroid>();
+
+	FCASImpressionInfo ImpressionInfo;
+	
+	if(!CASSettings->DisableReadingImpressionData)
+	{
+		ImpressionInfo = CASJNIHelpers::ParseImpressionInfo(jenv, impression);
+	}
 	
 	AsyncTask(ENamedThreads::GameThread, [ImpressionInfo]()
 	{

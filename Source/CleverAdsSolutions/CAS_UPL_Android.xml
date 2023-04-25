@@ -253,6 +253,12 @@
 
 			-dontwarn com.cleveradssolutions.**
 			-keep class com.cleveradssolutions.** { *; }
+
+			-dontwarn com.cleversolutions.**
+			-keep class com.cleversolutions.** { *; }
+			
+			-dontwarn com.cleversolutions.internal.content.**
+			-keep com.cleversolutions.internal.content.** { *; }
 		</insert>
 	</proguardAdditions>
 
