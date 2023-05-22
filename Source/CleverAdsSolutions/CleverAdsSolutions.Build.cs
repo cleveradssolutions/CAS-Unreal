@@ -248,7 +248,6 @@ public class CleverAdsSolutions : ModuleRules
 
 			if (EnablePangle)
 			{
-				Libraries.Add("BUAdSDK", "");
 				Libraries.Add("BURelyAdSDK", "");
 				Libraries.Add("PAGAdSDK", "PAGAdSDK.bundle");
 				Libraries.Add("BURelyFoundationGlobalAFN", "");
@@ -260,9 +259,6 @@ public class CleverAdsSolutions : ModuleRules
 				Libraries.Add("BURelyFoundationGlobalYYModel", "");
 				Libraries.Add("BURelyFoundationGlobalZFPlayer", "");
 				Libraries.Add("BURelyFoundationGlobalZip", "");
-				Libraries.Add("RARegisterKit", "");
-				Libraries.Add("RangersAPM_Pangle", "");
-				Libraries.Add("OneKit_Pangle", "");
 				Libraries.Add("CASPangle", "");
 			}
 
