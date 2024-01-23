@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+	<init>
+		<log text="CAS.AI Android Initialization"/>
+		<!-- Begin Dynamic Config -->
+		<setString result="GoogleAppId" value="ca-app-pub-3940256099942544~3347511713"/>
+		<setString result="CASConfigResFile" value="cas_settings.json"/>
+		<!-- End Dynamic Confi -->
+		<!-- Begin Init Mediation -->
+		<setBoolFromProperty result="IncludeOptimalAds" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeOptimalAds" default="false"/>
+		<setBoolFromProperty result="IncludeFamiliesAds" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeFamiliesAds" default="false"/>
+		<setBoolFromProperty result="IncludeCrossPromotion" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeCrossPromotion" default="false"/>
+		<setBoolFromProperty result="IncludeIronSource" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeIronSource" default="false"/>
+		<setBoolFromProperty result="IncludeUnityAds" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeUnityAds" default="false"/>
+		<setBoolFromProperty result="IncludeGoogleAds" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeGoogleAds" default="false"/>
+		<setBoolFromProperty result="IncludeLiftoffMonetize" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeLiftoffMonetize" default="false"/>
+		<setBoolFromProperty result="IncludeInMobi" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeInMobi" default="false"/>
+		<setBoolFromProperty result="IncludeChartboost" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeChartboost" default="false"/>
+		<setBoolFromProperty result="IncludeDTExchange" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeDTExchange" default="false"/>
+		<setBoolFromProperty result="IncludeKidoz" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeKidoz" default="false"/>
+		<setBoolFromProperty result="IncludeSuperAwesome" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeSuperAwesome" default="false"/>
+		<setBoolFromProperty result="IncludeMintegral" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeMintegral" default="false"/>
+		<setBoolFromProperty result="IncludeAppLovin" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeAppLovin" default="false"/>
+		<setBoolFromProperty result="IncludePangle" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludePangle" default="false"/>
+		<setBoolFromProperty result="IncludeBigo" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeBigo" default="false"/>
+		<setBoolFromProperty result="IncludeYandexAds" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeYandexAds" default="false"/>
+		<setBoolFromProperty result="IncludeAudienceNetwork" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeAudienceNetwork" default="false"/>
+		<setBoolFromProperty result="IncludeMyTarget" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeMyTarget" default="false"/>
+		<setBoolFromProperty result="IncludeHyprMX" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeHyprMX" default="false"/>
+		<setBoolFromProperty result="IncludeSmaato" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeSmaato" default="false"/>
+		<!-- End Init Mediation -->
+		<setBoolFromProperty result="UseAdvertisingId" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UseAdvertisingId" default="true"/>
+	</init>
+	<minimumSDKAPI>
+		<insertValue value="21"/>
+		<insertNewline/>
+	</minimumSDKAPI>
+	<androidManifestUpdates>
+		<setElement result="GoogleAppIdElem" value="meta-data" />
+		<addAttribute tag="$GoogleAppIdElem" name="android:name" value="com.google.android.gms.ads.APPLICATION_ID" />
+		<addAttribute tag="$GoogleAppIdElem" name="android:value" value="$S(GoogleAppId)" />
+		<addElement tag="application" name="GoogleAppIdElem" />
+		<addElements tag="application">
+			<meta-data android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT" android:value="true"/>
+			<meta-data android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION" android:value="true"/>
+			<meta-data android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING" android:value="true"/>
+		</addElements>
+		<if condition="IncludeAudienceNetwork">
+			<true>
+				<addAttribute tag="application" name="android:networkSecurityConfig" value="@xml/network_security_config"/>
+			</true>
+		</if>
+		<if condition="UseAdvertisingId">
+			<false>
+				<addElements tag="manifest">
+					<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+				</addElements>
+			</false>
+		</if>
+	</androidManifestUpdates>
+	<prebuildCopies>
+		<copyFile src="$S(PluginDir)/../ThirdParty/Android/$S(CASConfigResFile)"
+				dst="$S(BuildDir)/res/raw/$S(CASConfigResFile)"/>
+		<copyFile src="$S(PluginDir)/../ThirdParty/Android/network_security_config.xml"
+				dst="$S(BuildDir)/res/xml/network_security_config.xml"/>
+	</prebuildCopies>
+	<AARImports>
+		<!-- Begin Dependencies -->
+		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,3.5.2" /> <insertNewline/>
+		<if condition="IncludeOptimalAds"><true>
+		<insertValue value="com.cleveradssolutions,cas,3.5.2" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeFamiliesAds"><true>
+		<insertValue value="com.cleveradssolutions,cas-families,3.5.2" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeCrossPromotion"><true>
+		<insertValue value="com.cleveradssolutions,cas-promo,3.5.2" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeIronSource"><true>
+		<insertValue value="com.cleveradssolutions,ironsource,7.7.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeUnityAds"><true>
+		<insertValue value="com.cleveradssolutions,unity,4.9.2.2" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeGoogleAds"><true>
+		<insertValue value="com.cleveradssolutions,google,22.6.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeLiftoffMonetize"><true>
+		<insertValue value="com.cleveradssolutions,vungle,7.1.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeInMobi"><true>
+		<insertValue value="com.cleveradssolutions,inmobi,10.6.2.1" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeChartboost"><true>
+		<insertValue value="com.cleveradssolutions,chartboost,9.6.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeDTExchange"><true>
+		<insertValue value="com.cleveradssolutions,fyber,8.2.5.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeKidoz"><true>
+		<insertValue value="com.cleveradssolutions,kidoz,9.0.2.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeSuperAwesome"><true>
+		<insertValue value="com.cleveradssolutions,superawesome,9.3.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeMintegral"><true>
+		<insertValue value="com.cleveradssolutions,mintegral,16.5.91.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeAppLovin"><true>
+		<insertValue value="com.cleveradssolutions,applovin,12.1.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludePangle"><true>
+		<insertValue value="com.cleveradssolutions,pangle,5.7.0.2" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeBigo"><true>
+		<insertValue value="com.cleveradssolutions,bigo,4.4.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeYandexAds"><true>
+		<insertValue value="com.cleveradssolutions,yandex,26.3.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeAudienceNetwork"><true>
+		<insertValue value="com.cleveradssolutions,facebook,6.16.0.1" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeMyTarget"><true>
+		<insertValue value="com.cleveradssolutions,mytarget,5.20.0.1" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeHyprMX"><true>
+		<insertValue value="com.cleveradssolutions,hyprmx,6.2.3.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeSmaato"><true>
+		<insertValue value="com.cleveradssolutions,smaato,22.0.2.1" /> <insertNewline/>
+		</true></if>
+		<!-- End Dependencies -->
+	</AARImports>
+	<buildGradleAdditions>
+		<insert>
+android {
+	compileOptions {
+		sourceCompatibility 1.8
+		targetCompatibility 1.8
+	}
+}
+
+allprojects {
+	repositories {
+		<!-- Begin Repos -->
+		maven {
+			url = "https://android-sdk.is.com/"
+			content { it.includeGroup("com.ironsource.sdk") }
+		}
+		maven {
+			url = "https://cboost.jfrog.io/artifactory/chartboost-ads/"
+			content { it.includeGroup("com.chartboost") }
+		}
+		maven {
+			url = "https://aa-sdk.s3-eu-west-1.amazonaws.com/android_repo"
+			content { it.includeGroup("tv.superawesome.sdk.publisher") }
+		}
+		maven {
+			url = "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea"
+		}
+		maven {
+			url = "https://artifact.bytedance.com/repository/pangle"
+			content { it.includeGroup("com.pangle.global") }
+		}
+		maven {
+			url = "https://s3.amazonaws.com/smaato-sdk-releases/"
+			content { it.includeGroup("com.smaato.android.sdk") }
+		}
+		<!-- End Repos -->
+	}
+}
+
+// Prefer newer versions of Play Services, particularly for below UE 5.2
+dependencies {
+	implementation("com.google.android.gms:play-services-auth").version {
+		strictly("[16,19[")
+		prefer("16.0.1")
+	}
+	implementation("com.google.android.gms:play-services-games").version {
+		strictly("[17,19[")
+		prefer("17.0.0")
+	}
+	implementation("com.google.android.gms:play-services-nearby").version {
+		strictly("[16,19[")
+		prefer("16.0.0")
+	}
+	implementation("com.google.android.gms:play-services-plus").version {
+		strictly("[16,18[")
+		prefer("16.0.0")
+	}
+}
+		</insert>
+	</buildGradleAdditions>
+	<gradleProperties>
+		<insert>
+android.useAndroidX=true
+		</insert>
+	</gradleProperties>
+</root>

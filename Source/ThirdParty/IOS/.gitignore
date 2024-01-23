@@ -1,0 +1,10 @@
+/Frameworks/
+/Pods/
+/Temp/
+/CASFrameworks.xcworkspace/
+/CASFrameworks.xcodeproj/xcuserdata/
+/CASFrameworks.xcodeproj/project.xcworkspace/xcuserdata/
+/Podfile
+/Podfile.lock
+/CASXCConfig.cascache
+/*.json

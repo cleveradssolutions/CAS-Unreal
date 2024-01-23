@@ -1,0 +1,24 @@
+{
+    "CanContainContent": false, 
+    "Category": "Advertising", 
+    "CreatedBy": "CleverAdsSolutions LTD", 
+    "CreatedByURL": "https://cas.ai", 
+    "Description": "CAS.AI Unreal Engine plugin for Android and iOS", 
+    "DocsURL": "https://github.com/cleveradssolutions/CAS-Unreal/wiki", 
+    "FileVersion": 3, 
+    "FriendlyName": "CAS.AI", 
+    "Installed": false, 
+    "IsBetaVersion": false, 
+    "IsExperimentalVersion": false, 
+    "MarketplaceURL": "", 
+    "Modules": [
+        {
+            "LoadingPhase": "Default", 
+            "Name": "CleverAdsSolutions", 
+            "Type": "Runtime"
+        }
+    ], 
+    "SupportURL": "https://github.com/cleveradssolutions/CAS-Unreal/issues", 
+    "Version": 3000, 
+    "VersionName": "3.5.2"
+}
