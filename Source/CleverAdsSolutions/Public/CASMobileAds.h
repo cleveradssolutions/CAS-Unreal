@@ -20,7 +20,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Initialize mobile Ads once per session.
-     * @see OnAdsInitialized event
+     * Subscribe to OnAdsInitialized event
      */
     static void InitializeMobileAds();
 
@@ -40,14 +40,21 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void ValidateAdsIntegration();
 
+    /**
+     * The enabled Debug Mode will display a lot of useful information for debugging about the states of the sdk with tag CAS.
+     * Disabling Debug Mode may improve application performance.
+     *
+     * Disabled by default.
+     */
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void SetVerboseAdsLogs(bool Enabled);
 
     /**
-     * Indicates if the application’s audio is muted. Affects initial mute state
-     * for all ads. Use this method only if your application has its own volume
-     * controls.
-     * @param Mute - Mute ads audio by default
+     * Indicates if the application’s audio is muted. Affects initial mute state for
+     * all ads. Use this method only if your application has its own volume controls
+     * (e.g., custom music or sound effect muting).
+     *
+     * Disabled by default.
      */
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void SetAdsMuted(bool Mute);
@@ -66,15 +73,14 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Manual start the dialog, and display it on screen.
-     * @see OnConsentFlowDismissed event
+     * Subscribe to OnConsentFlowDismissed event
      */
     static void ShowAdConsentFlow();
 
     /**
-     * Sets users children audience category.
+     * Ad filters by Audience.
      * If you know that the user falls within an age-restricted category (i.e.,
-     * under the age of 16), you must set the "Children" audience flag
-     * @param Audience - User children audience status
+     * under the age of 13), you must set the "Children" audience flag.
      */
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void SetUserAudienceForAds(ECASAudience Audience);
@@ -148,6 +154,8 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Load new Ad for banner view with the Ad Size.
+     * Subscribe to OnBannerAdLoaded and OnBannerAdFailed events.
+     * Blueprints allowed with same function name.
      */
     static void LoadBannerAd(ECASBannerSize AdSize = ECASBannerSize::Banner);
 
@@ -158,7 +166,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     static void HideBannerAd();
 
     /**
-     * Set position on screen for Banner Ad.
+     * Set position on the screen for Banner Ad.
      * @param AdPosition - New Banner Ad position on screen.
      */
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads", meta = (AdPosition = "ECASPosition::BottomCenter"))
@@ -195,6 +203,8 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Load new Ad for MediumRectangle view.
+     * Subscribe to OnMRecAdLoaded and OnMRecAdFailed events
+     * Blueprints allowed with same function name.
      */
     static void LoadMRecAd();
 
@@ -238,6 +248,8 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Start loading an interstitial.
+     * Subscribe to OnInterstitialAdLoaded and OnInterstitialAdLoadFailed events.
+     * Blueprints allowed with same function name.
      */
     static void LoadInterstitialAd();
 
@@ -249,6 +261,9 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Present loaded interstitial.
+     * Subscribe to events: 
+     * OnInterstitialAdDisplayed, OnInterstitialAdDismissed, OnInterstitialAdShowFailed, OnInterstitialAdClicked
+     * Blueprints allowed with same function name.
      */
     static void ShowInterstitialAd();
 
@@ -278,6 +293,8 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Start loading a rewarded ad.
+     * Subscribe to events: OnRewardedAdLoaded, OnRewardedAdLoadFailed.
+     * Blueprints allowed with same function name.
      */
     static void LoadRewardedAd();
 
@@ -289,6 +306,9 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Present loaded rewarded ad.
+     * Subscribe to events: OnRewardedAdEarnedReward, 
+     * OnRewardedAdDisplayed, OnRewardedAdDismissed, OnRewardedAdShowFailed, OnRewardedAdClicked
+     * Blueprints allowed with same function name.
      */
     static void ShowRewardedAd();
 
@@ -302,6 +322,9 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     /**
      * The Return Ads which is displayed when the user returns to your application
      * after a certain period of time.
+     * Subscribe to events: 
+     * OnReturnToAppAdDisplayed, OnReturnToAppAdDismissed, OnReturnToAppAdShowFailed, OnReturnToAppAdClicked
+     * Blueprints allowed with same function name.
      */
     static void ShowAdOnReturnToApp();
 
