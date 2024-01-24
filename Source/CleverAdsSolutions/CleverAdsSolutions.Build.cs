@@ -146,6 +146,7 @@ public class CleverAdsSolutions : ModuleRules
 			// module.ModuleDirectory = Plugins/CleverAdsSolutions/Source/CleverAdsSolutions
 			// Platform name: Android, IOS
 			string PlatformName = Target.Platform.ToString();
+			LogDebug(PlatformName + " Configuration");
 			NativePath = Path.GetFullPath(Path.Combine(module.ModuleDirectory, "..", "ThirdParty", PlatformName));
 
 			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(module.ModuleDirectory, Target.RelativeEnginePath);
@@ -445,6 +446,9 @@ public class CleverAdsSolutions : ModuleRules
 			// Same as <copy file> in UPL.xml
 			//Module.AdditionalBundleResources.Add(new BundleResource(GetResourcesFilePath()));
 
+#if UE_5_0_OR_LATER
+			Module.bEnableObjCAutomaticReferenceCounting = true;
+#endif
 
 			FrameworksPath = Path.Combine(NativePath, "Frameworks");
 			for (int i = 0; i < solutions.Length; i++)

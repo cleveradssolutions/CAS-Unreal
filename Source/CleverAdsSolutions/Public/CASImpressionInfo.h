@@ -12,30 +12,30 @@ struct FCASImpressionInfo
 
 public:
 	/// NOTE: doubles are not supported by UE4 blueprints, so cropping to float
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	float RevenueCPM;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	FString Network;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	FString PlacementType;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	FString CurrencyCode = TEXT("USD");
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	FString UnitID;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	FString CreativeID;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	int TotalImpressions;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	float LifetimeRevenue;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
 	FString NetworkSDKVersion = TEXT(""); // Deprecated
 };

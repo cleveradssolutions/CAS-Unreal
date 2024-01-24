@@ -183,19 +183,19 @@ struct FCASInitialConfig {
     /**
      * Get the CAS initialization error, or empty if the initialization succses.
      */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
     FString Error;
 
     /**
      * Get the user's ISO-2 country code, or empty if the location fails.
      */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
     FString CountryCode;
 
     /**
      * Get the user Consent status after initialization and Consent Messaging Platform.
      */
-    UPROPERTY(BlueprintReadOnly)
+    UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
     ECASUserConsentStatus UserConsentStatus;
 };
 
