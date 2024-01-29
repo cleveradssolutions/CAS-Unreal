@@ -89,6 +89,8 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
         Category = "Privacy",
         meta =
             (MultiLine = true,
+             EditCondition = "UseAdvertisingId",
+             DisplayName = "User Tracking Usage Description (iOS Only)",
              ToolTip =
                  "Required to display the App Tracking Transparency authorization request for accessing the IDFA. Set empty to disable"))
     FString UserTrackingUsageDescription;

@@ -423,7 +423,8 @@ public class CleverAdsSolutions : ModuleRules
 		{
 			base.Apply(Module, Target);
 
-#if !UE_5_0_OR_LATER
+#if !UE_5_2_OR_LATER
+			// Starting from version 5.2, Unreal Engine no longer utilizes Bitcode in iOS builds.
 			bool BuildWithBitcode;
 			if (!EngineConfig.TryGetValue(ConfigRuntimeSettings, "bShipForBitcode", out BuildWithBitcode) || BuildWithBitcode)
 			{
