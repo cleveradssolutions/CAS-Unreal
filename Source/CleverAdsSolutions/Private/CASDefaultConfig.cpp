@@ -22,6 +22,16 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
     } else if (PropertyName == GET_MEMBER_NAME_CHECKED(UCASDefaultConfig, IncludeFamiliesAds)) {
         // Begin Families Ads solution - autogeneration tag
 		if(ConfigPlatformId == 1) {
+			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeKidoz = IncludeFamiliesAds;
+			IncludeSuperAwesome = IncludeFamiliesAds;
+		} else {
 			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
@@ -31,16 +41,6 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeKidoz = IncludeFamiliesAds;
-			IncludeSuperAwesome = IncludeFamiliesAds;
-		} else {
-			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeKidoz = IncludeFamiliesAds;
 			IncludeSuperAwesome = IncludeFamiliesAds;
 		}
@@ -54,20 +54,6 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
     } else if (PropertyName == GET_MEMBER_NAME_CHECKED(UCASDefaultConfig, IncludeOptimalAds)) {
         // Begin Optimal Ads solution  - autogeneration tag
 		if(ConfigPlatformId == 1) {
-			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeAudienceNetwork = IncludeOptimalAds;
-			IncludeAppLovin = IncludeOptimalAds;
-			IncludePangle = IncludeOptimalAds;
-			IncludeBigo = IncludeOptimalAds;
-		} else {
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
@@ -80,6 +66,20 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeAppLovin = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
 			IncludeYandexAds = IncludeOptimalAds;
+			IncludeBigo = IncludeOptimalAds;
+		} else {
+			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeAudienceNetwork = IncludeOptimalAds;
+			IncludeAppLovin = IncludeOptimalAds;
+			IncludePangle = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
 		}
         // End Optimal Ads solution

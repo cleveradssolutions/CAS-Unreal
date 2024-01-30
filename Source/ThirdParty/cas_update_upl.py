@@ -174,18 +174,17 @@ def handle_window_config_header(line, result):
                     conditions = []
                     if includeOptimalIOS and includeOptimalAndroid:
                         conditions.append("!IncludeOptimalAds")
-                    # Not supported scopes in conditions
-                    # elif includeOptimalIOS:
-                    #     conditions.append("(!IncludeOptimalAds || ConfigPlatformId!=2)")
-                    # elif includeOptimalAndroid:
-                    #     conditions.append("(!IncludeOptimalAds || ConfigPlatformId!=1)")
+                    elif includeOptimalIOS:
+                        conditions.append("(!IncludeOptimalAds || ConfigPlatformId != 2)")
+                    elif includeOptimalAndroid:
+                        conditions.append("(!IncludeOptimalAds || ConfigPlatformId != 1)")
 
                     if includeFamiliesIOS and includeFamiliesAndroid:
                         conditions.append("!IncludeFamiliesAds")
-                    # elif includeFamiliesIOS:
-                    #     conditions.append("(!IncludeFamiliesAds || ConfigPlatformId!=2)")
-                    # elif includeFamiliesAndroid:
-                    #     conditions.append("(!IncludeFamiliesAds || ConfigPlatformId!=1)")
+                    elif includeFamiliesIOS:
+                        conditions.append("(!IncludeFamiliesAds || ConfigPlatformId != 2)")
+                    elif includeFamiliesAndroid:
+                        conditions.append("(!IncludeFamiliesAds || ConfigPlatformId != 1)")
                         
                     result.append(', meta = (EditCondition = "' + " && ".join(conditions) + '")')
 
@@ -212,16 +211,16 @@ def apply_solutions_config_impl(optimalSet, familiesSet, isOptimal, result):
 def handle_window_config_script(line, result):
     if "// Begin Families Ads" in line:
         result.append('\t\tif(ConfigPlatformId == 1) {\n')
-        apply_solutions_config_impl(iosOptimalSolutionContains, iosFamiliesSolutionContains, False, result)
-        result.append('\t\t} else {\n')
         apply_solutions_config_impl(androidOptimalSolutionContains, androidFamiliesSolutionContains, False, result)
+        result.append('\t\t} else {\n')
+        apply_solutions_config_impl(iosOptimalSolutionContains, iosFamiliesSolutionContains, False, result)
         result.append('\t\t}\n')
         return True
     if "// Begin Optimal Ads" in line:
         result.append('\t\tif(ConfigPlatformId == 1) {\n')
-        apply_solutions_config_impl(iosOptimalSolutionContains, iosFamiliesSolutionContains, True, result)
-        result.append('\t\t} else {\n')
         apply_solutions_config_impl(androidOptimalSolutionContains, androidFamiliesSolutionContains, True, result)
+        result.append('\t\t} else {\n')
+        apply_solutions_config_impl(iosOptimalSolutionContains, iosFamiliesSolutionContains, True, result)
         result.append('\t\t}\n')
         return True
     return False

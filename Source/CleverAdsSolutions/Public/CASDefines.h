@@ -180,6 +180,8 @@ struct FCASInitialConfig {
     GENERATED_BODY()
 
    public:
+    FCASInitialConfig() : UserConsentStatus(ECASUserConsentStatus::Undefined) {}
+    
     /**
      * Get the CAS initialization error, or empty if the initialization succses.
      */

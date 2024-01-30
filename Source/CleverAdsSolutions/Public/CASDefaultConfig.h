@@ -80,7 +80,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
     UPROPERTY(Config,
               EditDefaultsOnly,
               Category = "Privacy",
-              meta = (EditCondition = "Audience!=ECASAudience::Children || ConfigPlatformId!=1"))
+              meta = (EditCondition = "Audience != ECASAudience::Children || ConfigPlatformId != 1"))
     bool UseAdvertisingId;
 
     UPROPERTY(
@@ -148,7 +148,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeFamiliesAds"))
 	bool IncludeSuperAwesome = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && (!IncludeFamiliesAds || ConfigPlatformId != 2)"))
 	bool IncludeMintegral = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
@@ -160,7 +160,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
 	bool IncludeBigo = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && (!IncludeFamiliesAds || ConfigPlatformId != 2)"))
 	bool IncludeYandexAds = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
@@ -177,10 +177,14 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 
     // End Adapters - autogeneration tag
 
+#if WITH_EDITORONLY_DATA
+   public:
+    UPROPERTY(Transient)
+    int32 ConfigPlatformId = 0;
+#endif
+
 #if WITH_EDITOR
    public:
-    int32 ConfigPlatformId = 0;
-
     virtual const TCHAR *GetConfigOverridePlatform() const override {
         if (ConfigPlatformId == 0) {
             return nullptr;
