@@ -131,7 +131,9 @@ def archive_embedded_frameworks(name):
     embeddedZipPath = embeddedPath + '.zip'
     sourcePath = os.path.join(rootDir, '..', '..', '..', '..', '..', '..', 'CAS-Swift', 'libs', framework)
 
-    if not move_native_lib(sourcePath, embeddedPath):
+    os.mkdir(embeddedPath)
+    if not move_native_lib(sourcePath, os.path.join(embeddedPath, framework)):
+        os.remove(embeddedPath)
         return
 
     if os.path.exists(embeddedZipPath):

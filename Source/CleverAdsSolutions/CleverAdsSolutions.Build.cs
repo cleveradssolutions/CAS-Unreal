@@ -18,10 +18,13 @@ using Tools.DotNETCommon;
 
 public class CleverAdsSolutions : ModuleRules
 {
-	public const string LOG_PREFIX = "[CAS.AI] ";
-	public const string MINIMUM_IOS_VERSION = "13.0";
-	public const string IOS_BRIDGE_NAME = "CASUnrealBridge";
+	private const string LOG_PREFIX = "[CAS.AI] ";
+	private const string MINIMUM_IOS_VERSION = "13.0";
+	private const string IOS_BRIDGE_NAME = "CASUnrealBridge";
+	private const string IOS_FRAMEWORKS_BUILD_DIR = "Temp";
 	private const string IOS_FRAMEWORKS_PROJECT = "CASFrameworks";
+	private const string XCWorkspace = IOS_FRAMEWORKS_PROJECT + ".xcworkspace";
+	private const string EngineConfigName = "/Script/CleverAdsSolutions.CASDefaultConfig";
 
 	public CleverAdsSolutions(ReadOnlyTargetRules Target) : base(Target)
 	{
@@ -36,10 +39,7 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				//"Slate",
-				//"SlateCore",
-				"Projects"
-				// ... add private dependencies that you statically link with here ...	
+				"Projects"	
 			}
 		);
 
@@ -57,11 +57,11 @@ public class CleverAdsSolutions : ModuleRules
 
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{
-			new CASAndroidConfig().Apply(this, Target);
+			new AndroidHandler().ApplyToModule(this, Target);
 		}
 		else if (Target.Platform == UnrealTargetPlatform.IOS)
 		{
-			new CASIOSConfig().Apply(this, Target);
+			new IOSHandler().ApplyToModule(this, Target);
 		}
 		else
 		{
@@ -73,26 +73,36 @@ public class CleverAdsSolutions : ModuleRules
 	private static void LogDebug(string message)
 	{
 #if UE_5_0_OR_LATER
-		System.Console.WriteLine(LOG_PREFIX + message);
+		Log.Logger.LogInformation(LOG_PREFIX + message);
 #else
-		Log.TraceLog(LOG_PREFIX + message);
+		Log.TraceInformation(LOG_PREFIX + message);
 #endif
 	}
 
-	public static void CancelBuild(string Error)
+	private static void LogWarning(string message)
+	{
+		// Logger implementation not support collored warnings
+		//Log.Logger.LogWarning(LOG_PREFIX + message);
+		Log.WriteLineOnce(LogEventType.Warning, LOG_PREFIX + message);
+	}
+
+	private static void CancelBuild(string Error)
 	{
 		throw new BuildException(Error);
 	}
 
-	public static void LostRequiredFile(string File)
+	private static void LostRequiredFile(string File)
 	{
-		throw new BuildException("Lost required plugin file. Try reinstal CAS plugin and check file exists: " + File);
+		throw new BuildException("Lost required plugin component. Try reinstal CAS plugin and check file exists: " + File);
 	}
 
-	public abstract class CASMediationConfig
+	private static string WrapInQuotes(string Line)
 	{
-		public const string EngineConfigName = "/Script/CleverAdsSolutions.CASDefaultConfig";
+		return "\"" + Line + "\"";
+	}
 
+	public abstract class BaseHandler
+	{
 		public string version;
 		public CASNetwork[] solutions;
 		public CASNetwork[] adapters;
@@ -102,15 +112,6 @@ public class CleverAdsSolutions : ModuleRules
 		public string ManagerID;
 		public bool TestAdMode;
 		public string CacheConfigFileName;// = "cas_config_res.casconfig";
-
-		public void LogWarning(string message)
-		{
-#if UE_5_0_OR_LATER
-			Log.Logger.LogWarning(LOG_PREFIX + message);
-#else
-			Log.TraceWarning(LOG_PREFIX + message);
-#endif
-		}
 
 		public int RunProcess(string Name, params string[] Args)
 		{
@@ -134,24 +135,20 @@ public class CleverAdsSolutions : ModuleRules
 		{
 			var argsLine = string.Join(" ", Args);
 			LogDebug("Run process: " + Name + " " + argsLine + " ...");
-			// #if UE_5_0_OR_LATER
-			// 	return Utils.RunLocalProcessAndReturnStdOut(Name, argsLine, Logger);
-			// #else
 			return Utils.RunLocalProcessAndReturnStdOut(Name, argsLine);
-			// #endif
 		}
 
-		public virtual void Apply(CleverAdsSolutions module, ReadOnlyTargetRules Target)
+		public virtual void ApplyToModule(CleverAdsSolutions Module, ReadOnlyTargetRules Target)
 		{
 			// module.ModuleDirectory = Plugins/CleverAdsSolutions/Source/CleverAdsSolutions
 			// Platform name: Android, IOS
 			string PlatformName = Target.Platform.ToString();
 			LogDebug(PlatformName + " Configuration");
-			NativePath = Path.GetFullPath(Path.Combine(module.ModuleDirectory, "..", "ThirdParty", PlatformName));
+			NativePath = Path.GetFullPath(Path.Combine(Module.ModuleDirectory, "..", "ThirdParty", PlatformName));
 
-			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(module.ModuleDirectory, Target.RelativeEnginePath);
+			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(Module.ModuleDirectory, Target.RelativeEnginePath);
 			string UPLFileName = "CAS_UPL_" + PlatformName + ".xml";
-			string UPLFilePath = Path.Combine(module.ModuleDirectory, UPLFileName);
+			string UPLFilePath = Path.Combine(Module.ModuleDirectory, UPLFileName);
 			if (!File.Exists(UPLFilePath))
 				LostRequiredFile(UPLFilePath);
 
@@ -160,8 +157,8 @@ public class CleverAdsSolutions : ModuleRules
 			if (!File.Exists(MediationPath))
 				LostRequiredFile(MediationPath);
 
-			module.PublicDefinitions.Add("WITH_CAS=1");
-			module.AdditionalPropertiesForReceipt.Add(PlatformName + "Plugin", Path.Combine(ModuleDirectoryRelative, UPLFileName));
+			Module.PublicDefinitions.Add("WITH_CAS=1");
+			Module.AdditionalPropertiesForReceipt.Add(PlatformName + "Plugin", Path.Combine(ModuleDirectoryRelative, UPLFileName));
 
 			JsonObject ConfigJson = JsonObject.Read(new FileReference(MediationPath));
 			version = ConfigJson.GetStringField("version");
@@ -181,11 +178,11 @@ public class CleverAdsSolutions : ModuleRules
 			}
 			for (int i = 0; i < solutions.Length; i++)
 			{
-				solutions[i].Configure(EngineConfig, EngineConfigName, module);
+				solutions[i].Configure(EngineConfig);
 			}
 			for (int i = 0; i < adapters.Length; i++)
 			{
-				adapters[i].Configure(EngineConfig, EngineConfigName, module);
+				adapters[i].Configure(EngineConfig);
 			}
 
 			if (string.IsNullOrEmpty(CacheConfigFileName))
@@ -214,32 +211,38 @@ public class CleverAdsSolutions : ModuleRules
 		{
 			var UPLFileFullPath = Path.GetFullPath(UPLFilePath);
 			var UPLFile = new List<string>(256);
-			using (var Stream = File.OpenRead(UPLFileFullPath))
+			using (var Reader = File.OpenText(UPLFileFullPath))
 			{
-				using (var Reader = new StreamReader(Stream, Encoding.UTF8, true))
+				const string StringLine = "<setString result=";
+				string GoogleAppIdKey = StringLine + WrapInQuotes("GoogleAppId");
+				string ConfigResKey = StringLine + WrapInQuotes("CASConfigResFile");
+				string Line;
+				while ((Line = Reader.ReadLine()) != null)
 				{
-					const string googleAppIdKey = "<setString result=\"GoogleAppId\"";
-					const string casConfigResKey = "<setString result=\"CASConfigResFile\"";
-					string line;
-					while ((line = Reader.ReadLine()) != null)
+					var TrimedLine = Line.TrimStart();
+					if (TrimedLine.StartsWith(GoogleAppIdKey))
 					{
-						var trimedLine = line.TrimStart();
-						if (trimedLine.StartsWith(googleAppIdKey))
+						string GoogleAppId = null;
+						string CacheConfigFilePath = GetResourcesFilePath();
+						if (File.Exists(CacheConfigFilePath))
 						{
-							var googleAppId = ReadGoogleAppIdFromConfigFile();
-							if (!string.IsNullOrEmpty(googleAppId))
-							{
-								UPLFile.Add("\t\t" + googleAppIdKey + " value=\"" + googleAppId + "\"/>");
-								continue;
-							}
+							var Config = File.ReadAllText(CacheConfigFilePath);
+							var AppId = FindPropertyString(Config, "admob_app_id");
+							if (AppId != null && AppId.Contains('~'))
+								GoogleAppId = AppId;
 						}
-						else if (trimedLine.StartsWith(casConfigResKey))
+						if (GoogleAppId != null)
 						{
-							UPLFile.Add("\t\t" + casConfigResKey + " value=\"" + GetResourcesFileName() + "\"/>");
+							UPLFile.Add("\t\t" + GoogleAppIdKey + " value=" + WrapInQuotes(GoogleAppId) + "/>");
 							continue;
 						}
-						UPLFile.Add(line);
 					}
+					else if (TrimedLine.StartsWith(ConfigResKey))
+					{
+						UPLFile.Add("\t\t" + ConfigResKey + " value=" + WrapInQuotes(GetResourcesFileName()) + "/>");
+						continue;
+					}
+					UPLFile.Add(Line);
 				}
 			}
 			using (StreamWriter Writer = new StreamWriter(UPLFileFullPath))
@@ -260,12 +263,12 @@ public class CleverAdsSolutions : ModuleRules
 			return Result;
 		}
 
-		private string GetFileSuffix(string casId)
+		private string GetFileSuffix(string CASId)
 		{
-			if (string.IsNullOrEmpty(casId))
+			if (string.IsNullOrEmpty(CASId))
 				return "";
-			string suffixChar = char.ToLower(casId[casId.Length - 1]).ToString();
-			return casId.Length.ToString() + suffixChar;
+			string SuffixChar = char.ToLower(CASId[CASId.Length - 1]).ToString();
+			return CASId.Length.ToString() + SuffixChar;
 		}
 
 		public string GetResourcesFileName()
@@ -278,21 +281,17 @@ public class CleverAdsSolutions : ModuleRules
 			return Path.Combine(NativePath, CacheConfigFileName);
 		}
 
-		private string WrapInDoubleQuotes(string line)
+		private void DownloadConfig(ReadOnlyTargetRules Target)
 		{
-			return "\"" + line + "\"";
-		}
+			var InvalidIdMessage = "CAS.AI '" + ManagerID + "' is not registered in CAS.AI. " +
+				"Please try using a real CAS identifier in the `Project Settings > CAS.AI` menu or contact support.";
+			if (Target.Configuration != UnrealTargetConfiguration.Shipping)
+				InvalidIdMessage += "\nIf you haven't created an CAS account and registered an app yet, use Test Ads mode to continue build (If not Shipping build only).";
 
-		public void DownloadConfig(ReadOnlyTargetRules Target)
-		{
-			const string HelpMessage = "\nPlease try using a real CAS identifier in the `Project Settings > CAS.AI` menu else contact support." +
-							"\nIf you haven't created an CAS account and registered an app yet, use Test Ads mode to continue build (If not Shipping build only).";
-
-			var invalidManagerId = "CAS.AI '" + ManagerID + "' is not registered in CAS.AI." + HelpMessage;
 			if (string.IsNullOrEmpty(ManagerID) || ManagerID == "demo")
 			{
 				if (!TestAdMode || Target.Configuration == UnrealTargetConfiguration.Shipping)
-					CancelBuild(invalidManagerId);
+					CancelBuild(InvalidIdMessage);
 				return;
 			}
 
@@ -305,9 +304,9 @@ public class CleverAdsSolutions : ModuleRules
 				"&bundle=" + ManagerID;
 
 			var Response = RunProcessForResult("curl",
-				"-w", WrapInDoubleQuotes("%{http_code}"),
-				"-o", WrapInDoubleQuotes(CacheConfigFilePath),
-				WrapInDoubleQuotes(RequestUrl)
+				"-w", WrapInQuotes("%{http_code}"),
+				"-o", WrapInQuotes(CacheConfigFilePath),
+				WrapInQuotes(RequestUrl)
 			);
 			Response = Response.Trim(' ', '"');
 
@@ -328,100 +327,54 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				if (TestAdMode)
 				{
-					LogWarning(invalidManagerId);
+					LogWarning(InvalidIdMessage);
 					return;
 				}
-				CancelBuild(invalidManagerId);
+				CancelBuild(InvalidIdMessage);
 			}
 			LogWarning("Failed to load configuration: " + Response);
 		}
 
-		public string ReadGoogleAppIdFromConfigFile()
-		{
-			string CacheConfigFilePath = GetResourcesFilePath();
-			if (!File.Exists(CacheConfigFilePath)) return null;
-			var Config = File.ReadAllText(CacheConfigFilePath);
-			var appId = FindPropertyString(Config, "admob_app_id");
-			if (appId != null && appId.Contains('~'))
-				return appId;
-			return null;
-		}
-
 		private static string FindPropertyString(string Source, string Property)
 		{
-			int index = Source.IndexOf(Property);
-			if (index < 0) return null;
-			index += Property.Length + 1;
-			while (Source[index] != '"')
-				index++;
-			index++;
-			return Source.Substring(index, Source.IndexOf('"', index) - index);
+			int Index = Source.IndexOf(Property);
+			if (Index < 0) return null;
+			Index += Property.Length + 1;
+			while (Source[Index] != '"')
+				Index++;
+			Index++;
+			return Source.Substring(Index, Source.IndexOf('"', Index) - Index);
 		}
 	}
 
-	public class CASNetwork
-	{
-		public bool included = false;
-		public string name;
-		public string version;
-		public string dependency;
-		//public string source;
-		public string embedLib;
-		//public string[] contains;
-
-		public CASNetwork(string name)
-		{
-			this.name = name;
-			version = "";
-			dependency = "";
-			//source = "";
-			//contains = new string[0];
-		}
-
-		public CASNetwork(JsonObject json)
-		{
-			this.name = json.GetStringField("name");
-			json.TryGetStringField("version", out this.version);
-			json.TryGetStringField("dependency", out this.dependency);
-			//json.TryGetStringField("source", out this.source);
-			json.TryGetStringField("embedLib", out this.embedLib);
-			//json.TryGetStringArrayField("contains", out this.contains);
-		}
-
-		public void Configure(ConfigHierarchy EngineConfig, string ConfigName, CleverAdsSolutions module)
-		{
-			EngineConfig.TryGetValue(ConfigName, "Include" + name, out included);
-			//module.PublicDefinitions.Add("WITH_CAS_" + name.ToUpper() + "=" + (included ? "1" : "0"););
-		}
-	}
-
-	private class CASAndroidConfig : CASMediationConfig
+	private class AndroidHandler : BaseHandler
 	{
 		//private const string ConfigRuntimeSettings = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
 
-		public override void Apply(CleverAdsSolutions module, ReadOnlyTargetRules Target)
+		public override void ApplyToModule(CleverAdsSolutions module, ReadOnlyTargetRules Target)
 		{
 			module.PublicDependencyModuleNames.Add("Launch"); // Includes Android JNI support
-			base.Apply(module, Target);
+			base.ApplyToModule(module, Target);
 			string PluginLibrary = Path.Combine(NativePath, "repository", "com", "cleveradssolutions", "cas-unreal-plugin", "release", "cas-unreal-plugin-release.aar");
 			if (!File.Exists(PluginLibrary))
 				LostRequiredFile(PluginLibrary);
 		}
 	}
 
-	public class CASIOSConfig : CASMediationConfig
+	public class IOSHandler : BaseHandler
 	{
 #pragma warning disable IDE0051
 		private const string ConfigRuntimeSettings = "/Script/IOSRuntimeSettings.IOSRuntimeSettings";
 #pragma warning restore IDE0051
 
 		public string FrameworksPath;
+		public string BridgeFrameworkPath;
 		public List<string> IncludedAdapters = new List<string>();
 		public HashSet<string> SupportedDynamicFrameworks = new HashSet<string>();
 
-		public override void Apply(CleverAdsSolutions Module, ReadOnlyTargetRules Target)
+		public override void ApplyToModule(CleverAdsSolutions Module, ReadOnlyTargetRules Target)
 		{
-			base.Apply(Module, Target);
+			base.ApplyToModule(Module, Target);
 
 #if !UE_5_2_OR_LATER
 			// Starting from version 5.2, Unreal Engine no longer utilizes Bitcode in iOS builds.
@@ -429,7 +382,7 @@ public class CleverAdsSolutions : ModuleRules
 			if (!EngineConfig.TryGetValue(ConfigRuntimeSettings, "bShipForBitcode", out BuildWithBitcode) || BuildWithBitcode)
 			{
 				CancelBuild("Bitcode is deprecated and no longer required for AppStore. " +
-					"Disable Bitcode check in iOS Runtime Settings window.");
+					"Disable Bitcode in iOS Runtime Settings window.");
 			}
 #endif
 
@@ -438,8 +391,12 @@ public class CleverAdsSolutions : ModuleRules
 			bool BuildModernXCode;
 			if (!EngineConfig.TryGetValue(XCodeSettings, "bUseModernXcode", out BuildModernXCode) || BuildModernXCode)
 			{
-				LogWarning("The Modern XCode build does not copy additional resources correctly.");
-				LogWarning("Please add a configuration file in XCode project > App Target > Build Phases > Copy Bundle Resources > + " + GetResourcesFilePath());
+				var ResourceFile = GetResourcesFilePath();
+				if (File.Exists(ResourceFile))
+				{
+					LogWarning("The Modern XCode build does not copy additional resources correctly.");
+					LogWarning("Please add a configuration file in XCode project `App Target > Build Phases > Copy Bundle Resources > +`: " + ResourceFile);
+				}
 			}
 #endif
 
@@ -447,11 +404,12 @@ public class CleverAdsSolutions : ModuleRules
 			// Same as <copy file> in UPL.xml
 			//Module.AdditionalBundleResources.Add(new BundleResource(GetResourcesFilePath()));
 
-#if UE_5_0_OR_LATER
-			Module.bEnableObjCAutomaticReferenceCounting = true;
-#endif
-
 			FrameworksPath = Path.Combine(NativePath, "Frameworks");
+
+			BridgeFrameworkPath = Path.Combine(NativePath, "Plugin", IOS_BRIDGE_NAME + ".embeddedframework.zip");
+			if (!File.Exists(BridgeFrameworkPath))
+				LostRequiredFile(BridgeFrameworkPath);
+
 			for (int i = 0; i < solutions.Length; i++)
 			{
 				if (solutions[i].included)
@@ -471,12 +429,19 @@ public class CleverAdsSolutions : ModuleRules
 				}
 			}
 
-			var XCodeCache = XCodeConfig.Read(NativePath);
-			if (XCodeCache != null && XCodeCache.IsSetupReady(FrameworksPath, version, IncludedAdapters))
+			try
 			{
-				LogDebug("Apply XCode Config from cache");
-				XCodeCache.Apply(this, Module);
-				return;
+				var ConfigCache = XCodeConfig.Read(NativePath);
+				if (ConfigCache != null && ConfigCache.IsSetupReady(this))
+				{
+					LogDebug("Apply XCode Config from cache");
+					ConfigCache.ApplyToModule(Module, this);
+					return;
+				}
+			}
+			catch (Exception e)
+			{
+				LogWarning(e.ToString());
 			}
 
 			InstallPods(Module);
@@ -488,44 +453,30 @@ public class CleverAdsSolutions : ModuleRules
 			if (!Directory.Exists(FrameworkProj))
 				LostRequiredFile(FrameworkProj);
 
-			string BuildDir = Path.Combine(NativePath, "Temp");
+			string BuildDir = Path.Combine(NativePath, IOS_FRAMEWORKS_BUILD_DIR);
 			string PodfileLock = Path.Combine(NativePath, "Podfile.lock");
 			FileUtils.ForceDeleteFile(PodfileLock);
 			FileUtils.ForceDeleteDirectory(BuildDir);
 			FileUtils.ForceDeleteDirectory(FrameworksPath);
 			Directory.CreateDirectory(FrameworksPath);
 
-			string PodTool = FindPodTool();
-
-			var Config = new XCodeConfig()
-			{
-				version = version,
-				adapters = IncludedAdapters.ToArray(),
-				bundles = new List<XCodeBundle>()
-			};
+			var Config = new XCodeConfig();
+			Config.version = version;
+			Config.adapters = IncludedAdapters.ToArray();
 
 			CreatePodfile(Config);
 
+			string PodTool = CocoaPods.FindPodTool();
 			RunProcess(PodTool, "update");
 
-			const string XCWorkspace = IOS_FRAMEWORKS_PROJECT + ".xcworkspace";
 			string XCWorkspacePath = Path.Combine(NativePath, XCWorkspace);
 			if (!Directory.Exists(XCWorkspacePath))
 				CancelBuild("Pod installation failed. Fix errors in console logs and try again.");
 
-			RunProcess("xcodebuild", "build",
-				"-workspace", XCWorkspace,
-				"-scheme", IOS_FRAMEWORKS_PROJECT,
-				"-derivedDataPath", BuildDir,
-				"-sdk", "iphoneos",
-				"-destination", "generic/platform=iOS",
-				"-configuration", "Release",
-				"IPHONEOS_DEPLOYMENT_TARGET=" + MINIMUM_IOS_VERSION,
-				"GCC_GENERATE_DEBUGGING_SYMBOLS=NO"
-			);
+			BuildPods(BuildDir);
 
 			Config.FindDependencies(this, BuildDir);
-			Config.Apply(this, Module);
+			Config.ApplyToModule(Module, this);
 			Config.Save(NativePath);
 
 			RunProcess(PodTool, "deintegrate");
@@ -534,105 +485,24 @@ public class CleverAdsSolutions : ModuleRules
 			FileUtils.ForceDeleteDirectory(BuildDir);
 		}
 
-		private string FindPodTool()
+		private void BuildPods(string BuildDir)
 		{
-			const string POD_EXECUTABLE = "pod";
-			var SearchPaths = new string[] {
-				"/opt/homebrew/bin",
-				"/usr/local/bin",
-				"/usr/bin",
-			};
-			foreach (string path in SearchPaths)
-			{
-				string podPath = Path.Combine(path, POD_EXECUTABLE);
-				if (File.Exists(podPath))
-				{
-					LogDebug("Found CocoaPods tool in " + podPath);
-					return podPath;
-				}
-			}
-			var environment = ReadGemsEnvironment();
-			if (environment == null) return null;
-			const string executableDir = "EXECUTABLE DIRECTORY";
-			foreach (string environmentVariable in new[] { executableDir, "GEM PATHS" })
-			{
-				List<string> paths;
-				if (environment.TryGetValue(environmentVariable, out paths))
-				{
-					foreach (var path in paths)
-					{
-						var binPath = environmentVariable == executableDir ? path :
-							Path.Combine(path, "bin");
-						var podPath = Path.Combine(binPath, POD_EXECUTABLE);
-						if (File.Exists(podPath))
-						{
-							LogDebug("Found CocoaPods tool in " + podPath);
-							return podPath;
-						}
-					}
-				}
-			}
-			LogWarning("Pod command not found. " +
-					"You can install CocoaPods with the Ruby gem package manager:\n" +
-					" > sudo gem install -n /usr/local/bin cocoapods");
-			return POD_EXECUTABLE;
-		}
-
-		/// <summary>
-		/// Read the Gems environment.
-		/// </summary>
-		/// <returns>Dictionary of environment properties or null if there was a problem reading
-		/// the environment.</returns>
-		private static Dictionary<string, List<string>> ReadGemsEnvironment()
-		{
-			int ExitCode;
-			var result = Utils.RunLocalProcessAndReturnStdOut("gem", "environment", out ExitCode);
-			if (ExitCode != 0) return null;
-			// gem environment outputs YAML for all config variables.  Perform some very rough YAML
-			// parsing to get the environment into a usable form.
-			var gemEnvironment = new Dictionary<string, List<string>>();
-			const string listItemPrefix = "- ";
-			int previousIndentSize = 0;
-			List<string> currentList = null;
-			char[] listToken = new char[] { ':' };
-			foreach (var line in result.Split(new char[] { '\r', '\n' }))
-			{
-				var trimmedLine = line.Trim();
-				var indentSize = line.Length - trimmedLine.Length;
-				if (indentSize < previousIndentSize) currentList = null;
-
-				if (trimmedLine.StartsWith(listItemPrefix))
-				{
-					trimmedLine = trimmedLine.Substring(listItemPrefix.Length).Trim();
-					if (currentList == null)
-					{
-						var tokens = trimmedLine.Split(listToken);
-						currentList = new List<string>();
-						gemEnvironment[tokens[0].Trim()] = currentList;
-						var value = tokens.Length == 2 ? tokens[1].Trim() : null;
-						if (!string.IsNullOrEmpty(value))
-						{
-							currentList.Add(value);
-							currentList = null;
-						}
-					}
-					else if (indentSize >= previousIndentSize)
-					{
-						currentList.Add(trimmedLine);
-					}
-				}
-				else
-				{
-					currentList = null;
-				}
-				previousIndentSize = indentSize;
-			}
-			return gemEnvironment;
+			RunProcess("xcodebuild", "build",
+				"-workspace", XCWorkspace,
+				"-scheme", IOS_FRAMEWORKS_PROJECT,
+				"-derivedDataPath", WrapInQuotes(BuildDir),
+				"-sdk", "iphoneos",
+				"-destination", WrapInQuotes("generic/platform=iOS"),
+				"-configuration", "Release",
+				"IPHONEOS_DEPLOYMENT_TARGET=" + MINIMUM_IOS_VERSION,
+				"GCC_GENERATE_DEBUGGING_SYMBOLS=NO"
+			);
 		}
 
 		private void CreatePodfile(XCodeConfig Config)
 		{
-			using (StreamWriter f = new StreamWriter(Path.Combine(NativePath, "Podfile")))
+			var Path = System.IO.Path.Combine(NativePath, "Podfile");
+			using (StreamWriter f = new StreamWriter(Path))
 			{
 				//f.WriteLine("source 'https://cdn.cocoapods.org/'");
 				f.WriteLine("source 'https://github.com/CocoaPods/Specs.git'");
@@ -650,16 +520,46 @@ public class CleverAdsSolutions : ModuleRules
 				}
 				f.WriteLine("end");
 			}
-			LogDebug("Podfile created");
+			LogDebug("Created " + Path);
+		}
+	}
+
+	public class CASNetwork
+	{
+		public bool included = false;
+		public string name;
+		public string version;
+		public string dependency;
+		public string embedLib;
+
+		public CASNetwork(string name)
+		{
+			this.name = name;
+			version = "";
+			dependency = "";
+		}
+
+		public CASNetwork(JsonObject json)
+		{
+			this.name = json.GetStringField("name");
+			json.TryGetStringField("version", out this.version);
+			json.TryGetStringField("dependency", out this.dependency);
+			json.TryGetStringField("embedLib", out this.embedLib);
+		}
+
+		public void Configure(ConfigHierarchy EngineConfig)
+		{
+			EngineConfig.TryGetValue(EngineConfigName, "Include" + name, out included);
 		}
 	}
 
 	public class XCodeConfig
 	{
 		private const string FILE_NAME = "CASXCConfig.cascache";
+
 		public string version;
+		public List<XCodeBundle> bundles = new List<XCodeBundle>();
 		public string[] adapters;
-		public List<XCodeBundle> bundles;
 		public string[] sysLibs;
 		public string[] sysFrameworks;
 		public string[] sysWeakFrameworks;
@@ -674,10 +574,10 @@ public class CleverAdsSolutions : ModuleRules
 			return new XCodeConfig
 			{
 				version = xml.Attribute("version").Value,
-				adapters = xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
 				bundles = xml.Element("bundles").Elements("bundle").Select(b =>
 					new XCodeBundle(b.Attribute("name").Value, b.Attribute("bundle").Value)
 				).ToList(),
+				adapters = xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
 				sysLibs = xml.Element("sysLibs").Elements("lib").Select(e => e.Value).ToArray(),
 				sysFrameworks = xml.Element("sysFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
 				sysWeakFrameworks = xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray()
@@ -695,13 +595,13 @@ public class CleverAdsSolutions : ModuleRules
 #if UE_5_0_OR_LATER
 			var xml = new XElement("XCodeConfig",
 				new XAttribute("version", version),
-				new XElement("adapters", adapters.Select(a => new XElement("adapter", a))),
 				new XElement("bundles", bundles.Select(b =>
 					new XElement("bundle",
 						new XAttribute("name", b.name),
 						new XAttribute("bundle", b.bundle)
 					)
 				)),
+				new XElement("adapters", adapters.Select(a => new XElement("adapter", a))),
 				new XElement("sysLibs", sysLibs.Select(l => new XElement("lib", l))),
 				new XElement("sysFrameworks", sysFrameworks.Select(f => new XElement("lib", f))),
 				new XElement("sysWeakFrameworks", sysWeakFrameworks.Select(w => new XElement("lib", w)))
@@ -712,38 +612,38 @@ public class CleverAdsSolutions : ModuleRules
 #endif
 		}
 
-		public bool IsSetupReady(string FrameworksPath, string Version, List<string> IncludedAdapters)
+		public bool IsSetupReady(IOSHandler Handler)
 		{
-			if (version != Version)
+			if (version != Handler.version)
 			{
-				LogDebug("Config framework version not mach");
+				LogDebug("XCode Config version not mach");
 				return false;
 			}
-			if (adapters.Length != IncludedAdapters.Count)
+			if (adapters.Length != Handler.IncludedAdapters.Count)
 			{
-				LogDebug("Config framework for adapters not mach");
+				LogDebug("XCode Config adapters not mach");
 				return false;
 			}
 			var readyAdapters = new HashSet<string>(adapters);
-			for (int i = 0; i < IncludedAdapters.Count; i++)
+			for (int i = 0; i < Handler.IncludedAdapters.Count; i++)
 			{
-				if (!readyAdapters.Contains(IncludedAdapters[i]))
+				if (!readyAdapters.Contains(Handler.IncludedAdapters[i]))
 				{
-					LogDebug("Config framework for adapter " + IncludedAdapters[i] + " missing");
+					LogDebug("XCode Config " + Handler.IncludedAdapters[i] + " adapter missing");
 					return false;
 				}
 			}
 			foreach (var bundle in bundles)
 			{
-				if (!Directory.Exists(Path.Combine(FrameworksPath, bundle.name + ".framework")))
+				if (!Directory.Exists(Path.Combine(Handler.FrameworksPath, bundle.name + ".framework")))
 				{
-					LogDebug("Config framework " + bundle.name + " missing");
+					LogDebug("XCode Config " + bundle.name + ".framework missing");
 					return false;
 				}
 				if (!string.IsNullOrEmpty(bundle.bundle)
-					&& !Directory.Exists(Path.Combine(FrameworksPath, bundle.bundle)))
+					&& !Directory.Exists(Path.Combine(Handler.FrameworksPath, bundle.bundle)))
 				{
-					LogDebug("Config framework " + bundle.name + " missing");
+					LogDebug("XCode Config " + bundle.bundle + " missing");
 					return false;
 				}
 			}
@@ -751,7 +651,7 @@ public class CleverAdsSolutions : ModuleRules
 			return true;
 		}
 
-		public void FindDependencies(CASIOSConfig Handler, string BuildDir)
+		public void FindDependencies(IOSHandler Handler, string BuildDir)
 		{
 			string DataPath = Path.Combine(BuildDir, "Build", "Products", "Release-iphoneos");
 			string BuildMainDir = Path.Combine(DataPath, IOS_FRAMEWORKS_PROJECT + ".framework");
@@ -780,7 +680,6 @@ public class CleverAdsSolutions : ModuleRules
 				ActiveFrameworkSet.Add(libName);
 			}
 
-
 			var podsXCConfig = Path.Combine(Handler.NativePath, "Pods", "Target Support Files", "Pods-" + IOS_FRAMEWORKS_PROJECT, "Pods-" + IOS_FRAMEWORKS_PROJECT + ".release.xcconfig");
 			if (!File.Exists(podsXCConfig))
 				CancelBuild("Build XCProject corrupted. Not found required build file: " + podsXCConfig);
@@ -804,26 +703,28 @@ public class CleverAdsSolutions : ModuleRules
 			}
 		}
 
-		public void Apply(CASIOSConfig Handler, CleverAdsSolutions Module)
+		public void ApplyToModule(CleverAdsSolutions Module, IOSHandler Handler)
 		{
-			string BridgePath = Path.Combine(Handler.NativePath, "Plugin", IOS_BRIDGE_NAME + ".embeddedframework.zip");
-			if (!File.Exists(BridgePath))
-			{
-				throw new FileNotFoundException("CAS.AI iOS Plugin corrupted try install again.", BridgePath);
-			}
-
 			Module.PublicAdditionalFrameworks.Add(
-				new Framework(IOS_BRIDGE_NAME, BridgePath)
+				new Framework(IOS_BRIDGE_NAME, Handler.BridgeFrameworkPath)
 			);
 
-			foreach (var bundle in bundles)
+			foreach (var Framework in bundles)
 			{
-				Module.PublicAdditionalFrameworks.Add(bundle.ToUFramework(Handler));
+				var Resources = string.IsNullOrEmpty(Framework.bundle) ? null : Framework.bundle;
+				bool CopyFramework = Handler.SupportedDynamicFrameworks.Contains(Framework.name);
+				Module.PublicAdditionalFrameworks.Add(
+					new Framework(Framework.name, Handler.FrameworksPath, Resources, CopyFramework)
+				);
 			}
 
 			Module.PublicSystemLibraries.AddRange(sysLibs);
 			Module.PublicFrameworks.AddRange(sysFrameworks);
 			Module.PublicWeakFrameworks.AddRange(sysWeakFrameworks);
+
+#if UE_5_0_OR_LATER
+			Module.bEnableObjCAutomaticReferenceCounting = true;
+#endif
 
 			AddSwiftSupport(Module);
 		}
@@ -884,7 +785,7 @@ public class CleverAdsSolutions : ModuleRules
 				if (BundleName.StartsWith(item))
 					return item;
 			}
-			CancelBuild(BundleName + " is not associated with any framework. Please update Build logic to fix it.");
+			CancelBuild(BundleName + " is not associated with any framework. Please contact support.");
 			return null;
 		}
 
@@ -947,8 +848,8 @@ public class CleverAdsSolutions : ModuleRules
 			this.sysFrameworks = sysFrameworks.ToArray();
 			this.sysWeakFrameworks = sysWeakFrameworks.ToArray();
 		}
-
 	}
+
 	public class XCodeBundle
 	{
 		public string name;
@@ -959,14 +860,104 @@ public class CleverAdsSolutions : ModuleRules
 			this.name = name;
 			this.bundle = bundle;
 		}
+	}
 
-		public Framework ToUFramework(CASIOSConfig Handler)
+	public static class CocoaPods
+	{
+		public static string FindPodTool()
 		{
-			string CopyBundle = null;
-			if (!string.IsNullOrEmpty(bundle))
-				CopyBundle = bundle;
-			bool CopyFramework = Handler.SupportedDynamicFrameworks.Contains(name);
-			return new Framework(name, Handler.FrameworksPath, CopyBundle, CopyFramework);
+			const string POD_EXECUTABLE = "pod";
+			var SearchPaths = new string[] {
+				"/opt/homebrew/bin",
+				"/usr/local/bin",
+				"/usr/bin",
+			};
+			foreach (string path in SearchPaths)
+			{
+				string podPath = Path.Combine(path, POD_EXECUTABLE);
+				if (File.Exists(podPath))
+				{
+					LogDebug("Found CocoaPods tool in " + podPath);
+					return podPath;
+				}
+			}
+			var environment = ReadGemsEnvironment();
+			if (environment != null)
+			{
+				const string executableDir = "EXECUTABLE DIRECTORY";
+				foreach (string environmentVariable in new[] { executableDir, "GEM PATHS" })
+				{
+					List<string> paths;
+					if (environment.TryGetValue(environmentVariable, out paths))
+					{
+						foreach (var path in paths)
+						{
+							var binPath = path.EndsWith("bin") ? path : Path.Combine(path, "bin");
+							var podPath = Path.Combine(binPath, POD_EXECUTABLE);
+							if (File.Exists(podPath))
+							{
+								LogDebug("Found CocoaPods tool in " + podPath);
+								return podPath;
+							}
+						}
+					}
+				}
+			}
+			LogWarning("Pod command not found. You can install CocoaPods with the Ruby gem package manager: " +
+					" > sudo gem install -n /usr/local/bin cocoapods");
+			return POD_EXECUTABLE;
+		}
+
+		/// <summary>
+		/// Read the Gems environment.
+		/// </summary>
+		/// <returns>Dictionary of environment properties or null if there was a problem reading
+		/// the environment.</returns>
+		private static Dictionary<string, List<string>> ReadGemsEnvironment()
+		{
+			int ExitCode;
+			var result = Utils.RunLocalProcessAndReturnStdOut("gem", "environment", out ExitCode);
+			if (ExitCode != 0) return null;
+			// gem environment outputs YAML for all config variables.  Perform some very rough YAML
+			// parsing to get the environment into a usable form.
+			var gemEnvironment = new Dictionary<string, List<string>>();
+			const string listItemPrefix = "- ";
+			int previousIndentSize = 0;
+			List<string> currentList = null;
+			char[] listToken = new char[] { ':' };
+			foreach (var line in result.Split(new char[] { '\r', '\n' }))
+			{
+				var trimmedLine = line.Trim();
+				var indentSize = line.Length - trimmedLine.Length;
+				if (indentSize < previousIndentSize) currentList = null;
+
+				if (trimmedLine.StartsWith(listItemPrefix))
+				{
+					trimmedLine = trimmedLine.Substring(listItemPrefix.Length).Trim();
+					if (currentList == null)
+					{
+						var tokens = trimmedLine.Split(listToken);
+						currentList = new List<string>();
+						gemEnvironment[tokens[0].Trim()] = currentList;
+						var value = tokens.Length == 2 ? tokens[1].Trim() : null;
+						if (!string.IsNullOrEmpty(value))
+						{
+							currentList.Add(value);
+							currentList = null;
+						}
+					}
+					else if (indentSize >= previousIndentSize)
+					{
+						currentList.Add(trimmedLine);
+					}
+				}
+				else
+				{
+					currentList = null;
+				}
+				previousIndentSize = indentSize;
+			}
+			return gemEnvironment;
 		}
 	}
 }
