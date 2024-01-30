@@ -173,32 +173,16 @@ allprojects {
 	}
 }
 
-// Prefer newer versions of Play Services, particularly for below UE 5.2
 dependencies {
-	implementation("com.google.android.gms:play-services-auth") {
-		version {
-			strictly('[16,)')
-			prefer('16.0.1')
-		}
-	}
-	implementation("com.google.android.gms:play-services-games") {
-		version {
-			strictly('[17,)')
-			prefer('17.0.0')
-		}
-	}
-	implementation("com.google.android.gms:play-services-nearby") {
-		version {
-			strictly('[16,)')
-			prefer('16.0.0')
-		}
-	}
-	implementation("com.google.android.gms:play-services-plus") {
-		version {
-			strictly('[16,)')
-			prefer('16.0.0')
-		}
-	}
+	// Prefer newer versions of Play Services, particularly for below UE 5.2
+	implementation "com.google.android.gms:play-services-auth:[16.0.1,)"
+	implementation "com.google.android.gms:play-services-games:[17.0.0,)"
+	implementation "com.google.android.gms:play-services-nearby:[16.0.0,)"
+	implementation "com.google.android.gms:play-services-plus:[16.0.0,)"
+
+	// Workaround to migrate Kotlin 1.8.0 since it no longer supports JVM targets 1.6 and 1.7
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:[1.8.0,)"
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:[1.8.0,)"
 }
 		</insert>
 	</buildGradleAdditions>
