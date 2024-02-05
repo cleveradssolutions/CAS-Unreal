@@ -7,6 +7,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using UnrealBuildTool.Rules;
+
 
 #if UE_5_0_OR_LATER
 using System.Xml.Linq;
@@ -20,11 +22,27 @@ public class CleverAdsSolutions : ModuleRules
 {
 	private const string LOG_PREFIX = "[CAS.AI] ";
 	private const string MINIMUM_IOS_VERSION = "13.0";
+
+	/// <summary>
+	/// Add [CASPluginBuildConfig] section to the Config/DefaultEditor.ini file 
+	/// to configure CAS plugin build logic
+	/// </summary>
+	private const string EditorConfigName = "CASPluginBuildConfig";
+
+	/// <summary>
+	/// Array of framework names to exclude from module rules: 
+	/// PublicAdditionalFrameworks, PublicFrameworks, PublicWeakFrameworks.
+	/// For example Config/DefaultEditor.ini:
+	/// [CASPluginBuildConfig]
+	/// +ExcludeFrameworks="TestFrameworkNameWithoutExtension"
+	/// </summary>
+	private const string EditorConfigExcludeFrameworks = "ExcludeFrameworks";
+
+	private const string EngineConfigName = "/Script/CleverAdsSolutions.CASDefaultConfig";
 	private const string IOS_BRIDGE_NAME = "CASUnrealBridge";
 	private const string IOS_FRAMEWORKS_BUILD_DIR = "Temp";
 	private const string IOS_FRAMEWORKS_PROJECT = "CASFrameworks";
 	private const string XCWorkspace = IOS_FRAMEWORKS_PROJECT + ".xcworkspace";
-	private const string EngineConfigName = "/Script/CleverAdsSolutions.CASDefaultConfig";
 
 	public CleverAdsSolutions(ReadOnlyTargetRules Target) : base(Target)
 	{
@@ -39,7 +57,7 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Projects"	
+				"Projects"
 			}
 		);
 
@@ -108,9 +126,12 @@ public class CleverAdsSolutions : ModuleRules
 		public CASNetwork[] adapters;
 
 		public ConfigHierarchy EngineConfig;
+		public ConfigHierarchy EditorConfig;
+
 		public string NativePath;
 		public string ManagerID;
 		public bool TestAdMode;
+		public bool ShippingMode;
 		public string CacheConfigFileName;// = "cas_config_res.casconfig";
 
 		public int RunProcess(string Name, params string[] Args)
@@ -143,8 +164,9 @@ public class CleverAdsSolutions : ModuleRules
 			// module.ModuleDirectory = Plugins/CleverAdsSolutions/Source/CleverAdsSolutions
 			// Platform name: Android, IOS
 			string PlatformName = Target.Platform.ToString();
-			LogDebug(PlatformName + " Configuration");
+			LogDebug(PlatformName + " Plugin build configuration");
 			NativePath = Path.GetFullPath(Path.Combine(Module.ModuleDirectory, "..", "ThirdParty", PlatformName));
+			ShippingMode = Target.Configuration == UnrealTargetConfiguration.Shipping;
 
 			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(Module.ModuleDirectory, Target.RelativeEnginePath);
 			string UPLFileName = "CAS_UPL_" + PlatformName + ".xml";
@@ -165,7 +187,9 @@ public class CleverAdsSolutions : ModuleRules
 			solutions = ParseNetworksList(ConfigJson, "simple");
 			adapters = ParseNetworksList(ConfigJson, "adapters");
 
-			EngineConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, DirectoryReference.FromFile(Target.ProjectFile), Target.Platform);
+			var ProjectDirRef = DirectoryReference.FromFile(Target.ProjectFile);
+			EngineConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, ProjectDirRef, Target.Platform);
+			EditorConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Editor, ProjectDirRef, Target.Platform);
 
 			EngineConfig.TryGetValue(EngineConfigName, "CASAppID", out ManagerID);
 			if (string.IsNullOrEmpty(ManagerID))
@@ -229,20 +253,33 @@ public class CleverAdsSolutions : ModuleRules
 							var Config = File.ReadAllText(CacheConfigFilePath);
 							var AppId = FindPropertyString(Config, "admob_app_id");
 							if (AppId != null && AppId.Contains('~'))
+							{
 								GoogleAppId = AppId;
+								LogDebug("Apply Google App ID: " + GoogleAppId);
+							}
+							else
+							{
+								string Warning = "Configuration for '" + ManagerID + "' is not valid, please contact support for additional information.";
+								if (ShippingMode)
+									CancelBuild(Warning);
+								else
+									LogWarning(Warning);
+							}
 						}
-						if (GoogleAppId != null)
-						{
+
+						if (GoogleAppId == null)
+							UPLFile.Add(Line);
+						else
 							UPLFile.Add("\t\t" + GoogleAppIdKey + " value=" + WrapInQuotes(GoogleAppId) + "/>");
-							continue;
-						}
 					}
 					else if (TrimedLine.StartsWith(ConfigResKey))
 					{
 						UPLFile.Add("\t\t" + ConfigResKey + " value=" + WrapInQuotes(GetResourcesFileName()) + "/>");
-						continue;
 					}
-					UPLFile.Add(Line);
+					else
+					{
+						UPLFile.Add(Line);
+					}
 				}
 			}
 			using (StreamWriter Writer = new StreamWriter(UPLFileFullPath))
@@ -263,17 +300,15 @@ public class CleverAdsSolutions : ModuleRules
 			return Result;
 		}
 
-		private string GetFileSuffix(string CASId)
-		{
-			if (string.IsNullOrEmpty(CASId))
-				return "";
-			string SuffixChar = char.ToLower(CASId[CASId.Length - 1]).ToString();
-			return CASId.Length.ToString() + SuffixChar;
-		}
-
 		public string GetResourcesFileName()
 		{
-			return "cas_settings" + GetFileSuffix(ManagerID) + ".json";
+			string suffix = "";
+			if (!string.IsNullOrEmpty(ManagerID))
+			{
+				string SuffixChar = char.ToLower(ManagerID[ManagerID.Length - 1]).ToString();
+				suffix = ManagerID.Length.ToString() + SuffixChar;
+			}
+			return "cas_settings" + suffix + ".json";
 		}
 
 		public string GetResourcesFilePath()
@@ -283,21 +318,31 @@ public class CleverAdsSolutions : ModuleRules
 
 		private void DownloadConfig(ReadOnlyTargetRules Target)
 		{
-			var InvalidIdMessage = "CAS.AI '" + ManagerID + "' is not registered in CAS.AI. " +
+			var InvalidIdMessage = "CAS App Id '" + ManagerID + "' is not registered in CAS.AI. " +
 				"Please try using a real CAS identifier in the `Project Settings > CAS.AI` menu or contact support.";
-			if (Target.Configuration != UnrealTargetConfiguration.Shipping)
+			if (!ShippingMode)
 				InvalidIdMessage += "\nIf you haven't created an CAS account and registered an app yet, use Test Ads mode to continue build (If not Shipping build only).";
 
 			if (string.IsNullOrEmpty(ManagerID) || ManagerID == "demo")
 			{
-				if (!TestAdMode || Target.Configuration == UnrealTargetConfiguration.Shipping)
+				if (!TestAdMode || ShippingMode)
 					CancelBuild(InvalidIdMessage);
+				else
+					LogDebug("Configuration not loaded for invalid CAS App Id and Test Ad Mode.");
 				return;
 			}
 
 			string CacheConfigFilePath = GetResourcesFilePath();
-			if (File.Exists(CacheConfigFilePath) && File.GetLastWriteTime(CacheConfigFilePath).AddHours(12) > DateTime.Now)
-				return;
+			string TempConfigFilePath = CacheConfigFilePath + ".temp";
+			if (File.Exists(CacheConfigFilePath))
+			{
+				if (File.GetLastWriteTime(CacheConfigFilePath).AddHours(12) > DateTime.Now)
+				{
+					LogDebug("Configuration used from cache for " + ManagerID);
+					return;
+				}
+				File.Move(CacheConfigFilePath, TempConfigFilePath);
+			}
 
 			var RequestUrl = "https://psvpromo.psvgamestudio.com/cas-settings.php?apply=config&platform=" +
 				(Target.Platform == UnrealTargetPlatform.Android ? "0" : "1") +
@@ -313,6 +358,8 @@ public class CleverAdsSolutions : ModuleRules
 			if (Response.StartsWith("200") || Response.EndsWith("200"))
 			{
 				LogDebug("Configuration loaded for " + ManagerID);
+				if (File.Exists(TempConfigFilePath))
+					File.Delete(TempConfigFilePath);
 				return;
 			}
 			try
@@ -332,7 +379,21 @@ public class CleverAdsSolutions : ModuleRules
 				}
 				CancelBuild(InvalidIdMessage);
 			}
+
 			LogWarning("Failed to load configuration: " + Response);
+			if (File.Exists(TempConfigFilePath))
+			{
+				File.Move(TempConfigFilePath, CacheConfigFilePath);
+				LogDebug("Configuration restored from cache for " + ManagerID);
+				return;
+			}
+
+			if (ShippingMode)
+			{
+				CancelBuild(
+					"Configuration file not found, please contact support for additional information. " +
+					"If you have a configuration file, move it along the path: " + CacheConfigFilePath);
+			}
 		}
 
 		private static string FindPropertyString(string Source, string Property)
@@ -709,8 +770,23 @@ public class CleverAdsSolutions : ModuleRules
 				new Framework(IOS_BRIDGE_NAME, Handler.BridgeFrameworkPath)
 			);
 
+			HashSet<string> ExcludeFrameworks = null;
+			List<string> ExcludeFrameworksList;
+			if (Handler.EditorConfig.GetArray(EditorConfigName, EditorConfigExcludeFrameworks, out ExcludeFrameworksList))
+			{
+				ExcludeFrameworks = new HashSet<string>(ExcludeFrameworksList);
+				sysFrameworks = sysFrameworks.Except(ExcludeFrameworksList).ToArray();
+				sysWeakFrameworks = sysWeakFrameworks.Except(ExcludeFrameworksList).ToArray();
+			}
+
 			foreach (var Framework in bundles)
 			{
+				if (ExcludeFrameworks != null && ExcludeFrameworks.Contains(Framework.name))
+				{
+					LogDebug("[Editor Config] Excluded framework: " + Framework.name);
+					continue;
+				}
+
 				var Resources = string.IsNullOrEmpty(Framework.bundle) ? null : Framework.bundle;
 				bool CopyFramework = Handler.SupportedDynamicFrameworks.Contains(Framework.name);
 				Module.PublicAdditionalFrameworks.Add(

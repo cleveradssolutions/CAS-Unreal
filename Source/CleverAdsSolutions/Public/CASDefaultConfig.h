@@ -89,8 +89,9 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
         Category = "Privacy",
         meta =
             (MultiLine = true,
-             EditCondition = "UseAdvertisingId",
-             DisplayName = "User Tracking Usage Description (iOS Only)",
+             EditCondition = "UseAdvertisingId && ConfigPlatformId == 2",
+             EditConditionHides,
+             DisplayName = "User Tracking Usage Description",
              ToolTip =
                  "Required to display the App Tracking Transparency authorization request for accessing the IDFA. Set empty to disable"))
     FString UserTrackingUsageDescription;
@@ -148,7 +149,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeFamiliesAds"))
 	bool IncludeSuperAwesome = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && (!IncludeFamiliesAds || ConfigPlatformId != 2)"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
 	bool IncludeMintegral = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
@@ -160,7 +161,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
 	bool IncludeBigo = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && (!IncludeFamiliesAds || ConfigPlatformId != 2)"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
 	bool IncludeYandexAds = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))

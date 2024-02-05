@@ -8,3 +8,4 @@
 /Podfile.lock
 /CASXCConfig.cascache
 /*.json
+/*.temp

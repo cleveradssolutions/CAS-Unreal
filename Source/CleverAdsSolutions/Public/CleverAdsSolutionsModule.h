@@ -7,16 +7,13 @@
 
 class UCASInterface;
 
-class FCleverAdsSolutionsModule : public IModuleInterface
-{
-public:
+class FCleverAdsSolutionsModule : public IModuleInterface {
+   public:
+    /** IModuleInterface implementation */
+    virtual void StartupModule() override;
+    virtual void ShutdownModule() override;
 
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
-
-	static inline FCleverAdsSolutionsModule& Get()
-	{
-		return FModuleManager::LoadModuleChecked<FCleverAdsSolutionsModule>("CleverAdsSolutions");
-	}	
+    static inline FCleverAdsSolutionsModule& Get() {
+        return FModuleManager::LoadModuleChecked<FCleverAdsSolutionsModule>("CleverAdsSolutions");
+    }
 };

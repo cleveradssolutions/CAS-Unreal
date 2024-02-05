@@ -131,9 +131,11 @@ def archive_embedded_frameworks(name):
     embeddedZipPath = embeddedPath + '.zip'
     sourcePath = os.path.join(rootDir, '..', '..', '..', '..', '..', '..', 'CAS-Swift', 'libs', framework)
 
-    os.mkdir(embeddedPath)
+    if not os.path.exists(embeddedPath):
+        os.mkdir(embeddedPath)
     if not move_native_lib(sourcePath, os.path.join(embeddedPath, framework)):
-        os.remove(embeddedPath)
+        if os.path.exists(embeddedPath):
+            shutil.rmtree(embeddedPath)
         return
 
     if os.path.exists(embeddedZipPath):
@@ -177,16 +179,16 @@ def handle_window_config_header(line, result):
                     if includeOptimalIOS and includeOptimalAndroid:
                         conditions.append("!IncludeOptimalAds")
                     elif includeOptimalIOS:
-                        conditions.append("(!IncludeOptimalAds || ConfigPlatformId != 2)")
+                        conditions.append("!IncludeOptimalAds || ConfigPlatformId != 2")
                     elif includeOptimalAndroid:
-                        conditions.append("(!IncludeOptimalAds || ConfigPlatformId != 1)")
+                        conditions.append("!IncludeOptimalAds || ConfigPlatformId != 1")
 
                     if includeFamiliesIOS and includeFamiliesAndroid:
                         conditions.append("!IncludeFamiliesAds")
                     elif includeFamiliesIOS:
-                        conditions.append("(!IncludeFamiliesAds || ConfigPlatformId != 2)")
+                        conditions.append("!IncludeFamiliesAds || ConfigPlatformId != 2")
                     elif includeFamiliesAndroid:
-                        conditions.append("(!IncludeFamiliesAds || ConfigPlatformId != 1)")
+                        conditions.append("!IncludeFamiliesAds || ConfigPlatformId != 1")
                         
                     result.append(', meta = (EditCondition = "' + " && ".join(conditions) + '")')
 

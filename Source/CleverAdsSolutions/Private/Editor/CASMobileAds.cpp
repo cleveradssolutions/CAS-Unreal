@@ -51,7 +51,7 @@ void UCASMobileAds::InitializeMobileAds() {
     CASUEventCallback(kCASUType_MANAGER, kCASUCallback_INITIALIZED, 0);
 
     if (notInitialized) {
-        const UCASDefaultConfig *DefaultConfig = UCASConfigContainer::Get()->GetAndroid();
+        const UCASDefaultConfig *DefaultConfig = UCASConfigContainer::GetConfig();
         CAS_LOG_D("Initialize Ads for %s", *DefaultConfig->CASAppID);
 
         if (DefaultConfig->AutoloadBannerAds) {
@@ -87,8 +87,7 @@ void UCASMobileAds::SetAdsMuted(bool Mute) { CAS_LOG_D("Setting Mute Ad sounds t
 void UCASMobileAds::SetTrialAdFreeInterval(int interval) {}
 
 void UCASMobileAds::ShowAdConsentFlow() {
-    const UCASDefaultConfig *DefaultConfig = UCASConfigContainer::Get()->GetAndroid();
-    CAS_LOG_D("Manual Show Consent Flow with Privacy Policy: %s", *DefaultConfig->PrivacyPolicyURL);
+    CAS_LOG_D("Manual Show Consent Flow with Privacy Policy: %s", *UCASConfigContainer::GetConfig()->PrivacyPolicyURL);
 }
 
 void UCASMobileAds::SetUserAudienceForAds(ECASAudience Audience) {
@@ -232,9 +231,8 @@ void UCASMobileAds::ShowInterstitialAd() {
             CASUEventCallback(AdType, kCASUCallback_PAY, 0);
             CASUEventCallback(AdType, kCASUCallback_CLICKED, 0);
             CASUEventCallback(AdType, kCASUCallback_CLOSED, 0);
-            const UCASDefaultConfig *DefaultConfig = UCASConfigContainer::Get()->GetAndroid();
 
-            if (DefaultConfig->AutoloadInterstitialAds) {
+            if (UCASConfigContainer::GetConfig()->AutoloadInterstitialAds) {
                 CASUEventCallback(AdType, kCASUCallback_LOADED, 0);
             } else {
                 ReadyInter = false;
@@ -279,9 +277,8 @@ void UCASMobileAds::ShowRewardedAd() {
             CASUEventCallback(AdType, kCASUCallback_CLICKED, 0);
             CASUEventCallback(AdType, kCASUCallback_COMPLETED, 0);
             CASUEventCallback(AdType, kCASUCallback_CLOSED, 0);
-            const UCASDefaultConfig *DefaultConfig = UCASConfigContainer::Get()->GetAndroid();
 
-            if (DefaultConfig->AutoloadInterstitialAds) {
+            if (UCASConfigContainer::GetConfig()->AutoloadInterstitialAds) {
                 CASUEventCallback(AdType, kCASUCallback_LOADED, 0);
             } else {
                 ReadyReward = false;

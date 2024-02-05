@@ -2,4 +2,4 @@
 
 #pragma once
 
-#include "CASMobileAds.h"
+#include "CoreMinimal.h"

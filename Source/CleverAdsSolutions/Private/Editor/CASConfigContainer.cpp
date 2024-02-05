@@ -7,9 +7,9 @@
 UCASConfigContainer* UCASConfigContainer::Get() {
     static const TCHAR* SettingsContainerName = TEXT("CASConfigContainer");
 
-    auto* Outer = FindObject<UCASConfigContainer>((UObject *)GetTransientPackage(), SettingsContainerName);
+    auto* Outer = FindObject<UCASConfigContainer>((UObject*)GetTransientPackage(), SettingsContainerName);
     if (!Outer) {
-        Outer = NewObject<UCASConfigContainer>((UObject *)GetTransientPackage(), UCASConfigContainer::StaticClass(),
+        Outer = NewObject<UCASConfigContainer>((UObject*)GetTransientPackage(), UCASConfigContainer::StaticClass(),
                                                SettingsContainerName);
         Outer->AddToRoot();
     }
@@ -18,7 +18,7 @@ UCASConfigContainer* UCASConfigContainer::Get() {
 
 UCASDefaultConfig* UCASConfigContainer::GetAndroid() {
     if (!ConfigAndroid) {
-        ConfigAndroid = NewObject<UCASDefaultConfig>();
+        ConfigAndroid = NewObject<UCASDefaultConfig>((UObject*)GetTransientPackage());
         ConfigAndroid->ConfigPlatformId = 1;
         ConfigAndroid->LoadConfig();
         ConfigAndroid->AddToRoot();
@@ -28,8 +28,7 @@ UCASDefaultConfig* UCASConfigContainer::GetAndroid() {
 
 UCASDefaultConfig* UCASConfigContainer::GetIOS() {
     if (!ConfigIOS) {
-        ConfigIOS = NewObject<UCASDefaultConfig>();
-        //ConfigIOS = DuplicateObject(GetMutableDefault<UCASDefaultConfig>(), this);
+        ConfigIOS = NewObject<UCASDefaultConfig>((UObject*)GetTransientPackage());
         ConfigIOS->ConfigPlatformId = 2;
         ConfigIOS->LoadConfig();
         ConfigIOS->AddToRoot();
@@ -37,3 +36,11 @@ UCASDefaultConfig* UCASConfigContainer::GetIOS() {
     return ConfigIOS;
 }
 #endif
+
+const UCASDefaultConfig* UCASConfigContainer::GetConfig() {
+#if WITH_EDITOR
+    return Get()->GetAndroid();
+#else
+    return GetDefault<UCASDefaultConfig>();
+#endif
+}
