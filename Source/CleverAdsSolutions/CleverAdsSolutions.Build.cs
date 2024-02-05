@@ -7,13 +7,13 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using UnrealBuildTool.Rules;
 
 
 #if UE_5_0_OR_LATER
 using System.Xml.Linq;
 using EpicGames.Core;
 using Microsoft.Extensions.Logging;
+using UnrealBuildTool.Rules;
 #else
 using Tools.DotNETCommon;
 #endif
@@ -24,19 +24,19 @@ public class CleverAdsSolutions : ModuleRules
 	private const string MINIMUM_IOS_VERSION = "13.0";
 
 	/// <summary>
-	/// Add [CASPluginBuildConfig] section to the Config/DefaultEditor.ini file 
+	/// Add [CASPluginBuildConfig] section to the Config/DefaultEngine.ini file 
 	/// to configure CAS plugin build logic
 	/// </summary>
-	private const string EditorConfigName = "CASPluginBuildConfig";
+	private const string BuildConfigName = "CASPluginBuildConfig";
 
 	/// <summary>
 	/// Array of framework names to exclude from module rules: 
 	/// PublicAdditionalFrameworks, PublicFrameworks, PublicWeakFrameworks.
-	/// For example Config/DefaultEditor.ini:
+	/// For example Config/DefaultEngine.ini:
 	/// [CASPluginBuildConfig]
 	/// +ExcludeFrameworks="TestFrameworkNameWithoutExtension"
 	/// </summary>
-	private const string EditorConfigExcludeFrameworks = "ExcludeFrameworks";
+	private const string BuildConfigExcludeFrameworks = "ExcludeFrameworks";
 
 	private const string EngineConfigName = "/Script/CleverAdsSolutions.CASDefaultConfig";
 	private const string IOS_BRIDGE_NAME = "CASUnrealBridge";
@@ -126,7 +126,6 @@ public class CleverAdsSolutions : ModuleRules
 		public CASNetwork[] adapters;
 
 		public ConfigHierarchy EngineConfig;
-		public ConfigHierarchy EditorConfig;
 
 		public string NativePath;
 		public string ManagerID;
@@ -189,8 +188,7 @@ public class CleverAdsSolutions : ModuleRules
 
 			var ProjectDirRef = DirectoryReference.FromFile(Target.ProjectFile);
 			EngineConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, ProjectDirRef, Target.Platform);
-			EditorConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Editor, ProjectDirRef, Target.Platform);
-
+			
 			EngineConfig.TryGetValue(EngineConfigName, "CASAppID", out ManagerID);
 			if (string.IsNullOrEmpty(ManagerID))
 			{
@@ -772,7 +770,7 @@ public class CleverAdsSolutions : ModuleRules
 
 			HashSet<string> ExcludeFrameworks = null;
 			List<string> ExcludeFrameworksList;
-			if (Handler.EditorConfig.GetArray(EditorConfigName, EditorConfigExcludeFrameworks, out ExcludeFrameworksList))
+			if (Handler.EngineConfig.GetArray(BuildConfigName, BuildConfigExcludeFrameworks, out ExcludeFrameworksList))
 			{
 				ExcludeFrameworks = new HashSet<string>(ExcludeFrameworksList);
 				sysFrameworks = sysFrameworks.Except(ExcludeFrameworksList).ToArray();
