@@ -131,7 +131,7 @@ public class CleverAdsSolutions : ModuleRules
 		public string ManagerID;
 		public bool TestAdMode;
 		public bool ShippingMode;
-		public string CacheConfigFileName;// = "cas_config_res.casconfig";
+		public string CacheConfigFileName;
 
 		public int RunProcess(string Name, params string[] Args)
 		{
@@ -142,13 +142,14 @@ public class CleverAdsSolutions : ModuleRules
 			// Warning: CocoaPods requires your terminal to be using UTF-8 encoding.
 			info.StandardOutputEncoding = Encoding.UTF8;
 			info.StandardErrorEncoding = Encoding.UTF8;
-			//info.StandardInputEncoding = Encoding.UTF8;
 			info.Environment["LANG"] = "en_US.UTF-8";
-#if UE_5_0_OR_LATER
-			return Utils.RunLocalProcessAndLogOutput(info, Log.Logger);
-#else
-			return Utils.RunLocalProcessAndLogOutput(info);
-#endif
+
+			Process LocalProcess = new Process();
+			LocalProcess.StartInfo = info;
+			LocalProcess.OutputDataReceived += LocalProcessOutput;
+			// Some minor warnings will be received as errors. 
+			LocalProcess.ErrorDataReceived += LocalProcessOutput;
+			return Utils.RunLocalProcess(LocalProcess);
 		}
 
 		public string RunProcessForResult(string Name, params string[] Args)
@@ -156,6 +157,14 @@ public class CleverAdsSolutions : ModuleRules
 			var argsLine = string.Join(" ", Args);
 			LogDebug("Run process: " + Name + " " + argsLine + " ...");
 			return Utils.RunLocalProcessAndReturnStdOut(Name, argsLine);
+		}
+
+		private static void LocalProcessOutput(object Sender, DataReceivedEventArgs Args)
+		{
+			if (Args != null && Args.Data != null)
+			{
+				LogDebug(Args.Data.TrimEnd());
+			}
 		}
 
 		public virtual void ApplyToModule(CleverAdsSolutions Module, ReadOnlyTargetRules Target)
@@ -188,7 +197,7 @@ public class CleverAdsSolutions : ModuleRules
 
 			var ProjectDirRef = DirectoryReference.FromFile(Target.ProjectFile);
 			EngineConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, ProjectDirRef, Target.Platform);
-			
+
 			EngineConfig.TryGetValue(EngineConfigName, "CASAppID", out ManagerID);
 			if (string.IsNullOrEmpty(ManagerID))
 			{
@@ -255,7 +264,7 @@ public class CleverAdsSolutions : ModuleRules
 								GoogleAppId = AppId;
 								LogDebug("Apply Google App ID: " + GoogleAppId);
 							}
-							else
+							else if (FindAdapter("GoogleAds").included)
 							{
 								string Warning = "Configuration for '" + ManagerID + "' is not valid, please contact support for additional information.";
 								if (ShippingMode)
@@ -408,8 +417,6 @@ public class CleverAdsSolutions : ModuleRules
 
 	private class AndroidHandler : BaseHandler
 	{
-		//private const string ConfigRuntimeSettings = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
-
 		public override void ApplyToModule(CleverAdsSolutions module, ReadOnlyTargetRules Target)
 		{
 			module.PublicDependencyModuleNames.Add("Launch"); // Includes Android JNI support
@@ -422,10 +429,6 @@ public class CleverAdsSolutions : ModuleRules
 
 	public class IOSHandler : BaseHandler
 	{
-#pragma warning disable IDE0051
-		private const string ConfigRuntimeSettings = "/Script/IOSRuntimeSettings.IOSRuntimeSettings";
-#pragma warning restore IDE0051
-
 		public string FrameworksPath;
 		public string BridgeFrameworkPath;
 		public List<string> IncludedAdapters = new List<string>();
@@ -437,10 +440,11 @@ public class CleverAdsSolutions : ModuleRules
 
 #if !UE_5_2_OR_LATER
 			// Starting from version 5.2, Unreal Engine no longer utilizes Bitcode in iOS builds.
+			const string ConfigRuntimeSettings = "/Script/IOSRuntimeSettings.IOSRuntimeSettings";
 			bool BuildWithBitcode;
 			if (!EngineConfig.TryGetValue(ConfigRuntimeSettings, "bShipForBitcode", out BuildWithBitcode) || BuildWithBitcode)
 			{
-				CancelBuild("Bitcode is deprecated and no longer required for AppStore. " +
+				CancelBuild("Building with bitcode is no longer supported. " +
 					"Disable Bitcode in iOS Runtime Settings window.");
 			}
 #endif
@@ -493,7 +497,6 @@ public class CleverAdsSolutions : ModuleRules
 				var ConfigCache = XCodeConfig.Read(NativePath);
 				if (ConfigCache != null && ConfigCache.IsSetupReady(this))
 				{
-					LogDebug("Apply XCode Config from cache");
 					ConfigCache.ApplyToModule(Module, this);
 					return;
 				}
@@ -614,7 +617,7 @@ public class CleverAdsSolutions : ModuleRules
 
 	public class XCodeConfig
 	{
-		private const string FILE_NAME = "CASXCConfig.cascache";
+		private const string FILE_NAME = "CASXCConfig.temp";
 
 		public string version;
 		public List<XCodeBundle> bundles = new List<XCodeBundle>();
@@ -673,14 +676,15 @@ public class CleverAdsSolutions : ModuleRules
 
 		public bool IsSetupReady(IOSHandler Handler)
 		{
+			const string LogPrefix = "XCode Config ";
 			if (version != Handler.version)
 			{
-				LogDebug("XCode Config version not mach");
+				LogDebug(LogPrefix + "version not mach");
 				return false;
 			}
 			if (adapters.Length != Handler.IncludedAdapters.Count)
 			{
-				LogDebug("XCode Config adapters not mach");
+				LogDebug(LogPrefix + "adapters not mach");
 				return false;
 			}
 			var readyAdapters = new HashSet<string>(adapters);
@@ -688,7 +692,7 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				if (!readyAdapters.Contains(Handler.IncludedAdapters[i]))
 				{
-					LogDebug("XCode Config " + Handler.IncludedAdapters[i] + " adapter missing");
+					LogDebug(LogPrefix + Handler.IncludedAdapters[i] + " adapter missing");
 					return false;
 				}
 			}
@@ -696,17 +700,18 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				if (!Directory.Exists(Path.Combine(Handler.FrameworksPath, bundle.name + ".framework")))
 				{
-					LogDebug("XCode Config " + bundle.name + ".framework missing");
+					LogDebug(LogPrefix + bundle.name + ".framework missing");
 					return false;
 				}
 				if (!string.IsNullOrEmpty(bundle.bundle)
 					&& !Directory.Exists(Path.Combine(Handler.FrameworksPath, bundle.bundle)))
 				{
-					LogDebug("XCode Config " + bundle.bundle + " missing");
+					LogDebug(LogPrefix + bundle.bundle + " missing");
 					return false;
 				}
 			}
 
+			LogDebug(LogPrefix + "apply from cache");
 			return true;
 		}
 
@@ -768,20 +773,39 @@ public class CleverAdsSolutions : ModuleRules
 				new Framework(IOS_BRIDGE_NAME, Handler.BridgeFrameworkPath)
 			);
 
+			Module.PublicSystemLibraries.AddRange(sysLibs);
+
 			HashSet<string> ExcludeFrameworks = null;
 			List<string> ExcludeFrameworksList;
 			if (Handler.EngineConfig.GetArray(BuildConfigName, BuildConfigExcludeFrameworks, out ExcludeFrameworksList))
 			{
 				ExcludeFrameworks = new HashSet<string>(ExcludeFrameworksList);
-				sysFrameworks = sysFrameworks.Except(ExcludeFrameworksList).ToArray();
-				sysWeakFrameworks = sysWeakFrameworks.Except(ExcludeFrameworksList).ToArray();
+				foreach (var Framework in sysFrameworks)
+				{
+					if (ExcludeFrameworks.Contains(Framework))
+						LogDebug("[Build Config] Excluded System Framework: " + Framework);
+					else
+						Module.PublicFrameworks.Add(Framework);
+				}
+				foreach (var Framework in sysWeakFrameworks)
+				{
+					if (ExcludeFrameworks.Contains(Framework))
+						LogDebug("[Build Config] Excluded Weak Framework: " + Framework);
+					else
+						Module.PublicWeakFrameworks.Add(Framework);
+				}
+			}
+			else
+			{
+				Module.PublicFrameworks.AddRange(sysFrameworks);
+				Module.PublicWeakFrameworks.AddRange(sysWeakFrameworks);
 			}
 
 			foreach (var Framework in bundles)
 			{
 				if (ExcludeFrameworks != null && ExcludeFrameworks.Contains(Framework.name))
 				{
-					LogDebug("[Editor Config] Excluded framework: " + Framework.name);
+					LogDebug("[Build Config] Excluded Additional Framework: " + Framework.name);
 					continue;
 				}
 
@@ -791,10 +815,6 @@ public class CleverAdsSolutions : ModuleRules
 					new Framework(Framework.name, Handler.FrameworksPath, Resources, CopyFramework)
 				);
 			}
-
-			Module.PublicSystemLibraries.AddRange(sysLibs);
-			Module.PublicFrameworks.AddRange(sysFrameworks);
-			Module.PublicWeakFrameworks.AddRange(sysWeakFrameworks);
 
 #if UE_5_0_OR_LATER
 			Module.bEnableObjCAutomaticReferenceCounting = true;
@@ -950,10 +970,7 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				string podPath = Path.Combine(path, POD_EXECUTABLE);
 				if (File.Exists(podPath))
-				{
-					LogDebug("Found CocoaPods tool in " + podPath);
 					return podPath;
-				}
 			}
 			var environment = ReadGemsEnvironment();
 			if (environment != null)
@@ -969,10 +986,7 @@ public class CleverAdsSolutions : ModuleRules
 							var binPath = path.EndsWith("bin") ? path : Path.Combine(path, "bin");
 							var podPath = Path.Combine(binPath, POD_EXECUTABLE);
 							if (File.Exists(podPath))
-							{
-								LogDebug("Found CocoaPods tool in " + podPath);
 								return podPath;
-							}
 						}
 					}
 				}

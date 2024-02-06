@@ -26,5 +26,6 @@ class CLEVERADSSOLUTIONS_API UCASConfigContainer : public UObject {
     UCASDefaultConfig* GetIOS();
 #endif
 
+   public:
     static const UCASDefaultConfig* GetConfig();
 };
