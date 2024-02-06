@@ -13,7 +13,6 @@ using System.Text;
 using System.Xml.Linq;
 using EpicGames.Core;
 using Microsoft.Extensions.Logging;
-using UnrealBuildTool.Rules;
 #else
 using Tools.DotNETCommon;
 #endif
@@ -135,17 +134,17 @@ public class CleverAdsSolutions : ModuleRules
 
 		public int RunProcess(string Name, params string[] Args)
 		{
-			var argsLine = string.Join(" ", Args);
-			LogDebug("Run process: " + Name + " " + argsLine + " ...");
-			var info = new ProcessStartInfo(Name, argsLine);
-			info.WorkingDirectory = NativePath;
+			var ArgsLine = string.Join(" ", Args);
+			LogDebug("Run process: " + Name + " " + ArgsLine + " ...");
+			var Info = new ProcessStartInfo(Name, ArgsLine);
+			Info.WorkingDirectory = NativePath;
 			// Warning: CocoaPods requires your terminal to be using UTF-8 encoding.
-			info.StandardOutputEncoding = Encoding.UTF8;
-			info.StandardErrorEncoding = Encoding.UTF8;
-			info.Environment["LANG"] = "en_US.UTF-8";
+			Info.StandardOutputEncoding = Encoding.UTF8;
+			Info.StandardErrorEncoding = Encoding.UTF8;
+			Info.Environment["LANG"] = "en_US.UTF-8";
 
-			Process LocalProcess = new Process();
-			LocalProcess.StartInfo = info;
+			var LocalProcess = new Process();
+			LocalProcess.StartInfo = Info;
 			LocalProcess.OutputDataReceived += LocalProcessOutput;
 			// Some minor warnings will be received as errors. 
 			LocalProcess.ErrorDataReceived += LocalProcessOutput;
@@ -154,9 +153,9 @@ public class CleverAdsSolutions : ModuleRules
 
 		public string RunProcessForResult(string Name, params string[] Args)
 		{
-			var argsLine = string.Join(" ", Args);
-			LogDebug("Run process: " + Name + " " + argsLine + " ...");
-			return Utils.RunLocalProcessAndReturnStdOut(Name, argsLine);
+			var ArgsLine = string.Join(" ", Args);
+			LogDebug("Run process: " + Name + " " + ArgsLine + " ...");
+			return Utils.RunLocalProcessAndReturnStdOut(Name, ArgsLine);
 		}
 
 		private static void LocalProcessOutput(object Sender, DataReceivedEventArgs Args)
