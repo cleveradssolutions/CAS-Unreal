@@ -644,9 +644,7 @@ public class CleverAdsSolutions : ModuleRules
 				sysWeakFrameworks = xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray()
 			};
 #else
-			var FileName = new FileReference(ConfigPath);
-			string Text = FileReference.ReadAllText(FileName);
-			return fastJSON.JSON.Instance.ToObject<XCodeConfig>(Text);
+			return Json.Deserialize<XCodeConfig>(File.ReadAllText(ConfigPath));
 #endif
 		}
 
@@ -669,7 +667,7 @@ public class CleverAdsSolutions : ModuleRules
 			);
 			xml.Save(ConfigPath);
 #else
-			File.WriteAllText(ConfigPath, fastJSON.JSON.Instance.ToJSON(this));
+			File.WriteAllText(ConfigPath, Json.Serialize(this, JsonSerializeOptions.None));
 #endif
 		}
 
@@ -697,13 +695,13 @@ public class CleverAdsSolutions : ModuleRules
 			}
 			foreach (var bundle in bundles)
 			{
-				if (!Directory.Exists(Path.Combine(Handler.FrameworksPath, bundle.name + ".framework")))
+				if (!Directory.Exists(bundle.GetFrameworkPath(Handler)))
 				{
 					LogDebug(LogPrefix + bundle.name + ".framework missing");
 					return false;
 				}
 				if (!string.IsNullOrEmpty(bundle.bundle)
-					&& !Directory.Exists(Path.Combine(Handler.FrameworksPath, bundle.bundle)))
+					&& !Directory.Exists(bundle.GetResourcesPath(Handler)))
 				{
 					LogDebug(LogPrefix + bundle.bundle + " missing");
 					return false;
@@ -721,48 +719,35 @@ public class CleverAdsSolutions : ModuleRules
 			if (!Directory.Exists(BuildMainDir))
 				CancelBuild("Build XCProject corrupted. Fix errors in console and try again.\n" + BuildMainDir);
 
-			var ActiveFrameworkSet = new HashSet<string>();
 			foreach (var item in FindBundles(".framework", DataPath))
 			{
 				if (item.EndsWith(IOS_FRAMEWORKS_PROJECT + ".framework")) continue;
-				string frameworkName = Path.GetFileNameWithoutExtension(item);
-				LogDebug("Framework found: " + frameworkName);
-				string destination = Path.Combine(Handler.FrameworksPath, frameworkName + ".framework");
-				Directory.Move(item, destination);
-				ActiveFrameworkSet.Add(frameworkName);
+				var bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(item));
+				LogDebug("Framework found: " + bundle.name);
+				Directory.Move(item, bundle.GetFrameworkPath(Handler));
+				bundles.Add(bundle);
 			}
 
 			foreach (var item in FindBundles(".a", DataPath, SkipExt: ".framework"))
 			{
-				string libName = Path.GetFileNameWithoutExtension(item).Substring(3);
-				LogDebug("Library found: " + libName);
-				string destination = Path.Combine(Handler.FrameworksPath, libName + ".framework");
+				var bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(item).Substring(3));
+				LogDebug("Library found: " + bundle.name);
+				string destination = bundle.GetFrameworkPath(Handler);
 				Directory.CreateDirectory(destination);
-				destination = Path.Combine(destination, libName);
-				File.Move(item, destination);
-				ActiveFrameworkSet.Add(libName);
+				File.Move(item, Path.Combine(destination, bundle.name));
+				bundles.Add(bundle);
 			}
 
 			var podsXCConfig = Path.Combine(Handler.NativePath, "Pods", "Target Support Files", "Pods-" + IOS_FRAMEWORKS_PROJECT, "Pods-" + IOS_FRAMEWORKS_PROJECT + ".release.xcconfig");
 			if (!File.Exists(podsXCConfig))
 				CancelBuild("Build XCProject corrupted. Not found required build file: " + podsXCConfig);
-			FindSystemDependencies(ActiveFrameworkSet, podsXCConfig);
+			FindSystemDependencies(podsXCConfig);
 
-			// Call last with removed bundles from ActiveFrameworkSet
 			foreach (var item in FindBundles(".bundle", BuildMainDir))
 			{
-				string bundleName = Path.GetFileName(item);
-				string frameworkName = FindResourcesOwner(bundleName, ActiveFrameworkSet);
-				ActiveFrameworkSet.Remove(frameworkName);
-				LogDebug("Resources found: " + bundleName);
-				string destination = Path.Combine(Handler.FrameworksPath, bundleName);
-				Directory.Move(item, destination);
-				bundles.Add(new XCodeBundle(frameworkName, bundleName));
-			}
-
-			foreach (var item in ActiveFrameworkSet)
-			{
-				bundles.Add(new XCodeBundle(item, ""));
+				var bundle = FindResourcesOwner(Path.GetFileName(item));
+				LogDebug("Resources found: " + bundle.bundle);
+				Directory.Move(item, bundle.GetResourcesPath(Handler));
 			}
 		}
 
@@ -811,7 +796,7 @@ public class CleverAdsSolutions : ModuleRules
 				var Resources = string.IsNullOrEmpty(Framework.bundle) ? null : Framework.bundle;
 				bool CopyFramework = Handler.SupportedDynamicFrameworks.Contains(Framework.name);
 				Module.PublicAdditionalFrameworks.Add(
-					new Framework(Framework.name, Handler.FrameworksPath, Resources, CopyFramework)
+					new Framework(Framework.name, Framework.GetPath(Handler), Resources, CopyFramework)
 				);
 			}
 
@@ -867,22 +852,25 @@ public class CleverAdsSolutions : ModuleRules
 		}
 
 
-		private string FindResourcesOwner(string BundleName, HashSet<string> ActiveFrameworkSet)
+		private XCodeBundle FindResourcesOwner(string BundleName)
 		{
 			if (BundleName.StartsWith("CASBase"))
 				BundleName = "CleverAdsSolutions";
 			if (BundleName.StartsWith("MobileAdsBundle"))
 				BundleName = "YandexMobileAds";
-			foreach (var item in ActiveFrameworkSet)
+			foreach (var item in bundles)
 			{
-				if (BundleName.StartsWith(item))
+				if (BundleName.StartsWith(item.name))
+				{
+					item.bundle = BundleName;
 					return item;
+				}
 			}
 			CancelBuild(BundleName + " is not associated with any framework. Please contact support.");
 			return null;
 		}
 
-		private void FindSystemDependencies(HashSet<string> FrameworkSet, string podsXCConfig)
+		private void FindSystemDependencies(string podsXCConfig)
 		{
 			string[] otherLDFlags = null;
 			using (StreamReader reader = new StreamReader(podsXCConfig))
@@ -903,6 +891,10 @@ public class CleverAdsSolutions : ModuleRules
 			var sysLibs = new List<string>();
 			var sysFrameworks = new HashSet<string>();
 			var sysWeakFrameworks = new List<string>();
+			var FrameworkSet = new HashSet<string>();
+			for (int i = 0; i < bundles.Count; i++)
+				FrameworkSet.Add(bundles[i].name);
+
 			for (int i = 0; i < otherLDFlags.Length; i++)
 			{
 				var lib = otherLDFlags[i].Trim(' ');
@@ -948,10 +940,31 @@ public class CleverAdsSolutions : ModuleRules
 		public string name;
 		public string bundle;
 
-		public XCodeBundle(string name, string bundle)
+		// Serialization constructor
+		public XCodeBundle() { }
+
+		public XCodeBundle(string name)
 		{
 			this.name = name;
-			this.bundle = bundle;
+			bundle = "";
+		}
+
+		public string GetPath(IOSHandler Handler)
+		{
+			return Path.Combine(Handler.FrameworksPath, name);
+		}
+
+		public string GetFrameworkPath(IOSHandler Handler)
+		{
+			var dir = GetPath(Handler);
+			if (!Directory.Exists(dir))
+				Directory.CreateDirectory(dir);
+			return Path.Combine(dir, name + ".framework");
+		}
+
+		public string GetResourcesPath(IOSHandler Handler)
+		{
+			return Path.Combine(Handler.FrameworksPath, name, bundle);
 		}
 	}
 

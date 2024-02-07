@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
 	<init>
-		<log text="CAS.AI UPL Android package modifications"/>
+		<log text="[CAS.AI] UPL Android package modifications"/>
 		<!-- Begin Dynamic Config -->
 		<setString result="GoogleAppId" value="ca-app-pub-3940256099942544~3347511713"/>
 		<setString result="CASConfigResFile" value="cas_settings.json"/>
@@ -186,9 +186,4 @@ dependencies {
 }
 		</insert>
 	</buildGradleAdditions>
-	<gradleProperties>
-		<insert>
-android.useAndroidX=true
-		</insert>
-	</gradleProperties>
 </root>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root>
 	<init>
-		<log text="CAS.AI UPL iOS package modifications" />
+		<log text="[CAS.AI] UPL iOS package modifications" />
 		<!-- Begin Dynamic Config -->
 		<setString result="GoogleAppId" value="ca-app-pub-3940256099942544~1458002511"/>
 		<setString result="CASConfigResFile" value="cas_settings.json"/>
