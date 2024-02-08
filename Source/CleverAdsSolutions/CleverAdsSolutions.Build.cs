@@ -101,14 +101,14 @@ public class CleverAdsSolutions : ModuleRules
 #if UE_5_0_OR_LATER
 		Log.Logger.LogInformation(LogTag + message);
 #else
-		Log.TraceInformation(LOG_PREFIX + message);
+		Log.TraceInformation(LogTag + message);
 #endif
 	}
 
 	private static void LogWarning(string message)
 	{
 		// Logger implementation not support collored warnings
-		//Log.Logger.LogWarning(LOG_PREFIX + message);
+		//Log.Logger.LogWarning(LogTag + message);
 		Log.WriteLineOnce(LogEventType.Warning, LogTag + message);
 	}
 
@@ -303,7 +303,7 @@ public class CleverAdsSolutions : ModuleRules
 		{
 			if (FileReference.Exists(CacheConfigFile))
 			{
-				var Config = FileUtils.ReadAllText(CacheConfigFile);
+				var Config = FileReference.ReadAllText(CacheConfigFile);
 				var AppId = FindPropertyString(Config, "admob_app_id");
 				if (AppId != null && AppId.Contains('~'))
 				{
@@ -662,7 +662,7 @@ public class CleverAdsSolutions : ModuleRules
 				sysWeakFrameworks = xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray()
 			};
 #else
-			return Json.Deserialize<XCodeConfig>(FileUtils.ReadAllText(ConfigPath));
+			return Json.Deserialize<XCodeConfig>(FileReference.ReadAllText(ConfigPath));
 #endif
 		}
 
