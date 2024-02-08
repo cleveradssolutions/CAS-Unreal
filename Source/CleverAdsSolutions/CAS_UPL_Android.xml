@@ -30,6 +30,7 @@
 		<setBoolFromProperty result="IncludeSmaato" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeSmaato" default="false"/>
 		<!-- End Init Mediation -->
 		<setBoolFromProperty result="UseAdvertisingId" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UseAdvertisingId" default="true"/>
+		<setStringFromProperty result="GoogleCustomAppId" ini="Engine" section="CASPluginBuildConfig" property="GoogleAppIdAndroid" default="$S(GoogleAppId)"/>
 	</init>
 	<minimumSDKAPI>
 		<insertValue value="21"/>
@@ -38,7 +39,7 @@
 	<androidManifestUpdates>
 		<setElement result="GoogleAppIdElem" value="meta-data" />
 		<addAttribute tag="$GoogleAppIdElem" name="android:name" value="com.google.android.gms.ads.APPLICATION_ID" />
-		<addAttribute tag="$GoogleAppIdElem" name="android:value" value="$S(GoogleAppId)" />
+		<addAttribute tag="$GoogleAppIdElem" name="android:value" value="$S(GoogleCustomAppId)" />
 		<addElement tag="application" name="GoogleAppIdElem" />
 		<addElements tag="application">
 			<meta-data android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT" android:value="true"/>
