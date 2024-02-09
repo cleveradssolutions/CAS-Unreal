@@ -18,13 +18,13 @@
 #define SIG_VOID__STRING "(Ljava/lang/String;)V"
 #define SIG_VOID__BOOL_STRING "(ZLjava/lang/String;)V"
 #define SIG_VOID__STRING_STRING "(Ljava/lang/String;Ljava/lang/String;)V"
-#define SIG_VOID__STRING_BOOL_BOOL_BOOL_BOOL "(Ljava/lang/String;ZZZZ)V"
+#define SIG_VOID__BOOL_BOOL_BOOL_BOOL "(ZZZZ)V"
 
 FJavaCASBridgeObject::FJavaCASBridgeObject()
     : FJavaClassObject(FName(BRIDGE_CLASS_NAME), SIG_VOID__ACTIVITY, FAndroidApplication::GetGameActivityThis()),
       IsInitializedPlugin(GetClassMethod("isInitializedPlugin", SIG_BOOL__VOID)),
       IsInitializedAds(GetClassMethod("isInitializedAds", SIG_BOOL__VOID)),
-      InitializeMobileAds(GetClassMethod("initializeMobileAds", SIG_VOID__STRING_BOOL_BOOL_BOOL_BOOL)),
+      InitializeMobileAds(GetClassMethod("initializeMobileAds", SIG_VOID__STRING_STRING)),
       GetMobileAdsVersion(GetClassMethod("getMobileAdsVersion", SIG_STRING__VOID)),
       ValidateAdsIntegration(GetClassMethod("validateAdsIntegration", SIG_VOID__VOID)),
       SetVerboseAdsLogs(GetClassMethod("setVerboseAdsLogs", SIG_VOID__BOOL)),
@@ -61,8 +61,8 @@ FJavaCASBridgeObject::FJavaCASBridgeObject()
       ShowAdOnReturnToApp(GetClassMethod("showAdOnReturnToApp", SIG_VOID__VOID)),
       SkipAdOnNextReturnToApp(GetClassMethod("skipAdOnNextReturnToApp", SIG_VOID__VOID)),
       DestroyReturnToAppAd(GetClassMethod("destroyReturnToAppAd", SIG_VOID__VOID)),
+      SetAutoloadFormats(GetClassMethod("setAutoloadFormats", SIG_VOID__BOOL_BOOL_BOOL_BOOL)),
       SetTestAdModeForInit(GetClassMethod("setTestAdModeForInit", SIG_VOID__VOID)),
-      SetUnrealVersion(GetClassMethod("setUnrealVersion", SIG_VOID__STRING)),
       SetInitializationExtras(GetClassMethod("setInitializationExtras", SIG_VOID__STRING_STRING)),
       SetConsentFlowEnabled(GetClassMethod("setConsentFlowEnabled", SIG_VOID__BOOL_STRING)),
       ShowConsentFlow(GetClassMethod("showConsentFlow", SIG_VOID__STRING)),

@@ -56,8 +56,8 @@ class FJavaCASBridgeObject : public FJavaClassObject {
     FJavaClassMethod ShowAdOnReturnToApp;
     FJavaClassMethod SkipAdOnNextReturnToApp;
     FJavaClassMethod DestroyReturnToAppAd;
+    FJavaClassMethod SetAutoloadFormats;
     FJavaClassMethod SetTestAdModeForInit;
-    FJavaClassMethod SetUnrealVersion;
     FJavaClassMethod SetInitializationExtras;
     FJavaClassMethod SetConsentFlowEnabled;
     FJavaClassMethod ShowConsentFlow;

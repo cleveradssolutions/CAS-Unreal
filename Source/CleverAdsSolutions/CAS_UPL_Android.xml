@@ -52,6 +52,11 @@
 			</true>
 		</if>
 		<if condition="UseAdvertisingId">
+			<true>
+				<addElements tag="manifest">
+					<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+				</addElements>
+			</true>
 			<false>
 				<addElements tag="manifest">
 					<uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
