@@ -194,9 +194,7 @@ public class CleverAdsSolutions : ModuleRules
 			if (!File.Exists(UPLFilePath))
 				LostRequiredFile(UPLFilePath);
 
-
-			string ListPlatform = Target.Platform == UnrealTargetPlatform.IOS ? "iOS" : PlatformName;
-			var MediationListFile = FileReference.Combine(NativeDir, "CAS" + ListPlatform + "Mediation.list");
+			var MediationListFile = FileReference.Combine(NativeDir, "CASMediation.list");
 			if (!FileReference.Exists(MediationListFile))
 				LostRequiredFile(MediationListFile.FullName);
 

@@ -14,10 +14,30 @@ _CONFIG_SECTION = '/Script/CleverAdsSolutions.CASDefaultConfig'
 _DEFAULT_GOOGLE_APP_ANDROID = 'ca-app-pub-3940256099942544~3347511713'
 _DEFAULT_GOOGLE_APP_IOS = 'ca-app-pub-3940256099942544~1458002511'
 
-def read_mediation_list_for(platform):
-    with open(os.path.join(rootDir, platform, 'CAS' + platform + 'Mediation.list'), 'r') as file:
-        return json.load(file)
+_ROOT_DIR = os.path.dirname(os.path.abspath(sys.argv[0]))
+_PLUGIN_ROOT_DIR = os.path.abspath(os.path.join(_ROOT_DIR, '..'))
+_PLUGIN_DIR = os.path.join(_PLUGIN_ROOT_DIR, 'CleverAdsSolutions')
+_PLUGIN_MANIFEST = os.path.abspath(os.path.join(_PLUGIN_ROOT_DIR, '..', 'CleverAdsSolutions.uplugin'))
 
+_CONFIG_IOS_DEST = os.path.join(_ROOT_DIR, 'IOS', 'CASMediation.list')
+_BRIDGE_IOS_DEST_DIR = os.path.join(_ROOT_DIR, 'IOS', 'Plugin')
+_SKADNETWORK_DEST = os.path.join(_ROOT_DIR, 'IOS', 'CASSKAdNetworks.txt')
+
+_CONFIG_ANDROID_DEST = os.path.join(_ROOT_DIR, 'Android', 'CASMediation.list')
+_BRIDGE_ANDROID_DEST = os.path.join(_ROOT_DIR, 'Android', 'repository', 'com', 'cleveradssolutions', 'cas-unreal-plugin', 'release', 'cas-unreal-plugin-release.aar')
+
+#REPOS/Unreal-Sample/UEProject/Plugins/CleverAdsSolutions/Source/ThirdParty
+_REPOS_DIR = os.path.abspath(os.path.join(_ROOT_DIR, '..', '..', '..', '..', '..', '..'))
+
+_REPO_IOS_DIR = os.path.join(_REPOS_DIR, 'CAS-Swift')
+_CONFIG_IOS_SOURCE = os.path.join(_REPO_IOS_DIR, 'Release', 'CASiOSMediation.list')
+_BRIDGE_IOS_SOURCE_DIR = os.path.join(_REPO_IOS_DIR, 'libs')
+_SKADNETWORK_SOURCE = os.path.join(_REPO_IOS_DIR, 'PublicSamplesRepo', 'SKAdNetworkCompact.txt')
+
+_REPO_ANDROID_DIR = os.path.join(_REPOS_DIR, 'CAS-Kotlin')
+_CONFIG_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'CASAndroidMediation.list')
+_BRIDGE_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'buildCAS', 'cas-unreal-plugin-release.aar')
+                          
 def applyDynamicConfigDefaults(googleAppId, uplFile):
     uplFile.append('\t\t<setString result="GoogleAppId" value="' + googleAppId + '"/>\n')
     uplFile.append('\t\t<setString result="CASConfigResFile" value="cas_settings.json"/>\n')
@@ -31,18 +51,18 @@ def applyAndroidConfig(mediationArray, uplFile):
             _CONFIG_SECTION+'" property="' + itemName + 
             '" default="false"/>\n'
         )
-        print("[Android] Add init " + itemName)
+        print("[Android] Init " + itemName)
 
 def applyAndroidDependencyItem(line, uplFile):
-    uplFile.append('\t\t<insertValue value="' + line + '" /> <insertNewline/>\n')
+    uplFile.append('\t\t<insertValue value="' + line.replace(':', ',') + '" /> <insertNewline/>\n')
+    print("[Android] Add " + line)
 
 def applyAndroidDependency(mediationArray, uplFile):
     for item in mediationArray:
         itemName = 'Include' + item['name']
         uplFile.append('\t\t<if condition="' + itemName + '"><true>\n')
-        applyAndroidDependencyItem(item['dependency'].replace(':', ',') + item['version'], uplFile)
+        applyAndroidDependencyItem(item['dependency'] + item['version'], uplFile)
         uplFile.append('\t\t</true></if>\n')
-        print("[Android] Add dependency " + itemName)
 
 def update_file(filePath, isScopeHandler):
     result = list()
@@ -63,6 +83,7 @@ def update_file(filePath, isScopeHandler):
 def handle_upl_ios(line, result):
     if "<!-- Begin Dynamic Config" in line:
         applyDynamicConfigDefaults(_DEFAULT_GOOGLE_APP_IOS, result)
+        print('[iOS] Reset dynamic config')
         return True
 
     if "<!-- Begin Copy Dynamic frameworks" in line:
@@ -80,7 +101,7 @@ def handle_upl_ios(line, result):
         result.append("\t\t\t<key>SKAdNetworkItems</key>\n")
         result.append("\t\t\t<array>\n")
         itemsCount = 0
-        with open(os.path.join(rootDir, 'iOS', 'CASSKAdNetworks.txt'), 'r') as file:
+        with open(_SKADNETWORK_DEST, 'r') as file:
             for item in file:
                 result.append("\t\t\t\t<dict>\n")
                 result.append("\t\t\t\t\t<key>SKAdNetworkIdentifier</key>\n")
@@ -88,13 +109,14 @@ def handle_upl_ios(line, result):
                 result.append("\t\t\t\t</dict>\n")
                 itemsCount += 1
         result.append("\t\t\t</array>\n")
-        print("[iOS] Update " + str(itemsCount) + " SKAdNetworkItems")
+        print("[iOS] Updated: " + str(itemsCount) + " SKAdNetworkItems")
         return True
     return False
 
 def handle_upl_android(line, result):
     if "<!-- Begin Dynamic Config" in line:
         applyDynamicConfigDefaults(_DEFAULT_GOOGLE_APP_ANDROID, result)
+        print('[Android] Reset dynamic config')
         return True
 
     elif "<!-- Begin Init Mediation" in line:
@@ -104,8 +126,8 @@ def handle_upl_android(line, result):
 
     elif "<!-- Begin Dependencies" in line:
         applyAndroidDependencyItem("repository $S(PluginDir)/../ThirdParty/Android/repository", result)
-        applyAndroidDependencyItem("com.cleveradssolutions,cas-unreal-plugin,release", result)
-        applyAndroidDependencyItem("com.cleveradssolutions,cas-sdk," + mediation["version"], result)
+        applyAndroidDependencyItem("com.cleveradssolutions:cas-unreal-plugin:release", result)
+        applyAndroidDependencyItem("com.cleveradssolutions:cas-sdk:" + mediation["version"], result)
         applyAndroidDependency(mediation["simple"], result)
         applyAndroidDependency(mediation["adapters"], result)
         return True
@@ -123,17 +145,16 @@ def handle_upl_android(line, result):
         return True
     return False
 
-def archive_embedded_frameworks(name):
-    dir = os.path.join(rootDir, 'IOS', 'Plugin')
+def embed_bridge_framework(name):
     framework = name + '.framework'
     embedded = name + '.embeddedframework'
-    embeddedPath = os.path.join(dir, embedded)
+    embeddedPath = os.path.join(_BRIDGE_IOS_DEST_DIR, embedded)
     embeddedZipPath = embeddedPath + '.zip'
-    sourcePath = os.path.join(rootDir, '..', '..', '..', '..', '..', '..', 'CAS-Swift', 'libs', framework)
+    sourcePath = os.path.join(_BRIDGE_IOS_SOURCE_DIR, framework)
 
     if not os.path.exists(embeddedPath):
         os.mkdir(embeddedPath)
-    if not move_native_lib(sourcePath, os.path.join(embeddedPath, framework)):
+    if not move_source(sourcePath, os.path.join(embeddedPath, framework)):
         if os.path.exists(embeddedPath):
             shutil.rmtree(embeddedPath)
         return
@@ -144,21 +165,12 @@ def archive_embedded_frameworks(name):
     archive = shutil.make_archive(
         base_name=embedded, 
         format='zip',
-        root_dir=dir, 
+        root_dir=_BRIDGE_IOS_DEST_DIR, 
         base_dir=embedded
     )
     shutil.move(archive, embeddedPath + '.zip')
     shutil.rmtree(embeddedPath)
-    print('[iOS] Archived: ' + archive)
-
-def update_uplugin(path):
-    with open(path, 'r') as file:
-        data = json.load(file)
-    data["VersionName"] = mediation["version"]
-
-    with open(path, "w") as file:
-        json.dump(data, file, indent=4, sort_keys=True)
-    print('Plugin version: ' + data["VersionName"])
+    print('[iOS] Updated: ' + os.path.relpath(archive, _PLUGIN_ROOT_DIR))
 
 def handle_window_config_header(line, result):
     if "// Begin Adapters" in line:
@@ -194,6 +206,7 @@ def handle_window_config_header(line, result):
 
             result.append(')\n')
             result.append('\tbool Include' + adapterName + ' = false;\n\n')
+        print('Updated: Default Config window header')
         return True
     return False
 
@@ -219,6 +232,7 @@ def handle_window_config_script(line, result):
         result.append('\t\t} else {\n')
         apply_solutions_config_impl(iosOptimalSolutionContains, iosFamiliesSolutionContains, False, result)
         result.append('\t\t}\n')
+        print('Updated: Default Config window Families Ads')
         return True
     if "// Begin Optimal Ads" in line:
         result.append('\t\tif(ConfigPlatformId == 1) {\n')
@@ -226,55 +240,77 @@ def handle_window_config_script(line, result):
         result.append('\t\t} else {\n')
         apply_solutions_config_impl(iosOptimalSolutionContains, iosFamiliesSolutionContains, True, result)
         result.append('\t\t}\n')
+        print('Updated: Default Config window Optimal Ads')
         return True
     return False
 
-def move_native_lib(source, destination):
+def move_source(source, destination):
     if not os.path.exists(source):
+        print("[!] Source not found: " + source)
         return False
     if os.path.exists(destination):
         os.remove(destination)
     shutil.move(source, destination)
-    print("Updated: " + destination)
+    print("Updated: " + os.path.relpath(destination, _PLUGIN_ROOT_DIR))
     return True
 
-rootDir = os.path.dirname(os.path.abspath(sys.argv[0]))
-pluginRoot = os.path.abspath(os.path.join(rootDir, '..', 'CleverAdsSolutions'))
+def copy_source_file(source, destination):
+    if not os.path.exists(source):
+        print("[!] Source not found: " + source)
+        return False
+    shutil.copyfile(source, destination)
+    print("Updated: " + os.path.relpath(destination, _PLUGIN_ROOT_DIR))
+    return True
 
 iosOptimalSolutionContains = []
 iosFamiliesSolutionContains = []
 androidOptimalSolutionContains = []
 androidFamiliesSolutionContains = []
 
-mediation = read_mediation_list_for('IOS')
+# Update iOS build config
+copy_source_file(_CONFIG_IOS_SOURCE, _CONFIG_IOS_DEST)
+copy_source_file(_SKADNETWORK_SOURCE, _SKADNETWORK_DEST)
+with open(_CONFIG_IOS_DEST, 'r') as file:
+    mediation = json.load(file)
+    
 for solution in mediation['simple']:
     if solution['name'] == 'OptimalAds':
         iosOptimalSolutionContains = set(solution['contains'])
     elif solution['name'] == 'FamiliesAds':
         iosFamiliesSolutionContains = set(solution['contains'])
 
-update_file(os.path.join(pluginRoot, 'CAS_UPL_IOS.xml'), isScopeHandler=handle_upl_ios)
+update_file(os.path.join(_PLUGIN_DIR, 'CAS_UPL_IOS.xml'), 
+            isScopeHandler=handle_upl_ios)
 
-mediation = read_mediation_list_for('Android')
+# Update Android build config
+copy_source_file(_CONFIG_ANDROID_SOURCE, _CONFIG_ANDROID_DEST)
+with open(_CONFIG_ANDROID_DEST, 'r') as file:
+    mediation = json.load(file)
 for solution in mediation['simple']:
     if solution['name'] == 'OptimalAds':
         androidOptimalSolutionContains = set(solution['contains'])
     elif solution['name'] == 'FamiliesAds':
         androidFamiliesSolutionContains = set(solution['contains'])
 
-update_file(os.path.join(pluginRoot, 'CAS_UPL_Android.xml'), isScopeHandler=handle_upl_android)
+update_file(os.path.join(_PLUGIN_DIR, 'CAS_UPL_Android.xml'), 
+            isScopeHandler=handle_upl_android)
 
-# Default Config Window update
-update_file(filePath=os.path.join(pluginRoot, 'Public', 'CASDefaultConfig.h'), 
+# Update Default Config window
+update_file(os.path.join(_PLUGIN_DIR, 'Public', 'CASDefaultConfig.h'), 
             isScopeHandler=handle_window_config_header)
 
-update_file(filePath=os.path.join(pluginRoot, 'Private', 'CASDefaultConfig.cpp'), 
+update_file(os.path.join(_PLUGIN_DIR, 'Private', 'CASDefaultConfig.cpp'), 
             isScopeHandler=handle_window_config_script)
 
-# Native library update
-move_native_lib(source=os.path.join(rootDir, '..', '..', '..', '..', '..', '..', 'CAS-Kotlin', 'buildCAS', 'cas-unreal-plugin-release.aar'),
-                destination=os.path.join(rootDir, 'Android', 'repository', 'com', 'cleveradssolutions', 'cas-unreal-plugin', 'release', 'cas-unreal-plugin-release.aar'))
+# Update Bridge plugins
+move_source(source=_BRIDGE_ANDROID_SOURCE, destination=_BRIDGE_ANDROID_DEST)
 
-archive_embedded_frameworks('CASUnrealBridge')
+embed_bridge_framework('CASUnrealBridge')
 
-update_uplugin(os.path.join(rootDir, '..', '..', 'CleverAdsSolutions.uplugin'))
+# Update Unreal Plugin manifest
+with open(_PLUGIN_MANIFEST, 'r') as file:
+    data = json.load(file)
+data["VersionName"] = mediation["version"]
+with open(_PLUGIN_MANIFEST, "w") as file:
+    json.dump(data, file, indent=4, sort_keys=True)
+print('Plugin version: ' + data["VersionName"])

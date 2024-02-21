@@ -74,57 +74,57 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,3.5.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,3.5.4" /> <insertNewline/>
 		<if condition="IncludeOptimalAds"><true>
-		<insertValue value="com.cleveradssolutions,cas,3.5.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas,3.5.4" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeFamiliesAds"><true>
-		<insertValue value="com.cleveradssolutions,cas-families,3.5.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-families,3.5.4" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCrossPromotion"><true>
-		<insertValue value="com.cleveradssolutions,cas-promo,3.5.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-promo,3.5.4" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeIronSource"><true>
-		<insertValue value="com.cleveradssolutions,ironsource,7.7.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ironsource,7.8.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
 		<insertValue value="com.cleveradssolutions,unity,4.9.2.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeGoogleAds"><true>
-		<insertValue value="com.cleveradssolutions,google,22.6.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,google,22.6.0.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeLiftoffMonetize"><true>
 		<insertValue value="com.cleveradssolutions,vungle,7.1.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeInMobi"><true>
-		<insertValue value="com.cleveradssolutions,inmobi,10.6.2.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,inmobi,10.6.6.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeChartboost"><true>
-		<insertValue value="com.cleveradssolutions,chartboost,9.6.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,chartboost,9.6.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeDTExchange"><true>
-		<insertValue value="com.cleveradssolutions,fyber,8.2.5.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,fyber,8.2.6.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeKidoz"><true>
 		<insertValue value="com.cleveradssolutions,kidoz,9.0.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeSuperAwesome"><true>
-		<insertValue value="com.cleveradssolutions,superawesome,9.3.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,superawesome,9.3.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMintegral"><true>
-		<insertValue value="com.cleveradssolutions,mintegral,16.5.91.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mintegral,16.6.31.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
-		<insertValue value="com.cleveradssolutions,applovin,12.1.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,applovin,12.2.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePangle"><true>
-		<insertValue value="com.cleveradssolutions,pangle,5.7.0.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,pangle,5.7.0.3" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
-		<insertValue value="com.cleveradssolutions,bigo,4.4.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,bigo,4.5.1.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYandexAds"><true>
-		<insertValue value="com.cleveradssolutions,yandex,26.3.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,yandex,26.4.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAudienceNetwork"><true>
 		<insertValue value="com.cleveradssolutions,facebook,6.16.0.1" /> <insertNewline/>
