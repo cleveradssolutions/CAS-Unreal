@@ -26,6 +26,7 @@
 		<setBoolFromProperty result="IncludeYandexAds" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeYandexAds" default="false"/>
 		<setBoolFromProperty result="IncludeAudienceNetwork" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeAudienceNetwork" default="false"/>
 		<setBoolFromProperty result="IncludeMyTarget" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeMyTarget" default="false"/>
+		<setBoolFromProperty result="IncludeMadex" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeMadex" default="false"/>
 		<setBoolFromProperty result="IncludeHyprMX" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeHyprMX" default="false"/>
 		<setBoolFromProperty result="IncludeSmaato" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeSmaato" default="false"/>
 		<!-- End Init Mediation -->
@@ -74,18 +75,18 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,3.5.4" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,3.5.5" /> <insertNewline/>
 		<if condition="IncludeOptimalAds"><true>
-		<insertValue value="com.cleveradssolutions,cas,3.5.4" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas,3.5.5" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeFamiliesAds"><true>
-		<insertValue value="com.cleveradssolutions,cas-families,3.5.4" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-families,3.5.5" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCrossPromotion"><true>
-		<insertValue value="com.cleveradssolutions,cas-promo,3.5.4" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-promo,3.5.5" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeIronSource"><true>
-		<insertValue value="com.cleveradssolutions,ironsource,7.8.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ironsource,7.8.0.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
 		<insertValue value="com.cleveradssolutions,unity,4.9.2.2" /> <insertNewline/>
@@ -112,7 +113,7 @@
 		<insertValue value="com.cleveradssolutions,superawesome,9.3.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMintegral"><true>
-		<insertValue value="com.cleveradssolutions,mintegral,16.6.31.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mintegral,16.6.41.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
 		<insertValue value="com.cleveradssolutions,applovin,12.2.0.0" /> <insertNewline/>
@@ -131,6 +132,9 @@
 		</true></if>
 		<if condition="IncludeMyTarget"><true>
 		<insertValue value="com.cleveradssolutions,mytarget,5.20.0.1" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeMadex"><true>
+		<insertValue value="com.cleveradssolutions,madex,1.1.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeHyprMX"><true>
 		<insertValue value="com.cleveradssolutions,hyprmx,6.2.3.0" /> <insertNewline/>
@@ -170,6 +174,13 @@ allprojects {
 		maven {
 			url = "https://artifact.bytedance.com/repository/pangle"
 			content { it.includeGroup("com.pangle.global") }
+		}
+		maven {
+			url = "https://sdkpkg.sspnet.tech"
+			content {
+				it.includeGroup("sspnet.tech")
+				it.includeGroup("sspnet.tech.adapters")
+			}
 		}
 		maven {
 			url = "https://s3.amazonaws.com/smaato-sdk-releases/"

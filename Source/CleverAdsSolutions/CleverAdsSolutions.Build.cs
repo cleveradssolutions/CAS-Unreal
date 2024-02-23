@@ -129,9 +129,9 @@ public class CleverAdsSolutions : ModuleRules
 
 	public abstract class BaseHandler
 	{
-		public string version;
-		public CASNetwork[] solutions;
-		public CASNetwork[] adapters;
+		public string Version;
+		public CASNetwork[] Solutions;
+		public CASNetwork[] Adapters;
 
 		public ConfigHierarchy EngineConfig;
 
@@ -202,9 +202,9 @@ public class CleverAdsSolutions : ModuleRules
 			Module.AdditionalPropertiesForReceipt.Add(PlatformName + "Plugin", Path.Combine(ModuleDirectoryRelative, UPLFileName));
 
 			JsonObject ConfigJson = JsonObject.Read(MediationListFile);
-			version = ConfigJson.GetStringField("version");
-			solutions = ParseNetworksList(ConfigJson, "simple");
-			adapters = ParseNetworksList(ConfigJson, "adapters");
+			Version = ConfigJson.GetStringField("version");
+			Solutions = ParseNetworksList(ConfigJson, "simple");
+			Adapters = ParseNetworksList(ConfigJson, "adapters");
 
 			var ProjectDirRef = DirectoryReference.FromFile(Target.ProjectFile);
 			EngineConfig = ConfigCache.ReadHierarchy(ConfigHierarchyType.Engine, ProjectDirRef, Target.Platform);
@@ -218,13 +218,13 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				TestAdMode = true;
 			}
-			for (int i = 0; i < solutions.Length; i++)
+			for (int i = 0; i < Solutions.Length; i++)
 			{
-				solutions[i].Configure(EngineConfig);
+				Solutions[i].Configure(EngineConfig);
 			}
-			for (int i = 0; i < adapters.Length; i++)
+			for (int i = 0; i < Adapters.Length; i++)
 			{
-				adapters[i].Configure(EngineConfig);
+				Adapters[i].Configure(EngineConfig);
 			}
 
 			if (string.IsNullOrEmpty(CacheConfigFileName))
@@ -239,17 +239,17 @@ public class CleverAdsSolutions : ModuleRules
 			UpdateUPLFile(UPLFilePath);
 		}
 
-		public CASNetwork FindAdapter(string name)
+		public CASNetwork FindAdapter(string Name)
 		{
-			for (int i = 0; i < solutions.Length; i++)
+			for (int i = 0; i < Solutions.Length; i++)
 			{
-				if (solutions[i].name == name)
-					return solutions[i];
+				if (Solutions[i].Name == Name)
+					return Solutions[i];
 			}
-			for (int i = 0; i < adapters.Length; i++)
+			for (int i = 0; i < Adapters.Length; i++)
 			{
-				if (adapters[i].name == name)
-					return adapters[i];
+				if (Adapters[i].Name == Name)
+					return Adapters[i];
 			}
 			return null;
 		}
@@ -314,7 +314,7 @@ public class CleverAdsSolutions : ModuleRules
 					}
 					return AppId;
 				}
-				if (FindAdapter("GoogleAds").included)
+				if (FindAdapter("GoogleAds").Included)
 				{
 					string Warning = "Configuration for '" + ManagerID + "' is not valid, please contact support for additional information.";
 					if (ShippingMode)
@@ -430,10 +430,10 @@ public class CleverAdsSolutions : ModuleRules
 
 	private class AndroidHandler : BaseHandler
 	{
-		public override void ApplyToModule(CleverAdsSolutions module, ReadOnlyTargetRules Target)
+		public override void ApplyToModule(CleverAdsSolutions Module, ReadOnlyTargetRules Target)
 		{
-			module.PublicDependencyModuleNames.Add("Launch"); // Includes Android JNI support
-			base.ApplyToModule(module, Target);
+			Module.PublicDependencyModuleNames.Add("Launch"); // Includes Android JNI support
+			base.ApplyToModule(Module, Target);
 			string PluginLibrary = Path.Combine(NativeDir.FullName, "repository", "com", "cleveradssolutions", "cas-unreal-plugin", "release", "cas-unreal-plugin-release.aar");
 			if (!File.Exists(PluginLibrary))
 				LostRequiredFile(PluginLibrary);
@@ -485,21 +485,20 @@ public class CleverAdsSolutions : ModuleRules
 			if (!File.Exists(BridgeFrameworkPath))
 				LostRequiredFile(BridgeFrameworkPath);
 
-			for (int i = 0; i < solutions.Length; i++)
+			for (int i = 0; i < Solutions.Length; i++)
 			{
-				if (solutions[i].included)
-					IncludedAdapters.Add(solutions[i].name);
+				if (Solutions[i].Included)
+					IncludedAdapters.Add(Solutions[i].Name);
 			}
-			for (int i = 0; i < adapters.Length; i++)
+			for (int i = 0; i < Adapters.Length; i++)
 			{
-				if (adapters[i].included)
+				if (Adapters[i].Included)
 				{
-					IncludedAdapters.Add(adapters[i].name);
-
-					var embedLib = adapters[i].embedLib;
-					if (!string.IsNullOrEmpty(embedLib))
+					IncludedAdapters.Add(Adapters[i].Name);
+					if (Adapters[i].EmbedPath != null)
 					{
-						SupportedDynamicFrameworks.Add(Path.GetFileNameWithoutExtension(embedLib));
+						foreach (var embedLib in Adapters[i].EmbedPath)
+							SupportedDynamicFrameworks.Add(Path.GetFileNameWithoutExtension(embedLib));
 					}
 				}
 			}
@@ -535,7 +534,7 @@ public class CleverAdsSolutions : ModuleRules
 			FileUtils.CreateDirectoryTree(FrameworksDir);
 
 			var Config = new XCodeConfig();
-			Config.version = version;
+			Config.version = Version;
 			Config.adapters = IncludedAdapters.ToArray();
 
 			CreatePodfile(Config);
@@ -583,14 +582,14 @@ public class CleverAdsSolutions : ModuleRules
 				f.WriteLine("source 'https://github.com/cleveradssolutions/CAS-Specs.git'");
 				f.WriteLine("platform :ios, '" + IOSMinimumVersion + "'");
 				f.WriteLine("use_frameworks! :linkage => :static");
-				f.WriteLine("$cas_version = '" + version + "'");
+				f.WriteLine("$cas_version = '" + Version + "'");
 				f.WriteLine();
 
 				f.WriteLine("target '" + IOSFrameworksName + "' do");
 				f.WriteLine("  pod 'CleverAdsSolutions-Base', $cas_version");
 				for (int i = 0; i < Config.adapters.Length; i++)
 				{
-					f.WriteLine("  pod '" + FindAdapter(Config.adapters[i]).dependency + "', $cas_version");
+					f.WriteLine("  pod '" + FindAdapter(Config.adapters[i]).Libs[0].Name + "', $cas_version");
 				}
 				f.WriteLine("end");
 			}
@@ -598,32 +597,43 @@ public class CleverAdsSolutions : ModuleRules
 		}
 	}
 
+	public class CASLib
+	{
+		public string Name;
+		public string Version;
+
+		public CASLib(JsonObject Json)
+		{
+			Name = Json.GetStringField("name");
+			Version = Json.GetStringField("version");
+		}
+	}
+
 	public class CASNetwork
 	{
-		public bool included = false;
-		public string name;
-		public string version;
-		public string dependency;
-		public string embedLib;
+		public string Name;
+		public string Version;
+		public CASLib[] Libs;
+		public string[] EmbedPath;
+		public bool Included;
 
-		public CASNetwork(string name)
+		public CASNetwork(JsonObject Json)
 		{
-			this.name = name;
-			version = "";
-			dependency = "";
-		}
+			Name = Json.GetStringField("name");
+			Json.TryGetStringField("version", out Version);
+			Json.TryGetStringArrayField("embedPath", out EmbedPath);
 
-		public CASNetwork(JsonObject json)
-		{
-			this.name = json.GetStringField("name");
-			json.TryGetStringField("version", out this.version);
-			json.TryGetStringField("dependency", out this.dependency);
-			json.TryGetStringField("embedLib", out this.embedLib);
+			JsonObject[] RawLibs = Json.GetObjectArrayField("libs");
+			Libs = new CASLib[RawLibs.Length];
+			for (int i = 0; i < RawLibs.Length; i++)
+				Libs[i] = new CASLib(RawLibs[i]);
+
+			Included = false;
 		}
 
 		public void Configure(ConfigHierarchy EngineConfig)
 		{
-			EngineConfig.TryGetValue(EngineConfigSection, "Include" + name, out included);
+			EngineConfig.TryGetValue(EngineConfigSection, "Include" + Name, out Included);
 		}
 	}
 
@@ -644,20 +654,20 @@ public class CleverAdsSolutions : ModuleRules
 			if (!FileReference.Exists(ConfigPath))
 				return null;
 #if UE_5_0_OR_LATER
-			XElement xml = XElement.Load(ConfigPath.FullName);
+			XElement Xml = XElement.Load(ConfigPath.FullName);
 			return new XCodeConfig
 			{
-				version = xml.Attribute("version").Value,
-				bundles = xml.Element("bundles").Elements("bundle").Select(b =>
+				version = Xml.Attribute("version").Value,
+				bundles = Xml.Element("bundles").Elements("bundle").Select(b =>
 					new XCodeBundle(b.Attribute("name").Value)
 					{
 						bundle = b.Attribute("bundle").Value
 					}
 				).ToList(),
-				adapters = xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
-				sysLibs = xml.Element("sysLibs").Elements("lib").Select(e => e.Value).ToArray(),
-				sysFrameworks = xml.Element("sysFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
-				sysWeakFrameworks = xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray()
+				adapters = Xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
+				sysLibs = Xml.Element("sysLibs").Elements("lib").Select(e => e.Value).ToArray(),
+				sysFrameworks = Xml.Element("sysFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
+				sysWeakFrameworks = Xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray()
 			};
 #else
 			return Json.Deserialize<XCodeConfig>(FileReference.ReadAllText(ConfigPath));
@@ -668,7 +678,7 @@ public class CleverAdsSolutions : ModuleRules
 		{
 			var ConfigPath = FileReference.Combine(NativePath, FILE_NAME);
 #if UE_5_0_OR_LATER
-			var xml = new XElement("XCodeConfig",
+			var Xml = new XElement("XCodeConfig",
 				new XAttribute("version", version),
 				new XElement("bundles", bundles.Select(b =>
 					new XElement("bundle",
@@ -681,7 +691,7 @@ public class CleverAdsSolutions : ModuleRules
 				new XElement("sysFrameworks", sysFrameworks.Select(f => new XElement("lib", f))),
 				new XElement("sysWeakFrameworks", sysWeakFrameworks.Select(w => new XElement("lib", w)))
 			);
-			xml.Save(ConfigPath.FullName);
+			Xml.Save(ConfigPath.FullName);
 #else
 			FileReference.WriteAllText(ConfigPath, Json.Serialize(this, JsonSerializeOptions.None));
 #endif
@@ -690,7 +700,7 @@ public class CleverAdsSolutions : ModuleRules
 		public bool IsSetupReady(IOSHandler Handler)
 		{
 			const string LogPrefix = "XCode Config ";
-			if (version != Handler.version)
+			if (version != Handler.Version)
 			{
 				LogDebug(LogPrefix + "version not mach");
 				return false;
@@ -700,26 +710,26 @@ public class CleverAdsSolutions : ModuleRules
 				LogDebug(LogPrefix + "adapters not mach");
 				return false;
 			}
-			var readyAdapters = new HashSet<string>(adapters);
+			var ReadyAdapters = new HashSet<string>(adapters);
 			for (int i = 0; i < Handler.IncludedAdapters.Count; i++)
 			{
-				if (!readyAdapters.Contains(Handler.IncludedAdapters[i]))
+				if (!ReadyAdapters.Contains(Handler.IncludedAdapters[i]))
 				{
 					LogDebug(LogPrefix + Handler.IncludedAdapters[i] + " adapter missing");
 					return false;
 				}
 			}
-			foreach (var bundle in bundles)
+			foreach (var Bundle in bundles)
 			{
-				if (!Directory.Exists(bundle.GetFrameworkPath(Handler)))
+				if (!Directory.Exists(Bundle.GetFrameworkPath(Handler)))
 				{
-					LogDebug(LogPrefix + bundle.name + ".framework missing");
+					LogDebug(LogPrefix + Bundle.name + ".framework missing");
 					return false;
 				}
-				if (!string.IsNullOrEmpty(bundle.bundle)
-					&& !Directory.Exists(bundle.GetResourcesPath(Handler)))
+				if (!string.IsNullOrEmpty(Bundle.bundle)
+					&& !Directory.Exists(Bundle.GetResourcesPath(Handler)))
 				{
-					LogDebug(LogPrefix + bundle.bundle + " missing");
+					LogDebug(LogPrefix + Bundle.bundle + " missing");
 					return false;
 				}
 			}
@@ -735,35 +745,35 @@ public class CleverAdsSolutions : ModuleRules
 			if (!Directory.Exists(BuildMainDir))
 				CancelBuild("Build XCProject corrupted. Fix errors in console and try again.\n" + BuildMainDir);
 
-			foreach (var item in FindBundles(".framework", DataPath))
+			foreach (var Item in FindBundles(".framework", DataPath))
 			{
-				if (item.EndsWith(IOSFrameworksName + ".framework")) continue;
-				var bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(item));
-				LogDebug("Framework found: " + bundle.name);
-				Directory.Move(item, bundle.GetFrameworkPath(Handler));
-				bundles.Add(bundle);
+				if (Item.EndsWith(IOSFrameworksName + ".framework")) continue;
+				var Bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(Item));
+				LogDebug("Framework found: " + Bundle.name);
+				Directory.Move(Item, Bundle.GetFrameworkPath(Handler));
+				bundles.Add(Bundle);
 			}
 
-			foreach (var item in FindBundles(".a", DataPath, SkipExt: ".framework"))
+			foreach (var Item in FindBundles(".a", DataPath, SkipExt: ".framework"))
 			{
-				var bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(item).Substring(3));
-				LogDebug("Library found: " + bundle.name);
-				string destination = bundle.GetFrameworkPath(Handler);
-				Directory.CreateDirectory(destination);
-				File.Move(item, Path.Combine(destination, bundle.name));
-				bundles.Add(bundle);
+				var Bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(Item).Substring(3));
+				LogDebug("Library found: " + Bundle.name);
+				string Destination = Bundle.GetFrameworkPath(Handler);
+				Directory.CreateDirectory(Destination);
+				File.Move(Item, Path.Combine(Destination, Bundle.name));
+				bundles.Add(Bundle);
 			}
 
-			var podsXCConfig = FileReference.Combine(Handler.NativeDir, "Pods", "Target Support Files", "Pods-" + IOSFrameworksName, "Pods-" + IOSFrameworksName + ".release.xcconfig");
-			if (!FileReference.Exists(podsXCConfig))
-				CancelBuild("Build XCProject corrupted. Not found required build file: " + podsXCConfig);
-			FindSystemDependencies(podsXCConfig.FullName);
+			var PodsXCConfig = FileReference.Combine(Handler.NativeDir, "Pods", "Target Support Files", "Pods-" + IOSFrameworksName, "Pods-" + IOSFrameworksName + ".release.xcconfig");
+			if (!FileReference.Exists(PodsXCConfig))
+				CancelBuild("Build XCProject corrupted. Not found required build file: " + PodsXCConfig);
+			FindSystemDependencies(PodsXCConfig.FullName);
 
-			foreach (var item in FindBundles(".bundle", BuildMainDir))
+			foreach (var Item in FindBundles(".bundle", BuildMainDir))
 			{
-				var bundle = FindResourcesOwner(Path.GetFileName(item));
-				LogDebug("Resources found: " + bundle.bundle);
-				Directory.Move(item, bundle.GetResourcesPath(Handler));
+				var Bundle = FindResourcesOwner(Path.GetFileName(Item));
+				LogDebug("Resources found: " + Bundle.bundle);
+				Directory.Move(Item, Bundle.GetResourcesPath(Handler));
 			}
 		}
 
@@ -874,12 +884,12 @@ public class CleverAdsSolutions : ModuleRules
 				BundleName = "CleverAdsSolutions";
 			if (BundleName.StartsWith("MobileAdsBundle"))
 				BundleName = "YandexMobileAds";
-			foreach (var item in bundles)
+			foreach (var Item in bundles)
 			{
-				if (BundleName.StartsWith(item.name))
+				if (BundleName.StartsWith(Item.name))
 				{
-					item.bundle = BundleName;
-					return item;
+					Item.bundle = BundleName;
+					return Item;
 				}
 			}
 			CancelBuild(BundleName + " is not associated with any framework. Please contact support.");
@@ -888,66 +898,66 @@ public class CleverAdsSolutions : ModuleRules
 
 		private void FindSystemDependencies(string PodsXCConfig)
 		{
-			string[] otherLDFlags = null;
+			string[] OtherLDFlags = null;
 			using (var Reader = File.OpenText(PodsXCConfig))
 			{
-				string line;
-				while ((line = Reader.ReadLine()) != null)
+				string Line;
+				while ((Line = Reader.ReadLine()) != null)
 				{
-					if (line.StartsWith("OTHER_LDFLAGS"))
+					if (Line.StartsWith("OTHER_LDFLAGS"))
 					{
-						otherLDFlags = line.Split('-');
+						OtherLDFlags = Line.Split('-');
 						break;
 					}
 				}
 			}
-			if (otherLDFlags == null)
+			if (OtherLDFlags == null)
 				CancelBuild("Build XCProject corrupted. Not found OTHER_LDFLAGS field in build file: " + PodsXCConfig);
 
-			var sysLibs = new List<string>();
-			var sysFrameworks = new HashSet<string>();
-			var sysWeakFrameworks = new List<string>();
+			var SysLibs = new List<string>();
+			var SysFrameworks = new HashSet<string>();
+			var SysWeakFrameworks = new List<string>();
 			var FrameworkSet = new HashSet<string>();
 			for (int i = 0; i < bundles.Count; i++)
 				FrameworkSet.Add(bundles[i].name);
 
-			for (int i = 0; i < otherLDFlags.Length; i++)
+			for (int i = 0; i < OtherLDFlags.Length; i++)
 			{
-				var lib = otherLDFlags[i].Trim(' ');
-				if (lib.StartsWith("l"))
+				var Lib = OtherLDFlags[i].Trim(' ');
+				if (Lib.StartsWith("l"))
 				{
-					lib = lib.Substring(2, lib.Length - 1 - 2);
-					if (!FrameworkSet.Contains(lib))
+					Lib = Lib.Substring(2, Lib.Length - 1 - 2);
+					if (!FrameworkSet.Contains(Lib))
 					{
-						sysLibs.Add(lib);
+						SysLibs.Add(Lib);
 					}
 				}
-				else if (lib.StartsWith("framework"))
+				else if (Lib.StartsWith("framework"))
 				{
 					// Substring name from: '-framework "CleverAdsSolutions"'
 					// 11 = "framework \"".Length
-					lib = lib.Substring(11, lib.Length - 1 - 11);
-					if (!FrameworkSet.Contains(lib))
+					Lib = Lib.Substring(11, Lib.Length - 1 - 11);
+					if (!FrameworkSet.Contains(Lib))
 					{
-						sysFrameworks.Add(lib);
+						SysFrameworks.Add(Lib);
 					}
 				}
 			}
-			for (int i = 0; i < otherLDFlags.Length; i++)
+			for (int i = 0; i < OtherLDFlags.Length; i++)
 			{
-				var lib = otherLDFlags[i].Trim(' ');
-				if (lib.StartsWith("weak_framework"))
+				var Lib = OtherLDFlags[i].Trim(' ');
+				if (Lib.StartsWith("weak_framework"))
 				{
 					// Substring name from: '-weak_framework "AdSupport"'
 					// 16 = "weak_framework \"".Length
-					lib = lib.Substring(16, lib.Length - 1 - 16);
-					if (!FrameworkSet.Contains(lib) && !sysFrameworks.Contains(lib))
-						sysWeakFrameworks.Add(lib);
+					Lib = Lib.Substring(16, Lib.Length - 1 - 16);
+					if (!FrameworkSet.Contains(Lib) && !SysFrameworks.Contains(Lib))
+						SysWeakFrameworks.Add(Lib);
 				}
 			}
-			this.sysLibs = sysLibs.ToArray();
-			this.sysFrameworks = sysFrameworks.ToArray();
-			this.sysWeakFrameworks = sysWeakFrameworks.ToArray();
+			this.sysLibs = SysLibs.ToArray();
+			this.sysFrameworks = SysFrameworks.ToArray();
+			this.sysWeakFrameworks = SysWeakFrameworks.ToArray();
 		}
 	}
 
@@ -972,10 +982,10 @@ public class CleverAdsSolutions : ModuleRules
 
 		public string GetFrameworkPath(IOSHandler Handler)
 		{
-			var dir = GetPath(Handler);
-			if (!Directory.Exists(dir))
-				Directory.CreateDirectory(dir);
-			return Path.Combine(dir, name + ".framework");
+			var Dir = GetPath(Handler);
+			if (!Directory.Exists(Dir))
+				Directory.CreateDirectory(Dir);
+			return Path.Combine(Dir, name + ".framework");
 		}
 
 		public string GetResourcesPath(IOSHandler Handler)
@@ -994,27 +1004,27 @@ public class CleverAdsSolutions : ModuleRules
 				"/usr/local/bin",
 				"/usr/bin",
 			};
-			foreach (string path in SearchPaths)
+			foreach (string Root in SearchPaths)
 			{
-				string podPath = Path.Combine(path, POD_EXECUTABLE);
-				if (File.Exists(podPath))
-					return podPath;
+				string PodPath = Path.Combine(Root, POD_EXECUTABLE);
+				if (File.Exists(PodPath))
+					return PodPath;
 			}
-			var environment = ReadGemsEnvironment();
-			if (environment != null)
+			var Environment = ReadGemsEnvironment();
+			if (Environment != null)
 			{
-				const string executableDir = "EXECUTABLE DIRECTORY";
-				foreach (string environmentVariable in new[] { executableDir, "GEM PATHS" })
+				const string ExecutableDir = "EXECUTABLE DIRECTORY";
+				foreach (string environmentVariable in new[] { ExecutableDir, "GEM PATHS" })
 				{
-					List<string> paths;
-					if (environment.TryGetValue(environmentVariable, out paths))
+					List<string> Paths;
+					if (Environment.TryGetValue(environmentVariable, out Paths))
 					{
-						foreach (var path in paths)
+						foreach (var Root in Paths)
 						{
-							var binPath = path.EndsWith("bin") ? path : Path.Combine(path, "bin");
-							var podPath = Path.Combine(binPath, POD_EXECUTABLE);
-							if (File.Exists(podPath))
-								return podPath;
+							var BinPath = Root.EndsWith("bin") ? Root : Path.Combine(Root, "bin");
+							var PodPath = Path.Combine(BinPath, POD_EXECUTABLE);
+							if (File.Exists(PodPath))
+								return PodPath;
 						}
 					}
 				}
@@ -1024,56 +1034,51 @@ public class CleverAdsSolutions : ModuleRules
 			return POD_EXECUTABLE;
 		}
 
-		/// <summary>
-		/// Read the Gems environment.
-		/// </summary>
-		/// <returns>Dictionary of environment properties or null if there was a problem reading
-		/// the environment.</returns>
 		private static Dictionary<string, List<string>> ReadGemsEnvironment()
 		{
 			int ExitCode;
-			var result = Utils.RunLocalProcessAndReturnStdOut("gem", "environment", out ExitCode);
+			var Result = Utils.RunLocalProcessAndReturnStdOut("gem", "environment", out ExitCode);
 			if (ExitCode != 0) return null;
 			// gem environment outputs YAML for all config variables.  Perform some very rough YAML
 			// parsing to get the environment into a usable form.
-			var gemEnvironment = new Dictionary<string, List<string>>();
-			const string listItemPrefix = "- ";
-			int previousIndentSize = 0;
-			List<string> currentList = null;
-			char[] listToken = new char[] { ':' };
-			foreach (var line in result.Split(new char[] { '\r', '\n' }))
+			var GEMEnvironment = new Dictionary<string, List<string>>();
+			const string ListItemPrefix = "- ";
+			int PreviousIndentSize = 0;
+			List<string> CurrentList = null;
+			char[] ListToken = new char[] { ':' };
+			foreach (var Line in Result.Split(new char[] { '\r', '\n' }))
 			{
-				var trimmedLine = line.Trim();
-				var indentSize = line.Length - trimmedLine.Length;
-				if (indentSize < previousIndentSize) currentList = null;
+				var TrimmedLine = Line.Trim();
+				var IndentSize = Line.Length - TrimmedLine.Length;
+				if (IndentSize < PreviousIndentSize) CurrentList = null;
 
-				if (trimmedLine.StartsWith(listItemPrefix))
+				if (TrimmedLine.StartsWith(ListItemPrefix))
 				{
-					trimmedLine = trimmedLine.Substring(listItemPrefix.Length).Trim();
-					if (currentList == null)
+					TrimmedLine = TrimmedLine.Substring(ListItemPrefix.Length).Trim();
+					if (CurrentList == null)
 					{
-						var tokens = trimmedLine.Split(listToken);
-						currentList = new List<string>();
-						gemEnvironment[tokens[0].Trim()] = currentList;
-						var value = tokens.Length == 2 ? tokens[1].Trim() : null;
-						if (!string.IsNullOrEmpty(value))
+						var Vokens = TrimmedLine.Split(ListToken);
+						CurrentList = new List<string>();
+						GEMEnvironment[Vokens[0].Trim()] = CurrentList;
+						var Value = Vokens.Length == 2 ? Vokens[1].Trim() : null;
+						if (!string.IsNullOrEmpty(Value))
 						{
-							currentList.Add(value);
-							currentList = null;
+							CurrentList.Add(Value);
+							CurrentList = null;
 						}
 					}
-					else if (indentSize >= previousIndentSize)
+					else if (IndentSize >= PreviousIndentSize)
 					{
-						currentList.Add(trimmedLine);
+						CurrentList.Add(TrimmedLine);
 					}
 				}
 				else
 				{
-					currentList = null;
+					CurrentList = null;
 				}
-				previousIndentSize = indentSize;
+				PreviousIndentSize = IndentSize;
 			}
-			return gemEnvironment;
+			return GEMEnvironment;
 		}
 	}
 }

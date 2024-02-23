@@ -128,7 +128,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
 	bool IncludeUnityAds = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include GoogleAds/AdMob", EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
 	bool IncludeGoogleAds = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
@@ -161,19 +161,22 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
 	bool IncludeBigo = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (ToolTip = "Yandex Metrica will also be added to the app", EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
 	bool IncludeYandexAds = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include AudienceNetwork/Meta", ToolTip = "Required implementation of `Data processing options for Users in California`", EditCondition = "!IncludeOptimalAds"))
 	bool IncludeAudienceNetwork = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (ToolTip = "Focused on CIS region only"))
 	bool IncludeMyTarget = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include HyprMX (beta)"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Madex (beta)", ToolTip = "Focused on CIS region only"))
+	bool IncludeMadex = false;
+
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include HyprMX (beta)", ToolTip = "Focused on USA region only"))
 	bool IncludeHyprMX = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Smaato (beta)"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Smaato (beta)", ToolTip = "Support Banner only"))
 	bool IncludeSmaato = false;
 
     // End Adapters - autogeneration tag

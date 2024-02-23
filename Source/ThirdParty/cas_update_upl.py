@@ -30,12 +30,12 @@ _BRIDGE_ANDROID_DEST = os.path.join(_ROOT_DIR, 'Android', 'repository', 'com', '
 _REPOS_DIR = os.path.abspath(os.path.join(_ROOT_DIR, '..', '..', '..', '..', '..', '..'))
 
 _REPO_IOS_DIR = os.path.join(_REPOS_DIR, 'CAS-Swift')
-_CONFIG_IOS_SOURCE = os.path.join(_REPO_IOS_DIR, 'Release', 'CASiOSMediation.list')
+_CONFIG_IOS_SOURCE = os.path.join(_REPO_IOS_DIR, 'Release', 'CASMediation.list')
 _BRIDGE_IOS_SOURCE_DIR = os.path.join(_REPO_IOS_DIR, 'libs')
 _SKADNETWORK_SOURCE = os.path.join(_REPO_IOS_DIR, 'PublicSamplesRepo', 'SKAdNetworkCompact.txt')
 
 _REPO_ANDROID_DIR = os.path.join(_REPOS_DIR, 'CAS-Kotlin')
-_CONFIG_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'CASAndroidMediation.list')
+_CONFIG_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'CASMediation.list')
 _BRIDGE_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'buildCAS', 'cas-unreal-plugin-release.aar')
                           
 def applyDynamicConfigDefaults(googleAppId, uplFile):
@@ -61,7 +61,8 @@ def applyAndroidDependency(mediationArray, uplFile):
     for item in mediationArray:
         itemName = 'Include' + item['name']
         uplFile.append('\t\t<if condition="' + itemName + '"><true>\n')
-        applyAndroidDependencyItem(item['dependency'] + item['version'], uplFile)
+        mainLib = item['libs'][0]
+        applyAndroidDependencyItem(mainLib['name'] + mainLib['version'], uplFile)
         uplFile.append('\t\t</true></if>\n')
 
 def update_file(filePath, isScopeHandler):
@@ -84,17 +85,6 @@ def handle_upl_ios(line, result):
     if "<!-- Begin Dynamic Config" in line:
         applyDynamicConfigDefaults(_DEFAULT_GOOGLE_APP_IOS, result)
         print('[iOS] Reset dynamic config')
-        return True
-
-    if "<!-- Begin Copy Dynamic frameworks" in line:
-        for adapter in mediation["adapters"]:
-            if "embedLib" in adapter:
-                framework = os.path.splitext(os.path.basename(adapter["embedLib"]))[0]
-                tempLocation = '/Frameworks/' + framework + '.framework'
-                srcPath = '$S(PluginDir)/../ThirdParty/iOS' + tempLocation
-                dstPath = '$S(BuildDir)' + tempLocation
-                result.append('\t\t<copyDir dst="' + dstPath + '" src="' + srcPath + '" />\n')
-                print("[iOS] Add dynamic: " + dstPath)
         return True
 
     if "<!-- Begin SKAdNetworkItems" in line:
@@ -137,9 +127,16 @@ def handle_upl_android(line, result):
             if 'source' in item:
                 result.append('\t\tmaven {\n')
                 result.append('\t\t\turl = "' + item['source'] + '"\n')
-                if 'depsSDK' in item:
-                    depGroup = item['depsSDK'][0]['name'].split(':')[0]
+                libs = item['libs']
+                if len(libs) == 2:
+                    depGroup = libs[1]['name'].split(':')[0]
                     result.append('\t\t\tcontent { it.includeGroup("' + depGroup + '") }\n')
+                elif len(libs) > 2:
+                    result.append('\t\t\tcontent {\n')
+                    for lib in libs[1:]:
+                        depGroup = lib['name'].split(':')[0]
+                        result.append('\t\t\t\tit.includeGroup("' + depGroup + '")\n')
+                    result.append('\t\t\t}\n')
                 result.append('\t\t}\n')
                 print('[Android] Add maven repository: ' + item['source'])
         return True
@@ -178,32 +175,39 @@ def handle_window_config_header(line, result):
             adapterName = adapter['name']
             result.append('\tUPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation"')
 
-            # 16 - beta bit flag
-            if (adapter['labels'] & 16) == 16:
-                result.append(', meta = (DisplayName = "Include ' + adapterName + ' (beta)")')
-            else:
-                includeOptimalIOS = adapterName in iosOptimalSolutionContains
-                includeFamiliesIOS = adapterName in iosFamiliesSolutionContains
-                includeOptimalAndroid = adapterName in androidOptimalSolutionContains
-                includeFamiliesAndroid = adapterName in androidFamiliesSolutionContains
-                if includeOptimalIOS or includeFamiliesIOS or includeOptimalAndroid or includeFamiliesAndroid:
-                    conditions = []
-                    if includeOptimalIOS and includeOptimalAndroid:
-                        conditions.append("!IncludeOptimalAds")
-                    elif includeOptimalIOS:
-                        conditions.append("!IncludeOptimalAds || ConfigPlatformId != 2")
-                    elif includeOptimalAndroid:
-                        conditions.append("!IncludeOptimalAds || ConfigPlatformId != 1")
+            meta = []
+            if (adapter['labels'] & 16) == 16:  # 16 - beta bit flag
+                meta.append('DisplayName = "Include ' + adapterName + ' (beta)"')
+            elif 'altName' in adapter:
+                meta.append('DisplayName = "Include ' + adapterName + '/' + adapter['altName']  + '"')
+            if 'comment' in adapter:
+                meta.append('ToolTip = "' + adapter['comment'] + '"')
+                
+            includeOptimalIOS = adapterName in iosOptimalSolutionContains
+            includeFamiliesIOS = adapterName in iosFamiliesSolutionContains
+            includeOptimalAndroid = adapterName in androidOptimalSolutionContains
+            includeFamiliesAndroid = adapterName in androidFamiliesSolutionContains
+            if includeOptimalIOS or includeFamiliesIOS or includeOptimalAndroid or includeFamiliesAndroid:
+                conditions = []
+                if includeOptimalIOS and includeOptimalAndroid:
+                    conditions.append("!IncludeOptimalAds")
+                elif includeOptimalIOS:
+                    conditions.append("!IncludeOptimalAds || ConfigPlatformId != 2")
+                elif includeOptimalAndroid:
+                    conditions.append("!IncludeOptimalAds || ConfigPlatformId != 1")
 
-                    if includeFamiliesIOS and includeFamiliesAndroid:
-                        conditions.append("!IncludeFamiliesAds")
-                    elif includeFamiliesIOS:
-                        conditions.append("!IncludeFamiliesAds || ConfigPlatformId != 2")
-                    elif includeFamiliesAndroid:
-                        conditions.append("!IncludeFamiliesAds || ConfigPlatformId != 1")
-                        
-                    result.append(', meta = (EditCondition = "' + " && ".join(conditions) + '")')
-
+                if includeFamiliesIOS and includeFamiliesAndroid:
+                    conditions.append("!IncludeFamiliesAds")
+                elif includeFamiliesIOS:
+                    conditions.append("!IncludeFamiliesAds || ConfigPlatformId != 2")
+                elif includeFamiliesAndroid:
+                    conditions.append("!IncludeFamiliesAds || ConfigPlatformId != 1")
+                    
+                meta.append('EditCondition = "' + ' && '.join(conditions) + '"')
+            
+            if meta:
+                result.append(', meta = (' + ', '.join(meta)  + ')')
+                
             result.append(')\n')
             result.append('\tbool Include' + adapterName + ' = false;\n\n')
         print('Updated: Default Config window header')
