@@ -30,7 +30,7 @@ _BRIDGE_ANDROID_DEST = os.path.join(_ROOT_DIR, 'Android', 'repository', 'com', '
 _REPOS_DIR = os.path.abspath(os.path.join(_ROOT_DIR, '..', '..', '..', '..', '..', '..'))
 
 _REPO_IOS_DIR = os.path.join(_REPOS_DIR, 'CAS-Swift')
-_CONFIG_IOS_SOURCE = os.path.join(_REPO_IOS_DIR, 'Release', 'CASMediation.list')
+_CONFIG_IOS_SOURCE = os.path.join(_REPO_IOS_DIR, 'CASMediation.list')
 _BRIDGE_IOS_SOURCE_DIR = os.path.join(_REPO_IOS_DIR, 'libs')
 _SKADNETWORK_SOURCE = os.path.join(_REPO_IOS_DIR, 'PublicSamplesRepo', 'SKAdNetworkCompact.txt')
 
