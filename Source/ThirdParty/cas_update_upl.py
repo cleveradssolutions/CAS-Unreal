@@ -126,6 +126,7 @@ def handle_upl_android(line, result):
         for item in mediation['adapters']:
             if 'source' in item:
                 result.append('\t\tmaven {\n')
+                result.append('\t\t\tname = "' + item['name'] + 'AdsRepo"\n')
                 result.append('\t\t\turl = "' + item['source'] + '"\n')
                 libs = item['libs']
                 if len(libs) == 2:
