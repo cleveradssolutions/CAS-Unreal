@@ -1,5 +1,7 @@
 // Copyright CleverAdsSolutions LTD, CAS.AI. All Rights Reserved.
 
+#define USE_ENGNIE_INTERMEDIATE
+
 using UnrealBuildTool;
 using System;
 using System.IO;
@@ -479,7 +481,11 @@ public class CleverAdsSolutions : ModuleRules
 			// Same as <copy file> in UPL.xml
 			//Module.AdditionalBundleResources.Add(new BundleResource(GetResourcesFilePath()));
 
+#if USE_ENGNIE_INTERMEDIATE
+			FrameworksDir = new DirectoryReference(Path.Combine(Module.EngineDirectory, "Intermediate", "UnzippedFrameworks"));
+#else
 			FrameworksDir = DirectoryReference.Combine(NativeDir, "Frameworks");
+#endif
 
 			BridgeFrameworkPath = Path.Combine(NativeDir.FullName, "Plugin", IOSBridgeName + ".embeddedframework.zip");
 			if (!File.Exists(BridgeFrameworkPath))
@@ -530,8 +536,10 @@ public class CleverAdsSolutions : ModuleRules
 			var PodfileLock = FileReference.Combine(NativeDir, "Podfile.lock");
 			FileUtils.ForceDeleteFile(PodfileLock);
 			FileUtils.ForceDeleteDirectory(BuildDir);
+#if !USE_ENGNIE_INTERMEDIATE
 			FileUtils.ForceDeleteDirectory(FrameworksDir);
 			FileUtils.CreateDirectoryTree(FrameworksDir);
+#endif
 
 			var Config = new XCodeConfig();
 			Config.version = Version;
@@ -721,7 +729,7 @@ public class CleverAdsSolutions : ModuleRules
 			}
 			foreach (var Bundle in bundles)
 			{
-				if (!Directory.Exists(Bundle.GetFrameworkPath(Handler)))
+				if (!Directory.Exists(Bundle.GetFrameworkPath(Handler, false)))
 				{
 					LogDebug(LogPrefix + Bundle.name + ".framework missing");
 					return false;
@@ -750,7 +758,7 @@ public class CleverAdsSolutions : ModuleRules
 				if (Item.EndsWith(IOSFrameworksName + ".framework")) continue;
 				var Bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(Item));
 				LogDebug("Framework found: " + Bundle.name);
-				Directory.Move(Item, Bundle.GetFrameworkPath(Handler));
+				Directory.Move(Item, Bundle.GetFrameworkPath(Handler, true));
 				bundles.Add(Bundle);
 			}
 
@@ -758,7 +766,7 @@ public class CleverAdsSolutions : ModuleRules
 			{
 				var Bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(Item).Substring(3));
 				LogDebug("Library found: " + Bundle.name);
-				string Destination = Bundle.GetFrameworkPath(Handler);
+				string Destination = Bundle.GetFrameworkPath(Handler, true);
 				Directory.CreateDirectory(Destination);
 				File.Move(Item, Path.Combine(Destination, Bundle.name));
 				bundles.Add(Bundle);
@@ -811,6 +819,15 @@ public class CleverAdsSolutions : ModuleRules
 				Module.PublicWeakFrameworks.AddRange(sysWeakFrameworks);
 			}
 
+			bool UseAdvertisingId = true;
+			if (!Handler.EngineConfig.TryGetValue(EngineConfigSection, "UseAdvertisingId", out UseAdvertisingId) || UseAdvertisingId)
+			{
+				if (Array.IndexOf(sysFrameworks, "AdSupport") > -1)
+					Module.PublicFrameworks.Add("AdSupport");
+				if (Array.IndexOf(sysFrameworks, "AppTrackingTransparency") > -1)
+					Module.PublicFrameworks.Add("AppTrackingTransparency");
+			}
+
 			foreach (var Framework in bundles)
 			{
 				if (ExcludeFrameworks != null && ExcludeFrameworks.Contains(Framework.name))
@@ -826,7 +843,7 @@ public class CleverAdsSolutions : ModuleRules
 				);
 			}
 
-#if UE_5_0_OR_LATER
+#if UE_5_2_OR_LATER
 			Module.bEnableObjCAutomaticReferenceCounting = true;
 #endif
 
@@ -880,13 +897,20 @@ public class CleverAdsSolutions : ModuleRules
 
 		private XCodeBundle FindResourcesOwner(string BundleName)
 		{
+			string findName = BundleName;
 			if (BundleName.StartsWith("CASBase"))
-				BundleName = "CleverAdsSolutions";
-			if (BundleName.StartsWith("MobileAdsBundle"))
-				BundleName = "YandexMobileAds";
+				findName = "CleverAdsSolutions";
+			if (BundleName.StartsWith("MobileAds"))
+			{
+				if (BundleName == "MobileAdsBundle.bundle")
+					findName = "YandexMobileAds";
+				else if (BundleName == "MobileAdsCorePrivacyInfo.bundle")
+					findName = "CASYandexAds"; //Use adapter framework for second bundle
+			}
+
 			foreach (var Item in bundles)
 			{
-				if (BundleName.StartsWith(Item.name))
+				if (findName.StartsWith(Item.name))
 				{
 					Item.bundle = BundleName;
 					return Item;
@@ -977,20 +1001,32 @@ public class CleverAdsSolutions : ModuleRules
 
 		public string GetPath(IOSHandler Handler)
 		{
+			// FrameworkRules.Path = "FrameworkName.embeddedframework.zip"
+			// Path.Combine(Module.EngineDirectory, "Intermediate", "UnzippedFrameworks", FrameworkRules.Name, Path.GetFileNameWithoutExtension(FrameworkRules.Path))
+#if USE_ENGNIE_INTERMEDIATE
+			return Path.Combine(Handler.FrameworksDir.FullName, name, name + ".embeddedframework");
+#else
 			return Path.Combine(Handler.FrameworksDir.FullName, name);
+#endif
 		}
 
-		public string GetFrameworkPath(IOSHandler Handler)
+		public string GetFrameworkPath(IOSHandler Handler, bool Create)
 		{
-			var Dir = GetPath(Handler);
-			if (!Directory.Exists(Dir))
-				Directory.CreateDirectory(Dir);
+			string Dir = GetPath(Handler);
+			if (Create)
+			{
+#if USE_ENGNIE_INTERMEDIATE
+				FileUtils.ForceDeleteDirectory(Path.GetDirectoryName(Dir));
+#endif
+				if (!Directory.Exists(Dir))
+					Directory.CreateDirectory(Dir);
+			}
 			return Path.Combine(Dir, name + ".framework");
 		}
 
 		public string GetResourcesPath(IOSHandler Handler)
 		{
-			return Path.Combine(Handler.FrameworksDir.FullName, name, bundle);
+			return Path.Combine(GetPath(Handler), bundle);
 		}
 	}
 

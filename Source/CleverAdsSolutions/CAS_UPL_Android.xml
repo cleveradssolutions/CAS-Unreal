@@ -75,69 +75,69 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,3.5.6" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,3.6.0" /> <insertNewline/>
 		<if condition="IncludeOptimalAds"><true>
-		<insertValue value="com.cleveradssolutions,cas,3.5.6" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas,3.6.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeFamiliesAds"><true>
-		<insertValue value="com.cleveradssolutions,cas-families,3.5.6" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-families,3.6.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCrossPromotion"><true>
-		<insertValue value="com.cleveradssolutions,cas-promo,3.5.6" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-promo,3.6.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeIronSource"><true>
-		<insertValue value="com.cleveradssolutions,ironsource,7.8.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ironsource,7.9.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
-		<insertValue value="com.cleveradssolutions,unity,4.9.3.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,unity,4.10.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeGoogleAds"><true>
-		<insertValue value="com.cleveradssolutions,google,22.6.0.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,google,23.0.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeLiftoffMonetize"><true>
-		<insertValue value="com.cleveradssolutions,vungle,7.1.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,vungle,7.3.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeInMobi"><true>
-		<insertValue value="com.cleveradssolutions,inmobi,10.6.6.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,inmobi,10.6.7.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeChartboost"><true>
-		<insertValue value="com.cleveradssolutions,chartboost,9.6.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,chartboost,9.7.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeDTExchange"><true>
 		<insertValue value="com.cleveradssolutions,fyber,8.2.6.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeKidoz"><true>
-		<insertValue value="com.cleveradssolutions,kidoz,9.1.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,kidoz,9.1.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeSuperAwesome"><true>
 		<insertValue value="com.cleveradssolutions,superawesome,9.3.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMintegral"><true>
-		<insertValue value="com.cleveradssolutions,mintegral,16.6.41.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mintegral,16.6.61.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
-		<insertValue value="com.cleveradssolutions,applovin,12.2.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,applovin,12.3.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePangle"><true>
-		<insertValue value="com.cleveradssolutions,pangle,5.7.0.6" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,pangle,5.8.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
-		<insertValue value="com.cleveradssolutions,bigo,4.5.1.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,bigo,4.6.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYandexAds"><true>
-		<insertValue value="com.cleveradssolutions,yandex,26.4.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,yandex,26.4.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAudienceNetwork"><true>
-		<insertValue value="com.cleveradssolutions,facebook,6.16.0.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,facebook,6.17.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMyTarget"><true>
-		<insertValue value="com.cleveradssolutions,mytarget,5.20.0.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mytarget,5.20.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMadex"><true>
-		<insertValue value="com.cleveradssolutions,madex,1.2.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,madex,1.2.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeHyprMX"><true>
-		<insertValue value="com.cleveradssolutions,hyprmx,6.2.3.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,hyprmx,6.2.3.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeSmaato"><true>
 		<insertValue value="com.cleveradssolutions,smaato,22.0.2.1" /> <insertNewline/>
@@ -157,25 +157,31 @@ allprojects {
 	repositories {
 		<!-- Begin Repos -->
 		maven {
+			name = "IronSourceAdsRepo"
 			url = "https://android-sdk.is.com/"
 			content { it.includeGroup("com.ironsource.sdk") }
 		}
 		maven {
+			name = "ChartboostAdsRepo"
 			url = "https://cboost.jfrog.io/artifactory/chartboost-ads/"
 			content { it.includeGroup("com.chartboost") }
 		}
 		maven {
+			name = "SuperAwesomeAdsRepo"
 			url = "https://aa-sdk.s3-eu-west-1.amazonaws.com/android_repo"
 			content { it.includeGroup("tv.superawesome.sdk.publisher") }
 		}
 		maven {
+			name = "MintegralAdsRepo"
 			url = "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea"
 		}
 		maven {
+			name = "PangleAdsRepo"
 			url = "https://artifact.bytedance.com/repository/pangle"
 			content { it.includeGroup("com.pangle.global") }
 		}
 		maven {
+			name = "MadexAdsRepo"
 			url = "https://sdkpkg.sspnet.tech"
 			content {
 				it.includeGroup("sspnet.tech")
@@ -183,6 +189,7 @@ allprojects {
 			}
 		}
 		maven {
+			name = "SmaatoAdsRepo"
 			url = "https://s3.amazonaws.com/smaato-sdk-releases/"
 			content { it.includeGroup("com.smaato.android.sdk") }
 		}
@@ -196,10 +203,6 @@ dependencies {
 	implementation "com.google.android.gms:play-services-games:[17.0.0,)"
 	implementation "com.google.android.gms:play-services-nearby:[16.0.0,)"
 	implementation "com.google.android.gms:play-services-plus:[16.0.0,)"
-
-	// Workaround to migrate Kotlin 1.8.0 since it no longer supports JVM targets 1.6 and 1.7
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:[1.8.0,)"
-	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:[1.8.0,)"
 }
 		</insert>
 	</buildGradleAdditions>

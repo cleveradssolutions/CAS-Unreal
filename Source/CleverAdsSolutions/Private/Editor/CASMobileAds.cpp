@@ -80,7 +80,9 @@ FString UCASMobileAds::GetMobileAdsVersion() {
 
 void UCASMobileAds::ValidateAdsIntegration() {}
 
-void UCASMobileAds::SetVerboseAdsLogs(bool Enabled) {}
+void UCASMobileAds::SetVerboseAdsLogs(bool Enabled) {
+    CAS_LOG_D("Setting Verbose Ads Logs to %s", CAS_BOOL_TO_STR(Enabled));
+}
 
 void UCASMobileAds::SetAdsMuted(bool Mute) { CAS_LOG_D("Setting Mute Ad sounds to %s", CAS_BOOL_TO_STR(Mute)) }
 
@@ -110,6 +112,10 @@ void UCASMobileAds::SetUserAgeForAds(int UserAge) { CAS_LOG_D("Setting User Age 
 void UCASMobileAds::SetUserGenderForAds(ECASGender UserGender) {
     FString GenderStr = UEnum::GetValueAsString(UserGender);
     CAS_LOG_D("Setting User Gender to %s", *GenderStr);
+}
+
+void UCASMobileAds::SetUserLocationCollectionForAds(bool Enabled) {
+    CAS_LOG_D("Setting User Location collection to %s", CAS_BOOL_TO_STR(Enabled));
 }
 
 void UCASMobileAds::SetMetaDataProcessingOptions(ECASUserCCPAStatus MetaOptions) {

@@ -138,6 +138,10 @@ void UCASMobileAds::SetUserGenderForAds(ECASGender UserGender) {
     GetBridge()->CallMethod<void>(GetBridge()->SetUserGenderForAds, static_cast<int>(UserGender));
 }
 
+void UCASMobileAds::SetUserLocationCollectionForAds(bool Enabled) {
+    GetBridge()->CallMethod<void>(GetBridge()->SetLocationCollectionEnabled, Enabled);
+}
+
 void UCASMobileAds::SetMetaDataProcessingOptions(ECASUserCCPAStatus MetaOptions) {
     GetBridge()->CallMethod<void>(GetBridge()->SetMetaDataProcessingOptions, static_cast<int>(MetaOptions));
 }

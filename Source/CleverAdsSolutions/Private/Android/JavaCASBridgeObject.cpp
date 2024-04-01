@@ -35,6 +35,7 @@ FJavaCASBridgeObject::FJavaCASBridgeObject()
       SetUserOptOutSaleForAds(GetClassMethod("setUserOptOutSaleForAds", SIG_VOID__INT)),
       SetUserAgeForAds(GetClassMethod("setUserAgeForAds", SIG_VOID__INT)),
       SetUserGenderForAds(GetClassMethod("setUserGenderForAds", SIG_VOID__INT)),
+      SetLocationCollectionEnabled(GetClassMethod("setLocationCollectionEnabled", SIG_BOOL__VOID)),
       SetMetaDataProcessingOptions(GetClassMethod("setMetaDataProcessingOptions", SIG_VOID__INT)),
       IsBannerAdReady(GetClassMethod("isBannerAdReady", SIG_BOOL__VOID)),
       LoadBannerAd(GetClassMethod("loadBannerAd", SIG_VOID__INT)),

@@ -130,6 +130,10 @@ void UCASMobileAds::SetUserGenderForAds(ECASGender UserGender) {
     [[CASUBridge shared] setUserGenderForAds:static_cast<int>(UserGender)];
 }
 
+void UCASMobileAds::SetUserLocationCollectionForAds(bool Enabled) {
+    [[CASUBridge shared] setUserLocationCollectionForAds:Enabled];
+}
+
 void UCASMobileAds::SetMetaDataProcessingOptions(ECASUserCCPAStatus MetaOptions) {
     [[CASUBridge shared] setMetaDataProcessingOptions:static_cast<int>(MetaOptions)];
 }

@@ -41,8 +41,8 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     static void ValidateAdsIntegration();
 
     /**
-     * The enabled Debug Mode will display a lot of useful information for debugging about the states of the sdk with tag CAS.
-     * Disabling Debug Mode may improve application performance.
+     * The enabled Debug Mode will display a lot of useful information for debugging about the states of the sdk with
+     * tag CAS. Disabling Debug Mode may improve application performance.
      *
      * Disabled by default.
      */
@@ -103,11 +103,29 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void SetUserOptOutSaleForAds(ECASUserCCPAStatus CCPAStatus);
 
+    /**
+     * Set targeting to user’s age
+     * Limitation: 1-99 and 0 is 'unknown'
+     */
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void SetUserAgeForAds(int UserAge);
 
+    /**
+     * Set targeting to user’s gender
+     */
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void SetUserGenderForAds(ECASGender UserGender);
+
+    /**
+     * Collect from the device the latitude and longitude coordinated truncated to the
+     * hundredths decimal place.
+     * Collect only if your application already has the relevant end-user permissions.
+     * Does not collect if the target audience is children.
+     *
+     * Disabled by default.
+     */
+    UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
+    static void SetUserLocationCollectionForAds(bool Enabled);
 
     /**
      * Meta Audience Network Data Processing Options for US Users
@@ -261,7 +279,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Present loaded interstitial.
-     * Subscribe to events: 
+     * Subscribe to events:
      * OnInterstitialAdDisplayed, OnInterstitialAdDismissed, OnInterstitialAdShowFailed, OnInterstitialAdClicked
      * Blueprints allowed with same function name.
      */
@@ -306,7 +324,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Present loaded rewarded ad.
-     * Subscribe to events: OnRewardedAdEarnedReward, 
+     * Subscribe to events: OnRewardedAdEarnedReward,
      * OnRewardedAdDisplayed, OnRewardedAdDismissed, OnRewardedAdShowFailed, OnRewardedAdClicked
      * Blueprints allowed with same function name.
      */
@@ -322,7 +340,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     /**
      * The Return Ads which is displayed when the user returns to your application
      * after a certain period of time.
-     * Subscribe to events: 
+     * Subscribe to events:
      * OnReturnToAppAdDisplayed, OnReturnToAppAdDismissed, OnReturnToAppAdShowFailed, OnReturnToAppAdClicked
      * Blueprints allowed with same function name.
      */

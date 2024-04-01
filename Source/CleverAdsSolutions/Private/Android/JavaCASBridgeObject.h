@@ -30,6 +30,7 @@ class FJavaCASBridgeObject : public FJavaClassObject {
     FJavaClassMethod SetUserOptOutSaleForAds;
     FJavaClassMethod SetUserAgeForAds;
     FJavaClassMethod SetUserGenderForAds;
+    FJavaClassMethod SetLocationCollectionEnabled;
     FJavaClassMethod SetMetaDataProcessingOptions;
     FJavaClassMethod IsBannerAdReady;
     FJavaClassMethod LoadBannerAd;
