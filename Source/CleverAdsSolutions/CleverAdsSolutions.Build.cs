@@ -779,8 +779,10 @@ public class CleverAdsSolutions : ModuleRules
 
 			foreach (var Item in FindBundles(".bundle", BuildMainDir))
 			{
-				var Bundle = FindResourcesOwner(Path.GetFileName(Item));
-				LogDebug("Resources found: " + Bundle.bundle);
+				var Resource = Path.GetFileName(Item);
+				var Bundle = FindResourcesOwner(Resource);
+				Bundle.bundle = Resource;
+				LogDebug("Resources found: " + Resource);
 				Directory.Move(Item, Bundle.GetResourcesPath(Handler));
 			}
 		}
@@ -897,24 +899,38 @@ public class CleverAdsSolutions : ModuleRules
 
 		private XCodeBundle FindResourcesOwner(string BundleName)
 		{
-			string findName = BundleName;
-			if (BundleName.StartsWith("CASBase"))
-				findName = "CleverAdsSolutions";
-			if (BundleName.StartsWith("MobileAds"))
+			string frameworkName = null;
+			switch (BundleName)
 			{
-				if (BundleName == "MobileAdsBundle.bundle")
-					findName = "YandexMobileAds";
-				else if (BundleName == "MobileAdsCorePrivacyInfo.bundle")
-					findName = "CASYandexAds"; //Use adapter framework for second bundle
+				case "CASBaseResources.bundle":
+					frameworkName = "CleverAdsSolutions";
+					break;
+				case "PrivacyInfo.bundle":
+					frameworkName = "KidozSDK";
+					break;
+				case "MobileAdsBundle.bundle":
+					frameworkName = "YandexMobileAds";
+					break;
+				case "MobileAdsCorePrivacyInfo.bundle":
+					frameworkName = "CASYandexAds"; //Use adapter framework for second bundle
+					break;
+				default:
+					// Typically the bundle name starts with the framework name.
+					break;
+			}
+			if (frameworkName != null)
+			{
+				foreach (var Item in bundles)
+				{
+					if (frameworkName == Item.name)
+						return Item;
+				}
 			}
 
 			foreach (var Item in bundles)
 			{
-				if (findName.StartsWith(Item.name))
-				{
-					Item.bundle = BundleName;
+				if (BundleName.StartsWith(Item.name))
 					return Item;
-				}
 			}
 			CancelBuild(BundleName + " is not associated with any framework. Please contact support.");
 			return null;
