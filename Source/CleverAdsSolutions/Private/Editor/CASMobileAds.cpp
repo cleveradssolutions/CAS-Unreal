@@ -41,6 +41,12 @@ void CASUEventCallback(int adType, int callback, int error) {
     AsyncTask(ENamedThreads::GameThread, [=]() { CASInternal::HandleEventCallback(adType, callback, error); });
 }
 
+void CASInternal::ShowConsentFlow(bool ifRequired) {
+    CAS_LOG_D("Manual Show Consent Flow with Privacy Policy: %s", *UCASConfigContainer::GetConfig()->PrivacyPolicyURL);
+    CASUEventCallback(kCASUType_MANAGER, kCASUCallback_CONSENT_FLOW_DISMISSED,
+                      static_cast<int>(ECASConsentFlowStatus::Unavailable));
+}
+
 // MARK: General
 bool UCASMobileAds::IsInitializedAds() { return Initialized; }
 
@@ -87,10 +93,6 @@ void UCASMobileAds::SetVerboseAdsLogs(bool Enabled) {
 void UCASMobileAds::SetAdsMuted(bool Mute) { CAS_LOG_D("Setting Mute Ad sounds to %s", CAS_BOOL_TO_STR(Mute)) }
 
 void UCASMobileAds::SetTrialAdFreeInterval(int interval) {}
-
-void UCASMobileAds::ShowAdConsentFlow() {
-    CAS_LOG_D("Manual Show Consent Flow with Privacy Policy: %s", *UCASConfigContainer::GetConfig()->PrivacyPolicyURL);
-}
 
 void UCASMobileAds::SetUserAudienceForAds(ECASAudience Audience) {
     FString AudienceStr = UEnum::GetValueAsString(Audience);

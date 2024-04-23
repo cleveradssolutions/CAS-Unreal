@@ -14,6 +14,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
     UCASDefaultConfig()
         : CASAppID(TEXT("demo")),
           TestAdsMode(true),
+          UserDebugGeography(ECASUserDebugGeography::EEA),
           Audience(ECASAudience::NotChildren),
           AutoConsentFlow(true),
           UseAdvertisingId(true),
@@ -59,6 +60,15 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
               Category = "Integration",
               meta = (NoElementDuplicate, ToolTip = "List of test devices to show tests ads to"))
     TArray<FString> TestDeviceIds;
+
+    UPROPERTY(
+        Config,
+        EditDefaultsOnly,
+        Category = "Integration",
+        meta =
+            (ToolTip =
+                 "Sets the debug geography for testing purposes. Note that debug settings only work with TestAdsMode enabled or for TestDeviceIds."))
+    ECASUserDebugGeography UserDebugGeography;
 
     // MARK: Privacy Config
    public:

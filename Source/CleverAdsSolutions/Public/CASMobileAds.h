@@ -13,14 +13,28 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     // MARK: General
    public:
     static FOnCASInitializedDelegate OnAdsInitialized;
+
+    /**
+     * The event is fired after the consent form is dismissed.
+     * If consent is not required, the event is fired immediately.
+     * Same event as the `OnConsentFlowResult` one.
+     */
     static FOnCASCallbackDelegate OnConsentFlowDismissed;
+
+    /**
+     * The event is fired after the consent form is dismissed.
+     * If consent is not required, the event is fired immediately.
+     * Same event as the `OnConsentFlowDismissed` one.
+     * The `FCASConsentFlowStatus` with which the form is dismissed will be passed to the event argument.
+     */
+    static FOnCASConsentFlowCallbackDelegate OnConsentFlowResult;
 
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads", meta = (ExpandBoolAsExecs = "ReturnValue"))
     static bool IsInitializedAds();
 
     /**
      * Initialize mobile Ads once per session.
-     * Subscribe to OnAdsInitialized event
+     * Subscribe to `OnAdsInitialized` event
      */
     static void InitializeMobileAds();
 
@@ -72,8 +86,18 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     static void SetTrialAdFreeInterval(int interval);
 
     /**
-     * Manual start the dialog, and display it on screen.
-     * Subscribe to OnConsentFlowDismissed event
+     * Shows the consent form only if it is required and the user has not responded previously.
+     * If the consent status is required, the SDK loads a form and immediately presents it.
+     * Subscribe to `OnConsentFlowDismissed` or `OnConsentFlowResult` event.
+     */
+    static void ShowAdConsentFlowIfRequired();
+
+    /**
+     * Force shows the form to modify user  consent at any time.
+     *
+     * When a user interacts with your UI element, call function to show the form
+     * so the user can update their privacy options at any time.
+     * Subscribe to `OnConsentFlowDismissed` or `OnConsentFlowResult` event.
      */
     static void ShowAdConsentFlow();
 
@@ -88,7 +112,6 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     /**
      * Sets Consent Flag in GDPR and Other Regions
      * Use it if you are using your own or a third-party party consent mechanism.
-     * @param ConsentStatus - User Consent Status
      */
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void SetUserConsentForAds(ECASUserConsentStatus ConsentStatus);
@@ -98,7 +121,6 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
      * If a user does NOT opt out of interest-based advertising, set the OptInSale
      * flag If a user does opt out of interest-based advertising, set the
      * OptOutSale flag
-     * @param CCPAStatus - User CCPA Status
      */
     UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
     static void SetUserOptOutSaleForAds(ECASUserCCPAStatus CCPAStatus);
@@ -134,9 +156,9 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
      * privacy regulations. To utilize this feature, you must proactively enable Limited Data Use.
      *
      * Set native the `FBAdSettings.setDataProcessingOptions` flag values:
-     * - ECASUserCCPAStatus::OptInSale ([] empty) - To explicitly not enable Limited Data Use (LDU) mode
-     * - ECASUserCCPAStatus::OptOutSale (['LDU'], 0, 0) - To enable LDU mode using geolocation
-     * - ECASUserCCPAStatus::Undefined - Do nothing
+     * - `ECASUserCCPAStatus::OptInSale` ([] empty) - To explicitly not enable Limited Data Use (LDU) mode
+     * - `ECASUserCCPAStatus::OptOutSale` (['LDU'], 0, 0) - To enable LDU mode using geolocation
+     * - `ECASUserCCPAStatus::Undefined` - Do nothing
      *
      * Attention: Flag will be applied before CAS Initialization only.
      *
@@ -266,7 +288,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Start loading an interstitial.
-     * Subscribe to OnInterstitialAdLoaded and OnInterstitialAdLoadFailed events.
+     * Subscribe to `OnInterstitialAdLoaded` and `OnInterstitialAdLoadFailed` events.
      * Blueprints allowed with same function name.
      */
     static void LoadInterstitialAd();
@@ -280,7 +302,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     /**
      * Present loaded interstitial.
      * Subscribe to events:
-     * OnInterstitialAdDisplayed, OnInterstitialAdDismissed, OnInterstitialAdShowFailed, OnInterstitialAdClicked
+     * `OnInterstitialAdDisplayed`, `OnInterstitialAdDismissed`, `OnInterstitialAdShowFailed`, OnInterstitialAdClicked`
      * Blueprints allowed with same function name.
      */
     static void ShowInterstitialAd();
@@ -311,7 +333,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Start loading a rewarded ad.
-     * Subscribe to events: OnRewardedAdLoaded, OnRewardedAdLoadFailed.
+     * Subscribe to events: `OnRewardedAdLoaded`, `OnRewardedAdLoadFailed`.
      * Blueprints allowed with same function name.
      */
     static void LoadRewardedAd();
@@ -324,8 +346,8 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
 
     /**
      * Present loaded rewarded ad.
-     * Subscribe to events: OnRewardedAdEarnedReward,
-     * OnRewardedAdDisplayed, OnRewardedAdDismissed, OnRewardedAdShowFailed, OnRewardedAdClicked
+     * Subscribe to events: `OnRewardedAdEarnedReward`,
+     * `OnRewardedAdDisplayed`, `OnRewardedAdDismissed`, `OnRewardedAdShowFailed`, `OnRewardedAdClicked`
      * Blueprints allowed with same function name.
      */
     static void ShowRewardedAd();
@@ -341,7 +363,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
      * The Return Ads which is displayed when the user returns to your application
      * after a certain period of time.
      * Subscribe to events:
-     * OnReturnToAppAdDisplayed, OnReturnToAppAdDismissed, OnReturnToAppAdShowFailed, OnReturnToAppAdClicked
+     * `OnReturnToAppAdDisplayed`, `OnReturnToAppAdDismissed`, `OnReturnToAppAdShowFailed`, `OnReturnToAppAdClicked`
      * Blueprints allowed with same function name.
      */
     static void ShowAdOnReturnToApp();

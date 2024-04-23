@@ -98,6 +98,21 @@ public class CleverAdsSolutions : ModuleRules
 		}
 	}
 
+	private static string OverrideIOSResourceBundle(string BundleName)
+	{
+		switch (BundleName)
+		{
+			case "CASBaseResources.bundle": return "CleverAdsSolutions.bundle";
+			case "PrivacyInfo.bundle": return "KidozSDK.bundle";
+			case "MobileAdsBundle.bundle": return "YandexMobileAds.bundle";
+			case "YandexMobileAds_PrivacyInfo.bundle": return "CASYandexAds.bundle"; //Use adapter framework for second bundle
+			case "Fyber_Marketplace_SDK.bundle": return "IASDKCore.bundle";
+			case "VungleAds.bundle": return "VungleAdsSDK.bundle";
+			case "Resources.bundle": return "SmaatoSDKInAppBidding.bundle";
+			default: return BundleName; // Typically the bundle name starts with the framework name.
+		}
+	}
+
 	private static void LogDebug(string message)
 	{
 #if UE_5_0_OR_LATER
@@ -542,8 +557,8 @@ public class CleverAdsSolutions : ModuleRules
 #endif
 
 			var Config = new XCodeConfig();
-			Config.version = Version;
-			Config.adapters = IncludedAdapters.ToArray();
+			Config.Version = Version;
+			Config.Adapters = IncludedAdapters.ToArray();
 
 			CreatePodfile(Config);
 
@@ -558,7 +573,14 @@ public class CleverAdsSolutions : ModuleRules
 
 			Config.FindDependencies(this, BuildDir);
 			Config.ApplyToModule(Module, this);
-			Config.Save(NativeDir);
+			try
+			{
+				Config.Save(NativeDir);
+			}
+			catch (Exception e)
+			{
+				LogWarning(e.ToString());
+			}
 
 			RunProcess(PodTool, "deintegrate");
 			FileUtils.ForceDeleteDirectory(XCWorkspacePath);
@@ -595,9 +617,9 @@ public class CleverAdsSolutions : ModuleRules
 
 				f.WriteLine("target '" + IOSFrameworksName + "' do");
 				f.WriteLine("  pod 'CleverAdsSolutions-Base', $cas_version");
-				for (int i = 0; i < Config.adapters.Length; i++)
+				for (int i = 0; i < Config.Adapters.Length; i++)
 				{
-					f.WriteLine("  pod '" + FindAdapter(Config.adapters[i]).Libs[0].Name + "', $cas_version");
+					f.WriteLine("  pod '" + FindAdapter(Config.Adapters[i]).Libs[0].Name + "', $cas_version");
 				}
 				f.WriteLine("end");
 			}
@@ -649,12 +671,12 @@ public class CleverAdsSolutions : ModuleRules
 	{
 		private const string FILE_NAME = "CASXCConfig.temp";
 
-		public string version;
-		public List<XCodeBundle> bundles = new List<XCodeBundle>();
-		public string[] adapters;
-		public string[] sysLibs;
-		public string[] sysFrameworks;
-		public string[] sysWeakFrameworks;
+		public string Version;
+		public List<XCodeBundle> Frameworks = new List<XCodeBundle>();
+		public string[] Adapters;
+		public string[] SysLibs;
+		public string[] SysFrameworks;
+		public string[] SysWeakFrameworks;
 
 		public static XCodeConfig Read(DirectoryReference NativePath)
 		{
@@ -665,17 +687,17 @@ public class CleverAdsSolutions : ModuleRules
 			XElement Xml = XElement.Load(ConfigPath.FullName);
 			return new XCodeConfig
 			{
-				version = Xml.Attribute("version").Value,
-				bundles = Xml.Element("bundles").Elements("bundle").Select(b =>
+				Version = Xml.Attribute("version").Value,
+				Frameworks = Xml.Element("bundles").Elements("bundle").Select(b =>
 					new XCodeBundle(b.Attribute("name").Value)
 					{
 						bundle = b.Attribute("bundle").Value
 					}
 				).ToList(),
-				adapters = Xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
-				sysLibs = Xml.Element("sysLibs").Elements("lib").Select(e => e.Value).ToArray(),
-				sysFrameworks = Xml.Element("sysFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
-				sysWeakFrameworks = Xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray()
+				Adapters = Xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
+				SysLibs = Xml.Element("sysLibs").Elements("lib").Select(e => e.Value).ToArray(),
+				SysFrameworks = Xml.Element("sysFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
+				SysWeakFrameworks = Xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray()
 			};
 #else
 			return Json.Deserialize<XCodeConfig>(FileReference.ReadAllText(ConfigPath));
@@ -687,17 +709,17 @@ public class CleverAdsSolutions : ModuleRules
 			var ConfigPath = FileReference.Combine(NativePath, FILE_NAME);
 #if UE_5_0_OR_LATER
 			var Xml = new XElement("XCodeConfig",
-				new XAttribute("version", version),
-				new XElement("bundles", bundles.Select(b =>
+				new XAttribute("version", Version),
+				new XElement("bundles", Frameworks.Select(b =>
 					new XElement("bundle",
 						new XAttribute("name", b.name),
 						new XAttribute("bundle", b.bundle)
 					)
 				)),
-				new XElement("adapters", adapters.Select(a => new XElement("adapter", a))),
-				new XElement("sysLibs", sysLibs.Select(l => new XElement("lib", l))),
-				new XElement("sysFrameworks", sysFrameworks.Select(f => new XElement("lib", f))),
-				new XElement("sysWeakFrameworks", sysWeakFrameworks.Select(w => new XElement("lib", w)))
+				new XElement("adapters", Adapters.Select(a => new XElement("adapter", a))),
+				new XElement("sysLibs", SysLibs.Select(l => new XElement("lib", l))),
+				new XElement("sysFrameworks", SysFrameworks.Select(f => new XElement("lib", f))),
+				new XElement("sysWeakFrameworks", SysWeakFrameworks.Select(w => new XElement("lib", w)))
 			);
 			Xml.Save(ConfigPath.FullName);
 #else
@@ -708,17 +730,17 @@ public class CleverAdsSolutions : ModuleRules
 		public bool IsSetupReady(IOSHandler Handler)
 		{
 			const string LogPrefix = "XCode Config ";
-			if (version != Handler.Version)
+			if (Version != Handler.Version)
 			{
 				LogDebug(LogPrefix + "version not mach");
 				return false;
 			}
-			if (adapters.Length != Handler.IncludedAdapters.Count)
+			if (Adapters.Length != Handler.IncludedAdapters.Count)
 			{
 				LogDebug(LogPrefix + "adapters not mach");
 				return false;
 			}
-			var ReadyAdapters = new HashSet<string>(adapters);
+			var ReadyAdapters = new HashSet<string>(Adapters);
 			for (int i = 0; i < Handler.IncludedAdapters.Count; i++)
 			{
 				if (!ReadyAdapters.Contains(Handler.IncludedAdapters[i]))
@@ -727,7 +749,7 @@ public class CleverAdsSolutions : ModuleRules
 					return false;
 				}
 			}
-			foreach (var Bundle in bundles)
+			foreach (var Bundle in Frameworks)
 			{
 				if (!Directory.Exists(Bundle.GetFrameworkPath(Handler, false)))
 				{
@@ -759,7 +781,7 @@ public class CleverAdsSolutions : ModuleRules
 				var Bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(Item));
 				LogDebug("Framework found: " + Bundle.name);
 				Directory.Move(Item, Bundle.GetFrameworkPath(Handler, true));
-				bundles.Add(Bundle);
+				Frameworks.Add(Bundle);
 			}
 
 			foreach (var Item in FindBundles(".a", DataPath, SkipExt: ".framework"))
@@ -769,7 +791,7 @@ public class CleverAdsSolutions : ModuleRules
 				string Destination = Bundle.GetFrameworkPath(Handler, true);
 				Directory.CreateDirectory(Destination);
 				File.Move(Item, Path.Combine(Destination, Bundle.name));
-				bundles.Add(Bundle);
+				Frameworks.Add(Bundle);
 			}
 
 			var PodsXCConfig = FileReference.Combine(Handler.NativeDir, "Pods", "Target Support Files", "Pods-" + IOSFrameworksName, "Pods-" + IOSFrameworksName + ".release.xcconfig");
@@ -779,11 +801,21 @@ public class CleverAdsSolutions : ModuleRules
 
 			foreach (var Item in FindBundles(".bundle", BuildMainDir))
 			{
-				var Resource = Path.GetFileName(Item);
-				var Bundle = FindResourcesOwner(Resource);
-				Bundle.bundle = Resource;
-				LogDebug("Resources found: " + Resource);
-				Directory.Move(Item, Bundle.GetResourcesPath(Handler));
+				var Resource = OverrideIOSResourceBundle(Path.GetFileName(Item));
+
+				foreach (var Framework in Frameworks)
+				{
+					if (Resource.StartsWith(Framework.name))
+					{
+						Framework.bundle = Resource;
+						LogDebug("Resources found: " + Resource);
+						Directory.Move(Item, Framework.GetResourcesPath(Handler));
+						Resource = null;
+						break;
+					}
+				}
+				if (Resource != null)
+					CancelBuild(Resource + " is not associated with any framework. Please contact support.");
 			}
 		}
 
@@ -793,21 +825,21 @@ public class CleverAdsSolutions : ModuleRules
 				new Framework(IOSBridgeName, Handler.BridgeFrameworkPath)
 			);
 
-			Module.PublicSystemLibraries.AddRange(sysLibs);
+			Module.PublicSystemLibraries.AddRange(SysLibs);
 
 			HashSet<string> ExcludeFrameworks = null;
 			List<string> ExcludeFrameworksList;
 			if (Handler.EngineConfig.GetArray(BuildConfigSection, BuildConfigExcludeFrameworks, out ExcludeFrameworksList))
 			{
 				ExcludeFrameworks = new HashSet<string>(ExcludeFrameworksList);
-				foreach (var Framework in sysFrameworks)
+				foreach (var Framework in SysFrameworks)
 				{
 					if (ExcludeFrameworks.Contains(Framework))
 						LogDebug("[Build Config] Excluded System Framework: " + Framework);
 					else
 						Module.PublicFrameworks.Add(Framework);
 				}
-				foreach (var Framework in sysWeakFrameworks)
+				foreach (var Framework in SysWeakFrameworks)
 				{
 					if (ExcludeFrameworks.Contains(Framework))
 						LogDebug("[Build Config] Excluded Weak Framework: " + Framework);
@@ -817,20 +849,20 @@ public class CleverAdsSolutions : ModuleRules
 			}
 			else
 			{
-				Module.PublicFrameworks.AddRange(sysFrameworks);
-				Module.PublicWeakFrameworks.AddRange(sysWeakFrameworks);
+				Module.PublicFrameworks.AddRange(SysFrameworks);
+				Module.PublicWeakFrameworks.AddRange(SysWeakFrameworks);
 			}
 
 			bool UseAdvertisingId = true;
 			if (!Handler.EngineConfig.TryGetValue(EngineConfigSection, "UseAdvertisingId", out UseAdvertisingId) || UseAdvertisingId)
 			{
-				if (Array.IndexOf(sysFrameworks, "AdSupport") > -1)
+				if (Array.IndexOf(SysFrameworks, "AdSupport") > -1)
 					Module.PublicFrameworks.Add("AdSupport");
-				if (Array.IndexOf(sysFrameworks, "AppTrackingTransparency") > -1)
+				if (Array.IndexOf(SysFrameworks, "AppTrackingTransparency") > -1)
 					Module.PublicFrameworks.Add("AppTrackingTransparency");
 			}
 
-			foreach (var Framework in bundles)
+			foreach (var Framework in Frameworks)
 			{
 				if (ExcludeFrameworks != null && ExcludeFrameworks.Contains(Framework.name))
 				{
@@ -896,46 +928,6 @@ public class CleverAdsSolutions : ModuleRules
 			}
 		}
 
-
-		private XCodeBundle FindResourcesOwner(string BundleName)
-		{
-			string frameworkName = null;
-			switch (BundleName)
-			{
-				case "CASBaseResources.bundle":
-					frameworkName = "CleverAdsSolutions";
-					break;
-				case "PrivacyInfo.bundle":
-					frameworkName = "KidozSDK";
-					break;
-				case "MobileAdsBundle.bundle":
-					frameworkName = "YandexMobileAds";
-					break;
-				case "MobileAdsCorePrivacyInfo.bundle":
-					frameworkName = "CASYandexAds"; //Use adapter framework for second bundle
-					break;
-				default:
-					// Typically the bundle name starts with the framework name.
-					break;
-			}
-			if (frameworkName != null)
-			{
-				foreach (var Item in bundles)
-				{
-					if (frameworkName == Item.name)
-						return Item;
-				}
-			}
-
-			foreach (var Item in bundles)
-			{
-				if (BundleName.StartsWith(Item.name))
-					return Item;
-			}
-			CancelBuild(BundleName + " is not associated with any framework. Please contact support.");
-			return null;
-		}
-
 		private void FindSystemDependencies(string PodsXCConfig)
 		{
 			string[] OtherLDFlags = null;
@@ -958,8 +950,8 @@ public class CleverAdsSolutions : ModuleRules
 			var SysFrameworks = new HashSet<string>();
 			var SysWeakFrameworks = new List<string>();
 			var FrameworkSet = new HashSet<string>();
-			for (int i = 0; i < bundles.Count; i++)
-				FrameworkSet.Add(bundles[i].name);
+			for (int i = 0; i < Frameworks.Count; i++)
+				FrameworkSet.Add(Frameworks[i].name);
 
 			for (int i = 0; i < OtherLDFlags.Length; i++)
 			{
@@ -995,9 +987,9 @@ public class CleverAdsSolutions : ModuleRules
 						SysWeakFrameworks.Add(Lib);
 				}
 			}
-			this.sysLibs = SysLibs.ToArray();
-			this.sysFrameworks = SysFrameworks.ToArray();
-			this.sysWeakFrameworks = SysWeakFrameworks.ToArray();
+			this.SysLibs = SysLibs.ToArray();
+			this.SysFrameworks = SysFrameworks.ToArray();
+			this.SysWeakFrameworks = SysWeakFrameworks.ToArray();
 		}
 	}
 

@@ -32,6 +32,7 @@ namespace CASInternal {
 // region For each platform implementation in CASMobileAds.cpp
 void FillImpressionInfo(int AdType, FCASImpressionInfo& Info);
 void FillInitialConfig(FCASInitialConfig& Config);
+void ShowConsentFlow(bool ifRequired);
 // endregion
 
 void HandleEventCallback(int adType, int callback, int error);

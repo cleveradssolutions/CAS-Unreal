@@ -13,10 +13,63 @@ THIRD_PARTY_INCLUDES_START
 #include <CASUnrealBridge/CASUnrealBridge.h>
 THIRD_PARTY_INCLUDES_END
 
+CASUBridge *GetBridge() {
+    static CASUBridge *Bridge;
+    static dispatch_once_t OnceToken;
+
+    dispatch_once(&OnceToken, ^{
+      const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
+
+      CAS_LOG_W("Apply Ads ID: %s", *DefaultConfig->CASAppID);
+
+      // Framework Unreal info
+      const FEngineVersion &EngineVersion = FEngineVersion::Current();
+      const FString VersionString = FString::Printf(TEXT("%u.%u.%u"), EngineVersion.GetMajor(),
+                                                    EngineVersion.GetMinor(), EngineVersion.GetPatch());
+
+      Bridge = [[CASUBridge alloc] initWithId:DefaultConfig->CASAppID.GetNSString()
+                                engineVersion:VersionString.GetNSString()];
+
+      if (DefaultConfig->Audience != ECASAudience::Undefined) {
+          [GetBridge() setUserAudienceForAds:static_cast<int>(DefaultConfig->Audience)];
+      }
+
+#if !UE_BUILD_SHIPPING
+      if (DefaultConfig->TestAdsMode) {
+          [Bridge setTestAdModeForInit];
+      }
+#endif
+
+      TArray<FString> TestDeviceIds = DefaultConfig->TestDeviceIds;
+      if (TestDeviceIds.Num()) {
+          NSMutableArray<NSString *> *NewArray = [NSMutableArray arrayWithCapacity:TestDeviceIds.Num()];
+          for (const FString &Element : TestDeviceIds) {
+              [NewArray addObject:Element.GetNSString()];
+          }
+          [Bridge setTestDeviceIds:NewArray];
+      }
+
+      UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
+
+      [Bridge setConsentFlowEnabled:DefaultConfig->AutoConsentFlow
+                          geography:static_cast<int>(DefaultConfig->UserDebugGeography)
+                         privacyURL:DefaultConfig->PrivacyPolicyURL.GetNSString()
+                         controller:Controller];
+
+      [Bridge setMetaAdvertiserTrackingEnabled:DefaultConfig->UseAdvertisingId];
+
+      [Bridge setAutoloadFormatsWith:DefaultConfig->AutoloadBannerAds
+                            withMRec:DefaultConfig->AutoloadMRecAds
+                           withInter:DefaultConfig->AutoloadInterstitialAds
+                          withReward:DefaultConfig->AutoloadRewardedAds];
+    });
+    return Bridge;
+}
+
 // MARK: Bridge Callbacks (Should be at top of script)
 
 void CASInternal::FillImpressionInfo(int AdType, FCASImpressionInfo &Info) {
-    CASUBridge *Bridge = [CASUBridge shared];
+    CASUBridge *Bridge = GetBridge();
     Info.RevenueCPM = [Bridge getImpressionCPMFor:AdType];
     Info.Network = FString([Bridge getImpressionNetworkFor:AdType]);
     Info.UnitID = FString([Bridge getImpressionAdUnitFor:AdType]);
@@ -26,10 +79,15 @@ void CASInternal::FillImpressionInfo(int AdType, FCASImpressionInfo &Info) {
 }
 
 void CASInternal::FillInitialConfig(FCASInitialConfig &Config) {
-    CASUBridge *Bridge = [CASUBridge shared];
+    CASUBridge *Bridge = GetBridge();
     Config.Error = FString([Bridge getInitializationError]);
     Config.CountryCode = FString([Bridge getUserCountryCode]);
     Config.UserConsentStatus = static_cast<ECASUserConsentStatus>([Bridge getUserConsentForAds]);
+}
+
+void CASInternal::ShowConsentFlow(bool ifRequired) {
+    UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
+    [GetBridge() showConsentFlowIfRequired:ifRequired controller:Controller];
 }
 
 extern "C" void CASUEventCallback(int adType, int callback, int error) {
@@ -38,187 +96,136 @@ extern "C" void CASUEventCallback(int adType, int callback, int error) {
 
 // MARK: Mobile Ads implementation
 
-bool UCASMobileAds::IsInitializedAds() { return [[CASUBridge shared] isInitializedAds]; }
+bool UCASMobileAds::IsInitializedAds() { return [GetBridge() isInitializedAds]; }
 
 void UCASMobileAds::InitializeMobileAds() {
     if (IsInitializedAds()) {
         CASUEventCallback(kCASUType_MANAGER, kCASUCallback_INITIALIZED, 0);
         return;
     }
-    CASUBridge *Bridge = [CASUBridge shared];
-    if ([Bridge isInitializedPlugin]) {
-        // In initiailization progress
-        return;
-    }
 
-    const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
+    CAS_LOG_W("Initialize Ads");
 
-    CAS_LOG_W("Initialize with id: %s", *DefaultConfig->CASAppID);
-
-    if (DefaultConfig->Audience != ECASAudience::Undefined) {
-        SetUserAudienceForAds(DefaultConfig->Audience);
-    }
-
-    TArray<FString> TestDeviceIds = DefaultConfig->TestDeviceIds;
-    if (TestDeviceIds.Num()) {
-        NSMutableArray<NSString *> *NewArray = [NSMutableArray arrayWithCapacity:TestDeviceIds.Num()];
-        for (const FString &Element : TestDeviceIds) {
-            [NewArray addObject:Element.GetNSString()];
-        }
-        [Bridge setTestDeviceIds:NewArray];
-    }
-
-    UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
-
-    [Bridge setConsentFlowEnabled:DefaultConfig->AutoConsentFlow
-                       privacyURL:DefaultConfig->PrivacyPolicyURL.GetNSString()
-                       controller:Controller];
-
-    [Bridge setMetaAdvertiserTrackingEnabled:DefaultConfig->UseAdvertisingId];
-
-#if !UE_BUILD_SHIPPING
-    if (DefaultConfig->TestAdsMode) {
-        [Bridge setTestAdModeForInit];
-    }
-#endif
-
-    [Bridge setAutoloadFormatsWith:DefaultConfig->AutoloadBannerAds
-                          withMRec:DefaultConfig->AutoloadMRecAds
-                         withInter:DefaultConfig->AutoloadInterstitialAds
-                        withReward:DefaultConfig->AutoloadRewardedAds];
-
-    // Framework Unreal info
-    const FEngineVersion &EngineVersion = FEngineVersion::Current();
-    const FString VersionString =
-        FString::Printf(TEXT("%u.%u.%u"), EngineVersion.GetMajor(), EngineVersion.GetMinor(), EngineVersion.GetPatch());
-
-    [Bridge initializeWithCASId:DefaultConfig->CASAppID.GetNSString() engineVersion:VersionString.GetNSString()];
+    [GetBridge() initializeAds];
 }
 
-FString UCASMobileAds::GetMobileAdsVersion() { return FString([[CASUBridge shared] getMobileAdsVersion]); }
+FString UCASMobileAds::GetMobileAdsVersion() { return FString([GetBridge() getMobileAdsVersion]); }
 
-void UCASMobileAds::ValidateAdsIntegration() { [[CASUBridge shared] validateAdsIntegration]; }
+void UCASMobileAds::ValidateAdsIntegration() { [GetBridge() validateAdsIntegration]; }
 
-void UCASMobileAds::SetVerboseAdsLogs(bool Enabled) { [[CASUBridge shared] setVerboseAdsLogs:Enabled]; }
+void UCASMobileAds::SetVerboseAdsLogs(bool Enabled) { [GetBridge() setVerboseAdsLogs:Enabled]; }
 
-void UCASMobileAds::SetAdsMuted(bool Mute) { [[CASUBridge shared] setAdsMuted:Mute]; }
+void UCASMobileAds::SetAdsMuted(bool Mute) { [GetBridge() setAdsMuted:Mute]; }
 
-void UCASMobileAds::SetTrialAdFreeInterval(int Interval) { [[CASUBridge shared] setTrialAdFreeInterval:Interval]; }
-
-void UCASMobileAds::ShowAdConsentFlow() {
-    const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
-    UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
-    [[CASUBridge shared] showConsentFlowWithPrivacyURL:DefaultConfig->PrivacyPolicyURL.GetNSString()
-                                            controller:Controller];
-}
+void UCASMobileAds::SetTrialAdFreeInterval(int Interval) { [GetBridge() setTrialAdFreeInterval:Interval]; }
 
 void UCASMobileAds::SetUserAudienceForAds(ECASAudience Audience) {
-    [[CASUBridge shared] setUserAudienceForAds:static_cast<int>(Audience)];
+    [GetBridge() setUserAudienceForAds:static_cast<int>(Audience)];
 }
 
 void UCASMobileAds::SetUserConsentForAds(ECASUserConsentStatus ConsentStatus) {
-    [[CASUBridge shared] setUserConsentForAds:static_cast<int>(ConsentStatus)];
+    [GetBridge() setUserConsentForAds:static_cast<int>(ConsentStatus)];
 }
 
 void UCASMobileAds::SetUserOptOutSaleForAds(ECASUserCCPAStatus CCPAStatus) {
-    [[CASUBridge shared] setUserOptOutSaleForAds:static_cast<int>(CCPAStatus)];
+    [GetBridge() setUserOptOutSaleForAds:static_cast<int>(CCPAStatus)];
 }
 
-void UCASMobileAds::SetUserAgeForAds(int UserAge) { [[CASUBridge shared] setUserAgeForAds:UserAge]; }
+void UCASMobileAds::SetUserAgeForAds(int UserAge) { [GetBridge() setUserAgeForAds:UserAge]; }
 
 void UCASMobileAds::SetUserGenderForAds(ECASGender UserGender) {
-    [[CASUBridge shared] setUserGenderForAds:static_cast<int>(UserGender)];
+    [GetBridge() setUserGenderForAds:static_cast<int>(UserGender)];
 }
 
 void UCASMobileAds::SetUserLocationCollectionForAds(bool Enabled) {
-    [[CASUBridge shared] setUserLocationCollectionForAds:Enabled];
+    [GetBridge() setUserLocationCollectionForAds:Enabled];
 }
 
 void UCASMobileAds::SetMetaDataProcessingOptions(ECASUserCCPAStatus MetaOptions) {
-    [[CASUBridge shared] setMetaDataProcessingOptions:static_cast<int>(MetaOptions)];
+    [GetBridge() setMetaDataProcessingOptions:static_cast<int>(MetaOptions)];
 }
 
 // MARK: Banner Ads
 
-bool UCASMobileAds::IsBannerAdReady() { return [[CASUBridge shared] isBannerAdReady]; }
+bool UCASMobileAds::IsBannerAdReady() { return [GetBridge() isBannerAdReady]; }
 
 void UCASMobileAds::LoadBannerAd(ECASBannerSize AdSize) {
     UIView *MainView = (UIView *)[IOSAppDelegate GetDelegate].IOSView;
-    [[CASUBridge shared] loadBannerAd:static_cast<int>(AdSize) mainView:MainView];
+    [GetBridge() loadBannerAd:static_cast<int>(AdSize) mainView:MainView];
 }
 
-void UCASMobileAds::ShowBannerAd() { [[CASUBridge shared] showBannerAd]; }
+void UCASMobileAds::ShowBannerAd() { [GetBridge() showBannerAd]; }
 
-void UCASMobileAds::HideBannerAd() { [[CASUBridge shared] hideBannerAd]; }
+void UCASMobileAds::HideBannerAd() { [GetBridge() hideBannerAd]; }
 
 void UCASMobileAds::SetBannerAdPosition(ECASPosition AdPosition) {
-    [[CASUBridge shared] setBannerAdPosition:static_cast<int>(AdPosition) withX:0 withY:0];
+    [GetBridge() setBannerAdPosition:static_cast<int>(AdPosition) withX:0 withY:0];
 }
 
 void UCASMobileAds::SetBannerAdRefreshInterval(int Interval) {
-    [[CASUBridge shared] setBannerAdRefreshInterval:Interval];
+    [GetBridge() setBannerAdRefreshInterval:Interval];
 }
 
-void UCASMobileAds::DestroyBannerAd() { [[CASUBridge shared] destroyBannerAd]; }
+void UCASMobileAds::DestroyBannerAd() { [GetBridge() destroyBannerAd]; }
 
 // MARK: MRec Ads
 
-bool UCASMobileAds::IsMRecAdReady() { return [[CASUBridge shared] isMRecAdReady]; }
+bool UCASMobileAds::IsMRecAdReady() { return [GetBridge() isMRecAdReady]; }
 
 void UCASMobileAds::LoadMRecAd() {
     UIView *MainView = (UIView *)[IOSAppDelegate GetDelegate].IOSView;
-    [[CASUBridge shared] loadMRecAd:MainView];
+    [GetBridge() loadMRecAd:MainView];
 }
 
-void UCASMobileAds::ShowMRecAd() { [[CASUBridge shared] showMRecAd]; }
+void UCASMobileAds::ShowMRecAd() { [GetBridge() showMRecAd]; }
 
-void UCASMobileAds::HideMRecAd() { [[CASUBridge shared] hideMRecAd]; }
+void UCASMobileAds::HideMRecAd() { [GetBridge() hideMRecAd]; }
 
 void UCASMobileAds::SetMRecAdPosition(ECASPosition AdPosition) {
-    [[CASUBridge shared] setMRecAdPosition:static_cast<int>(AdPosition) withX:0 withY:0];
+    [GetBridge() setMRecAdPosition:static_cast<int>(AdPosition) withX:0 withY:0];
 }
 
-void UCASMobileAds::SetMRecAdRefreshInterval(int Interval) { [[CASUBridge shared] setMRecAdRefreshInterval:Interval]; }
+void UCASMobileAds::SetMRecAdRefreshInterval(int Interval) { [GetBridge() setMRecAdRefreshInterval:Interval]; }
 
-void UCASMobileAds::DestroyMRecAd() { [[CASUBridge shared] destroyMRecAd]; }
+void UCASMobileAds::DestroyMRecAd() { [GetBridge() destroyMRecAd]; }
 
 // MARK: Interstitial Ads
 
-void UCASMobileAds::LoadInterstitialAd() { [[CASUBridge shared] loadInterstitialAd]; }
+void UCASMobileAds::LoadInterstitialAd() { [GetBridge() loadInterstitialAd]; }
 
-bool UCASMobileAds::IsInterstitialAdReady() { return [[CASUBridge shared] isInterstitialAdReady]; }
+bool UCASMobileAds::IsInterstitialAdReady() { return [GetBridge() isInterstitialAdReady]; }
 
 void UCASMobileAds::ShowInterstitialAd() {
     UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
-    [[CASUBridge shared] showInterstitialAd:Controller];
+    [GetBridge() showInterstitialAd:Controller];
 }
 
 void UCASMobileAds::SetInterstitialAdMinimumInterval(int Interval) {
-    [[CASUBridge shared] setInterstitialAdMinimumInterval:(int)Interval];
+    [GetBridge() setInterstitialAdMinimumInterval:(int)Interval];
 }
 
-void UCASMobileAds::RestartInterstitialAdInterval() { [[CASUBridge shared] restartInterstitialAdInterval]; }
+void UCASMobileAds::RestartInterstitialAdInterval() { [GetBridge() restartInterstitialAdInterval]; }
 
 // MARK: Rewarded Ads
 
-void UCASMobileAds::LoadRewardedAd() { [[CASUBridge shared] loadRewardedAd]; }
+void UCASMobileAds::LoadRewardedAd() { [GetBridge() loadRewardedAd]; }
 
-bool UCASMobileAds::IsRewardedAdReady() { return [[CASUBridge shared] isRewardedAdReady]; }
+bool UCASMobileAds::IsRewardedAdReady() { return [GetBridge() isRewardedAdReady]; }
 
 void UCASMobileAds::ShowRewardedAd() {
     UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
-    [[CASUBridge shared] showRewardedAd:Controller];
+    [GetBridge() showRewardedAd:Controller];
 }
 
 // MARK: Return To App Ads
 
-void UCASMobileAds::ShowAdOnReturnToApp() { [[CASUBridge shared] showAdOnReturnToApp]; }
+void UCASMobileAds::ShowAdOnReturnToApp() { [GetBridge() showAdOnReturnToApp]; }
 
-void UCASMobileAds::SkipAdOnNextReturnToApp() { [[CASUBridge shared] skipAdOnNextReturnToApp]; }
+void UCASMobileAds::SkipAdOnNextReturnToApp() { [GetBridge() skipAdOnNextReturnToApp]; }
 
 void UCASMobileAds::DestroyReturnToAppAd() {
     CASInternal::KeepProxy(kCASUType_APP_RETURN, nullptr);
-    [[CASUBridge shared] destroyReturnToAppAd];
+    [GetBridge() destroyReturnToAppAd];
 }
 
 #endif

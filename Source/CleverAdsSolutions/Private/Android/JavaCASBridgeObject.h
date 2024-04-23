@@ -16,7 +16,6 @@ class FJavaCASBridgeObject : public FJavaClassObject {
 
     float CallFloatMethod(FJavaClassMethod Method, ...);
 
-    FJavaClassMethod IsInitializedPlugin;
     FJavaClassMethod IsInitializedAds;
     FJavaClassMethod InitializeMobileAds;
     FJavaClassMethod GetMobileAdsVersion;
@@ -57,6 +56,7 @@ class FJavaCASBridgeObject : public FJavaClassObject {
     FJavaClassMethod ShowAdOnReturnToApp;
     FJavaClassMethod SkipAdOnNextReturnToApp;
     FJavaClassMethod DestroyReturnToAppAd;
+    FJavaClassMethod SetPluginConfig;
     FJavaClassMethod SetAutoloadFormats;
     FJavaClassMethod SetTestAdModeForInit;
     FJavaClassMethod SetInitializationExtras;

@@ -7,7 +7,6 @@
 #include "CASImpressionInfo.h"
 #include "CASDefines.generated.h"
 
-/** User age category */
 UENUM(BlueprintType)
 enum class ECASAudience : uint8 {
     /**
@@ -45,7 +44,6 @@ enum class ECASAudience : uint8 {
     NotChildren
 };
 
-/** User Consent status */
 UENUM(BlueprintType)
 enum class ECASUserConsentStatus : uint8 {
     /**
@@ -62,7 +60,6 @@ enum class ECASUserConsentStatus : uint8 {
     Denied
 };
 
-/** User CCPA status */
 UENUM(BlueprintType)
 enum class ECASUserCCPAStatus : uint8 {
     /**
@@ -79,9 +76,24 @@ enum class ECASUserCCPAStatus : uint8 {
     OptInSale
 };
 
-/** Used to determine a gender in CAS > SetGender */
 UENUM(BlueprintType)
 enum class ECASGender : uint8 { Undefined, Male, Female };
+
+UENUM(BlueprintType)
+enum class ECASUserDebugGeography : uint8 {
+    /**
+     * Debug geography disabled.
+     */
+    Disabled,
+    /**
+     * Geography appears as in European Economic Area.
+     */
+    EEA,
+    /**
+     * Geography appears as not in European Economic Area.
+     */
+    NotEEA
+};
 
 /**
  * Ads Loading/Impression errors.
@@ -175,13 +187,49 @@ enum class ECASPosition : uint8 {
     BottomRight = 5,
 };
 
+UENUM(BlueprintType)
+enum class ECASConsentFlowStatus : uint8 {
+    /**
+     * No used
+     */
+    Undefined = 0,
+    /**
+     * User consent obtained. Personalized vs non-personalized undefined.
+     */
+    Obtained = 3,
+    /**
+     * User consent not required.
+     */
+    NotRequired = 4,
+    /**
+     * User consent unavailable.
+     */
+    Unavailable = 5,
+    /**
+     * There was the internal error.
+     */
+    InternalError = 10,
+    /**
+     * There was an error loading data from the network.
+     */
+    NetworkError = 11,
+    /**
+     * There was the app not foreground error. 
+     */
+    NotForegroundApp = 12,
+    /**
+     * There was an error with another form is still being displayed.
+     */
+    FlowStillPresenting = 13,
+};
+
 USTRUCT(BlueprintType)
 struct FCASInitialConfig {
     GENERATED_BODY()
 
    public:
     FCASInitialConfig() : UserConsentStatus(ECASUserConsentStatus::Undefined) {}
-    
+
     /**
      * Get the CAS initialization error, or empty if the initialization succses.
      */
@@ -206,6 +254,7 @@ DECLARE_MULTICAST_DELEGATE(FOnCASCallbackDelegate);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCASInitializedDelegate, const FCASInitialConfig & /*Config*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCASImpressionDelegate, const FCASImpressionInfo & /*AdImpression*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCASFailedDelegate, const ECASError /*Error*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCASConsentFlowCallbackDelegate, const ECASConsentFlowStatus /*Error*/);
 
 // MARK: Dynamic Multicast Delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCASEvent);

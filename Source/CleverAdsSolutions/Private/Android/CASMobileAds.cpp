@@ -13,6 +13,42 @@ TSharedPtr<FJavaCASBridgeObject> GetBridge() {
     static TSharedPtr<FJavaCASBridgeObject, ESPMode::ThreadSafe> Instance;
     if (!Instance.IsValid()) {
         Instance = MakeShared<FJavaCASBridgeObject, ESPMode::ThreadSafe>();
+
+        CAS_LOG_W("Apply Ads ID: %s", *DefaultConfig->CASAppID);
+
+        const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
+        if (DefaultConfig->Audience != ECASAudience::Undefined) {
+            GetBridge()->CallMethod<void>(GetBridge()->SetUserAudienceForAds, static_cast<int>(DefaultConfig->Audience));
+        }
+
+#if !UE_BUILD_SHIPPING
+        if (DefaultConfig->TestAdsMode) {
+            Bridge->CallMethod<void>(Bridge->SetTestAdModeForInit);
+        }
+#endif
+
+        TArray<FString> TestDeviceIds = DefaultConfig->TestDeviceIds;
+        if (TestDeviceIds.Num()) {
+            for (const FString &Element : TestDeviceIds) {
+                Bridge->CallMethod<void>(Bridge->AddTestDeviceId, *Bridge->GetJString(Element));
+            }
+        }
+
+        Bridge->CallMethod<void>(Bridge->SetConsentFlowEnabled, DefaultConfig->AutoConsentFlow,
+                                 static_cast<int>(DefaultConfig->UserDebugGeography),
+                                 *Bridge->GetJString(DefaultConfig->PrivacyPolicyURL));
+
+        Bridge->CallMethod<void>(Bridge->SetAutoloadFormats, DefaultConfig->AutoloadBannerAds,
+                                 DefaultConfig->AutoloadMRecAds, DefaultConfig->AutoloadInterstitialAds,
+                                 DefaultConfig->AutoloadRewardedAds);
+
+        // Framework Unreal info
+        const FEngineVersion &EngineVersion = FEngineVersion::Current();
+        const FString VersionString = FString::Printf(TEXT("%u.%u.%u"), EngineVersion.GetMajor(),
+                                                      EngineVersion.GetMinor(), EngineVersion.GetPatch());
+
+        Bridge->CallMethod<void>(Bridge->SetPluginConfig, *Bridge->GetJString(DefaultConfig->CASAppID),
+                                 *Bridge->GetJString(VersionString));
     }
     return Instance;
 }
@@ -37,6 +73,11 @@ void CASInternal::FillInitialConfig(FCASInitialConfig &Config) {
         static_cast<ECASUserConsentStatus>(Bridge->CallMethod<int>(Bridge->GetUserConsentForAds));
 }
 
+void CASInternal::ShowConsentFlow(bool ifRequired) {
+    TSharedPtr<FJavaCASBridgeObject> Bridge = GetBridge();
+    Bridge->CallMethod<void>(Bridge->ShowConsentFlow, ifRequired);
+}
+
 extern "C" JNIEXPORT void JNICALL Java_com_cleveradssolutions_plugin_unreal_CASUEvent_callback(
     JNIEnv *env, jobject thiz, jint adType, jint callback, jint error) {
     const int AdType = (int)adType;
@@ -54,47 +95,9 @@ void UCASMobileAds::InitializeMobileAds() {
         CASInternal::HandleEventCallback(kCASUType_MANAGER, kCASUCallback_INITIALIZED, 0);
         return;
     }
-    TSharedPtr<FJavaCASBridgeObject> Bridge = GetBridge();
-    if (Bridge->CallMethod<bool>(Bridge->IsInitializedPlugin)) {
-        // In initiailization progress
-        return;
-    }
 
-    const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
-
-    CAS_LOG_W("Initialize with id: %s", *DefaultConfig->CASAppID);
-
-    if (DefaultConfig->Audience != ECASAudience::Undefined) {
-        SetUserAudienceForAds(DefaultConfig->Audience);
-    }
-
-    TArray<FString> TestDeviceIds = DefaultConfig->TestDeviceIds;
-    if (TestDeviceIds.Num()) {
-        for (const FString &Element : TestDeviceIds) {
-            Bridge->CallMethod<void>(Bridge->AddTestDeviceId, *Bridge->GetJString(Element));
-        }
-    }
-
-    Bridge->CallMethod<void>(Bridge->SetConsentFlowEnabled, DefaultConfig->AutoConsentFlow,
-                             *Bridge->GetJString(DefaultConfig->PrivacyPolicyURL));
-
-#if !UE_BUILD_SHIPPING
-    if (DefaultConfig->TestAdsMode) {
-        Bridge->CallMethod<void>(Bridge->SetTestAdModeForInit);
-    }
-#endif
-
-    Bridge->CallMethod<void>(Bridge->SetAutoloadFormats, DefaultConfig->AutoloadBannerAds,
-                             DefaultConfig->AutoloadMRecAds, DefaultConfig->AutoloadInterstitialAds,
-                             DefaultConfig->AutoloadRewardedAds);
-
-    // Framework Unreal info
-    const FEngineVersion &EngineVersion = FEngineVersion::Current();
-    const FString VersionString =
-        FString::Printf(TEXT("%u.%u.%u"), EngineVersion.GetMajor(), EngineVersion.GetMinor(), EngineVersion.GetPatch());
-
-    Bridge->CallMethod<void>(Bridge->InitializeMobileAds, *Bridge->GetJString(DefaultConfig->CASAppID),
-                             *Bridge->GetJString(VersionString));
+    CAS_LOG_W("Initialize Ads");
+    GetBridge()->CallMethod<void>(Bridge->InitializeMobileAds);
 }
 
 FString UCASMobileAds::GetMobileAdsVersion() {
@@ -111,11 +114,6 @@ void UCASMobileAds::SetAdsMuted(bool Mute) { GetBridge()->CallMethod<void>(GetBr
 
 void UCASMobileAds::SetTrialAdFreeInterval(int Interval) {
     GetBridge()->CallMethod<void>(GetBridge()->SetTrialAdFreeInterval, Interval);
-}
-
-void UCASMobileAds::ShowAdConsentFlow() {
-    TSharedPtr<FJavaCASBridgeObject> Bridge = GetBridge();
-    Bridge->CallMethod<void>(Bridge->ShowConsentFlow, *Bridge->GetJString(GetDefault<UCASDefaultConfig>()->PrivacyPolicyURL));
 }
 
 void UCASMobileAds::SetUserAudienceForAds(ECASAudience Audience) {

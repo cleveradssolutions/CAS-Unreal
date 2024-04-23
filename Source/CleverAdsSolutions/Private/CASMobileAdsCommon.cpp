@@ -5,6 +5,7 @@
 
 FOnCASInitializedDelegate UCASMobileAds::OnAdsInitialized;
 FOnCASCallbackDelegate UCASMobileAds::OnConsentFlowDismissed;
+FOnCASConsentFlowCallbackDelegate UCASMobileAds::OnConsentFlowResult;
 
 FOnCASImpressionDelegate UCASMobileAds::OnAdsImpression;
 
@@ -35,6 +36,10 @@ FOnCASFailedDelegate UCASMobileAds::OnReturnToAppAdShowFailed;
 FOnCASCallbackDelegate UCASMobileAds::OnReturnToAppAdDisplayed;
 FOnCASCallbackDelegate UCASMobileAds::OnReturnToAppAdClicked;
 FOnCASCallbackDelegate UCASMobileAds::OnReturnToAppAdDismissed;
+
+void UCASMobileAds::ShowAdConsentFlow() { CASInternal::ShowConsentFlow(false); }
+
+void UCASMobileAds::ShowAdConsentFlowIfRequired() { CASInternal::ShowConsentFlow(true); }
 
 void UCASMobileAds::BindEventToOnAdsImpression(const FCASImpressionDelegate &OnImpression) {
     CASInternal::OnAdsImpression.AddUnique(OnImpression);

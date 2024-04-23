@@ -161,6 +161,7 @@ void CASInternal::HandleEventCallback(int AdType, int Callback, int Error) {
             break;
         case kCASUCallback_CONSENT_FLOW_DISMISSED:
             UCASMobileAds::OnConsentFlowDismissed.Broadcast();
+            UCASMobileAds::OnConsentFlowResult.Broadcast(static_cast<ECASConsentFlowStatus>(Error));
             break;
     }
 }

@@ -16,10 +16,13 @@ class CLEVERADSSOLUTIONS_API UCASShowAdConsentFlowProxy : public UBlueprintAsync
     UPROPERTY(BlueprintAssignable, Category = "CAS Mobile Ads")
     FCASEvent OnCompleted;
 
+    UPROPERTY(BlueprintAssignable, Category = "CAS Mobile Ads")
+    FCASEvent OnFailed;
+
     UFUNCTION(BlueprintCallable,
               Category = "CAS Mobile Ads",
               meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject"))
-    static UCASShowAdConsentFlowProxy* ShowAdConsentFlow(UObject* WorldContextObject);
+    static UCASShowAdConsentFlowProxy* ShowAdConsentFlow(UObject* WorldContextObject, bool IfRequired);
 
     // UBlueprintAsyncActionBase interface
     virtual void Activate() override;
@@ -27,7 +30,8 @@ class CLEVERADSSOLUTIONS_API UCASShowAdConsentFlowProxy : public UBlueprintAsync
 
    protected:
     UFUNCTION()
-    void HandleResult();
+    void HandleResult(ECASConsentFlowStatus Status);
 
     UObject* WorldContextObject;
+    bool IfRequiredOnly;
 };

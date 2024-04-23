@@ -3,23 +3,34 @@
 #include "BlueprintAsync/CASShowAdConsentFlowProxy.h"
 #include "CASMobileAds.h"
 
-UCASShowAdConsentFlowProxy* UCASShowAdConsentFlowProxy::ShowAdConsentFlow(UObject* WorldContextObject) {
+UCASShowAdConsentFlowProxy* UCASShowAdConsentFlowProxy::ShowAdConsentFlow(UObject* WorldContextObject,
+                                                                          bool IfRequired) {
     UCASShowAdConsentFlowProxy* Proxy = NewObject<UCASShowAdConsentFlowProxy>();
     Proxy->WorldContextObject = WorldContextObject;
+    Proxy->IfRequiredOnly = IfRequired;
     return Proxy;
 }
 
 void UCASShowAdConsentFlowProxy::Activate() {
     if (OnCompleted.IsBound()) {
-        UCASMobileAds::OnConsentFlowDismissed.AddUObject(this, &UCASShowAdConsentFlowProxy::HandleResult);
+        UCASMobileAds::OnConsentFlowResult.AddUObject(this, &UCASShowAdConsentFlowProxy::HandleResult);
         RegisterWithGameInstance(WorldContextObject);
     } else {
         SetReadyToDestroy();
     }
-    UCASMobileAds::ShowAdConsentFlow();
+    if (IfRequiredOnly) {
+        UCASMobileAds::ShowAdConsentFlowIfRequired();
+    } else {
+        UCASMobileAds::ShowAdConsentFlow();
+    }
 }
 
-void UCASShowAdConsentFlowProxy::HandleResult() {
-    OnCompleted.Broadcast();
+void UCASShowAdConsentFlowProxy::HandleResult(ECASConsentFlowStatus Status) {
+    if (Status == ECASConsentFlowStatus::Obtained || Status == ECASConsentFlowStatus::NotRequired ||
+        Status == ECASConsentFlowStatus::Unavailable) {
+        OnCompleted.Broadcast();
+    } else {
+        OnFailed.Broadcast();
+    }
     SetReadyToDestroy();
 }
