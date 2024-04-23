@@ -31,7 +31,7 @@ CASUBridge *GetBridge() {
                                 engineVersion:VersionString.GetNSString()];
 
       if (DefaultConfig->Audience != ECASAudience::Undefined) {
-          [GetBridge() setUserAudienceForAds:static_cast<int>(DefaultConfig->Audience)];
+          [Bridge setUserAudienceForAds:static_cast<int>(DefaultConfig->Audience)];
       }
 
 #if !UE_BUILD_SHIPPING

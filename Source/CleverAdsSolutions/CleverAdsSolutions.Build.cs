@@ -102,14 +102,14 @@ public class CleverAdsSolutions : ModuleRules
 	{
 		switch (BundleName)
 		{
-			case "CASBaseResources.bundle": return "CleverAdsSolutions.bundle";
-			case "PrivacyInfo.bundle": return "KidozSDK.bundle";
-			case "MobileAdsBundle.bundle": return "YandexMobileAds.bundle";
-			case "YandexMobileAds_PrivacyInfo.bundle": return "CASYandexAds.bundle"; //Use adapter framework for second bundle
-			case "Fyber_Marketplace_SDK.bundle": return "IASDKCore.bundle";
-			case "VungleAds.bundle": return "VungleAdsSDK.bundle";
-			case "Resources.bundle": return "SmaatoSDKInAppBidding.bundle";
-			default: return BundleName; // Typically the bundle name starts with the framework name.
+			case "CASBaseResources.bundle": return "CleverAdsSolutions";
+			case "PrivacyInfo.bundle": return "KidozSDK";
+			case "MobileAdsBundle.bundle": return "YandexMobileAds";
+			case "YandexMobileAds_PrivacyInfo.bundle": return "CASYandexAds"; //Use adapter framework for second bundle
+			case "Fyber_Marketplace_SDK.bundle": return "IASDKCore";
+			case "VungleAds.bundle": return "VungleAdsSDK";
+			case "Resources.bundle": return "SmaatoSDKInAppBidding";
+			default: return null; // Typically the bundle name starts with the framework name.
 		}
 	}
 
@@ -801,21 +801,41 @@ public class CleverAdsSolutions : ModuleRules
 
 			foreach (var Item in FindBundles(".bundle", BuildMainDir))
 			{
-				var Resource = OverrideIOSResourceBundle(Path.GetFileName(Item));
-
-				foreach (var Framework in Frameworks)
+				var Resource = Path.GetFileName(Item);
+				XCodeBundle Bundle = null;
+				var FrameworkOverrided = OverrideIOSResourceBundle(Resource);
+				if (FrameworkOverrided != null)
 				{
-					if (Resource.StartsWith(Framework.name))
+					foreach (var Framework in Frameworks)
 					{
-						Framework.bundle = Resource;
-						LogDebug("Resources found: " + Resource);
-						Directory.Move(Item, Framework.GetResourcesPath(Handler));
-						Resource = null;
-						break;
+						if (FrameworkOverrided == Framework.name)
+						{
+							Bundle = Framework;
+							break;
+						}
 					}
 				}
-				if (Resource != null)
+				if (Bundle == null)
+				{
+					foreach (var Framework in Frameworks)
+					{
+						if (Resource.StartsWith(Framework.name))
+						{
+							Bundle = Framework;
+							break;
+						}
+					}
+				}
+				if (Bundle == null)
+				{
 					CancelBuild(Resource + " is not associated with any framework. Please contact support.");
+				}
+				else
+				{
+					Bundle.bundle = Resource;
+					LogDebug("Resources found: " + Resource);
+					Directory.Move(Item, Bundle.GetResourcesPath(Handler));
+				}
 			}
 		}
 

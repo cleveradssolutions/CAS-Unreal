@@ -10,15 +10,15 @@
 #include "Misc/EngineVersion.h"
 
 TSharedPtr<FJavaCASBridgeObject> GetBridge() {
-    static TSharedPtr<FJavaCASBridgeObject, ESPMode::ThreadSafe> Instance;
-    if (!Instance.IsValid()) {
-        Instance = MakeShared<FJavaCASBridgeObject, ESPMode::ThreadSafe>();
+    static TSharedPtr<FJavaCASBridgeObject, ESPMode::ThreadSafe> Bridge;
+    if (!Bridge.IsValid()) {
+        Bridge = MakeShared<FJavaCASBridgeObject, ESPMode::ThreadSafe>();
+        const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
 
         CAS_LOG_W("Apply Ads ID: %s", *DefaultConfig->CASAppID);
 
-        const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
         if (DefaultConfig->Audience != ECASAudience::Undefined) {
-            GetBridge()->CallMethod<void>(GetBridge()->SetUserAudienceForAds, static_cast<int>(DefaultConfig->Audience));
+            Bridge->CallMethod<void>(Bridge->SetUserAudienceForAds, static_cast<int>(DefaultConfig->Audience));
         }
 
 #if !UE_BUILD_SHIPPING
@@ -50,7 +50,7 @@ TSharedPtr<FJavaCASBridgeObject> GetBridge() {
         Bridge->CallMethod<void>(Bridge->SetPluginConfig, *Bridge->GetJString(DefaultConfig->CASAppID),
                                  *Bridge->GetJString(VersionString));
     }
-    return Instance;
+    return Bridge;
 }
 
 // MARK: Bridge Callbacks (Should be at top of script)
@@ -97,7 +97,7 @@ void UCASMobileAds::InitializeMobileAds() {
     }
 
     CAS_LOG_W("Initialize Ads");
-    GetBridge()->CallMethod<void>(Bridge->InitializeMobileAds);
+    GetBridge()->CallMethod<void>(GetBridge()->InitializeMobileAds);
 }
 
 FString UCASMobileAds::GetMobileAdsVersion() {
