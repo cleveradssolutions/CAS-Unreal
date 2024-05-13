@@ -9,8 +9,6 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCAS_AI, Log, All);
 
-DEFINE_LOG_CATEGORY(LogCAS_AI);
-
 #define CAS_LOG_D(message, ...)                                      \
     {                                                                \
         if (true) {                                                  \

@@ -9,6 +9,7 @@
 #include "CASInterface_Rewarded.h"
 #include "CASMobileAds.h"
 #include "Engine/World.h"
+#include "Engine/GameInstance.h"
 
 void UCAS::Initialize(FSubsystemCollectionBase &Collection) {
     Super::Initialize(Collection);

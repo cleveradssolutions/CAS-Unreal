@@ -266,5 +266,3 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FCASImpressionDelegate, const FCASImpressionIn
 // MARK: Deprecated Dynamic Multicast Delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASErrorEvent, FString, ErrorMessage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASImpressionInfoEvent, FCASImpressionInfo, ImpressionInfo);
-
-DEFINE_LOG_CATEGORY_STATIC(LogCAS, Log, All);

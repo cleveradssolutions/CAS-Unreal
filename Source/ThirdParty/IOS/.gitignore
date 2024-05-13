@@ -1,6 +1,7 @@
 /Frameworks/
 /Pods/
 /Temp/
+/Resources/
 /CASFrameworks.xcworkspace/
 /CASFrameworks.xcodeproj/xcuserdata/
 /CASFrameworks.xcodeproj/project.xcworkspace/xcuserdata/
@@ -9,3 +10,4 @@
 /CASXCConfig.cascache
 /*.json
 /*.temp
+/cas_settings*

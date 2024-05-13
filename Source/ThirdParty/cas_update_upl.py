@@ -40,7 +40,6 @@ _BRIDGE_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'buildCAS', 'cas-unreal
                           
 def applyDynamicConfigDefaults(googleAppId, uplFile):
     uplFile.append('\t\t<setString result="GoogleAppId" value="' + googleAppId + '"/>\n')
-    uplFile.append('\t\t<setString result="CASConfigResFile" value="cas_settings.json"/>\n')
 
 def applyAndroidConfig(mediationArray, uplFile):
     for item in mediationArray:
@@ -106,6 +105,7 @@ def handle_upl_ios(line, result):
 def handle_upl_android(line, result):
     if "<!-- Begin Dynamic Config" in line:
         applyDynamicConfigDefaults(_DEFAULT_GOOGLE_APP_ANDROID, result)
+        result.append('\t\t<setString result="CASConfigResFile" value="cas_settings.json"/>\n')
         print('[Android] Reset dynamic config')
         return True
 

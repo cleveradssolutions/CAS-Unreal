@@ -460,6 +460,7 @@ public class CleverAdsSolutions : ModuleRules
 	public class IOSHandler : BaseHandler
 	{
 		public DirectoryReference FrameworksDir;
+		public DirectoryReference ResourcesDir;
 		public string BridgeFrameworkPath;
 		public List<string> IncludedAdapters = new List<string>();
 		public HashSet<string> SupportedDynamicFrameworks = new HashSet<string>();
@@ -479,32 +480,24 @@ public class CleverAdsSolutions : ModuleRules
 			}
 #endif
 
-#if UE_5_3_OR_LATER
-			const string XCodeSettings = "/Script/MacTargetPlatform.XcodeProjectSettings";
-			bool BuildModernXCode;
-			if (!EngineConfig.TryGetValue(XCodeSettings, "bUseModernXcode", out BuildModernXCode) || BuildModernXCode)
-			{
-				if (FileReference.Exists(CacheConfigFile))
-				{
-					LogWarning("The Modern XCode build does not copy additional resources correctly.");
-					LogWarning("Please add a configuration file in XCode project `App Target > Build Phases > Copy Bundle Resources > +`: " + CacheConfigFile.FullName);
-				}
-			}
-#endif
-
-			// Work only for not Modern Xcode Build UE 5.3+
-			// Same as <copy file> in UPL.xml
-			//Module.AdditionalBundleResources.Add(new BundleResource(GetResourcesFilePath()));
-
 #if USE_ENGNIE_INTERMEDIATE
 			FrameworksDir = new DirectoryReference(Path.Combine(Module.EngineDirectory, "Intermediate", "UnzippedFrameworks"));
 #else
 			FrameworksDir = DirectoryReference.Combine(NativeDir, "Frameworks");
 #endif
+			ResourcesDir = DirectoryReference.Combine(NativeDir, "Resources");
 
 			BridgeFrameworkPath = Path.Combine(NativeDir.FullName, "Plugin", IOSBridgeName + ".embeddedframework.zip");
 			if (!File.Exists(BridgeFrameworkPath))
 				LostRequiredFile(BridgeFrameworkPath);
+
+			// AdditionalBundleResources not support json resources, but support files withut extension
+			if (FileReference.Exists(CacheConfigFile))
+			{
+				var ConfigFilePathForBuild = CacheConfigFile.ChangeExtension(null);
+				FileUtils.ForceMoveFile(CacheConfigFile, ConfigFilePathForBuild);
+				Module.AdditionalBundleResources.Add(new BundleResource(ConfigFilePathForBuild.FullName));
+			}
 
 			for (int i = 0; i < Solutions.Length; i++)
 			{
@@ -533,6 +526,10 @@ public class CleverAdsSolutions : ModuleRules
 					return;
 				}
 			}
+			catch (NullReferenceException)
+			{
+				LogDebug("XCode config cache is deprecated.");
+			}
 			catch (Exception e)
 			{
 				LogWarning(e.ToString());
@@ -551,6 +548,8 @@ public class CleverAdsSolutions : ModuleRules
 			var PodfileLock = FileReference.Combine(NativeDir, "Podfile.lock");
 			FileUtils.ForceDeleteFile(PodfileLock);
 			FileUtils.ForceDeleteDirectory(BuildDir);
+			FileUtils.ForceDeleteDirectory(ResourcesDir);
+			FileUtils.CreateDirectoryTree(ResourcesDir);
 #if !USE_ENGNIE_INTERMEDIATE
 			FileUtils.ForceDeleteDirectory(FrameworksDir);
 			FileUtils.CreateDirectoryTree(FrameworksDir);
@@ -677,6 +676,7 @@ public class CleverAdsSolutions : ModuleRules
 		public string[] SysLibs;
 		public string[] SysFrameworks;
 		public string[] SysWeakFrameworks;
+		public string[] AdditionalResources;
 
 		public static XCodeConfig Read(DirectoryReference NativePath)
 		{
@@ -697,7 +697,8 @@ public class CleverAdsSolutions : ModuleRules
 				Adapters = Xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
 				SysLibs = Xml.Element("sysLibs").Elements("lib").Select(e => e.Value).ToArray(),
 				SysFrameworks = Xml.Element("sysFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
-				SysWeakFrameworks = Xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray()
+				SysWeakFrameworks = Xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
+				AdditionalResources = Xml.Element("additRes").Elements("res").Select(e => e.Value).ToArray()
 			};
 #else
 			return Json.Deserialize<XCodeConfig>(FileReference.ReadAllText(ConfigPath));
@@ -719,7 +720,8 @@ public class CleverAdsSolutions : ModuleRules
 				new XElement("adapters", Adapters.Select(a => new XElement("adapter", a))),
 				new XElement("sysLibs", SysLibs.Select(l => new XElement("lib", l))),
 				new XElement("sysFrameworks", SysFrameworks.Select(f => new XElement("lib", f))),
-				new XElement("sysWeakFrameworks", SysWeakFrameworks.Select(w => new XElement("lib", w)))
+				new XElement("sysWeakFrameworks", SysWeakFrameworks.Select(w => new XElement("lib", w))),
+				new XElement("additRes", AdditionalResources.Select(w => new XElement("res", w)))
 			);
 			Xml.Save(ConfigPath.FullName);
 #else
@@ -799,44 +801,32 @@ public class CleverAdsSolutions : ModuleRules
 				CancelBuild("Build XCProject corrupted. Not found required build file: " + PodsXCConfig);
 			FindSystemDependencies(PodsXCConfig.FullName);
 
+			var AdditResSet = new HashSet<string>();
 			foreach (var Item in FindBundles(".bundle", BuildMainDir))
 			{
 				var Resource = Path.GetFileName(Item);
+				LogDebug("Resources found: " + Resource);
 				XCodeBundle Bundle = null;
-				var FrameworkOverrided = OverrideIOSResourceBundle(Resource);
-				if (FrameworkOverrided != null)
+				foreach (var Framework in Frameworks)
 				{
-					foreach (var Framework in Frameworks)
+					if (Resource.StartsWith(Framework.name))
 					{
-						if (FrameworkOverrided == Framework.name)
-						{
-							Bundle = Framework;
-							break;
-						}
+						Bundle = Framework;
+						break;
 					}
 				}
 				if (Bundle == null)
 				{
-					foreach (var Framework in Frameworks)
-					{
-						if (Resource.StartsWith(Framework.name))
-						{
-							Bundle = Framework;
-							break;
-						}
-					}
-				}
-				if (Bundle == null)
-				{
-					CancelBuild(Resource + " is not associated with any framework. Please contact support.");
+					AdditResSet.Add(Resource);
+					Directory.Move(Item, Path.Combine(Handler.ResourcesDir.FullName, Resource));
 				}
 				else
 				{
 					Bundle.bundle = Resource;
-					LogDebug("Resources found: " + Resource);
 					Directory.Move(Item, Bundle.GetResourcesPath(Handler));
 				}
 			}
+			AdditionalResources = AdditResSet.ToArray();
 		}
 
 		public void ApplyToModule(CleverAdsSolutions Module, IOSHandler Handler)
@@ -894,6 +884,13 @@ public class CleverAdsSolutions : ModuleRules
 				bool CopyFramework = Handler.SupportedDynamicFrameworks.Contains(Framework.name);
 				Module.PublicAdditionalFrameworks.Add(
 					new Framework(Framework.name, Framework.GetPath(Handler), Resources, CopyFramework)
+				);
+			}
+
+			foreach (var Resource in AdditionalResources)
+			{
+				Module.AdditionalBundleResources.Add(
+					new BundleResource(Path.Combine(Handler.ResourcesDir.FullName, Resource))
 				);
 			}
 
