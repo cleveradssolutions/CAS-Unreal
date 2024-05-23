@@ -116,7 +116,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
      * Note that the real status will only be determined 
      * after calling the `ShowAdConsentFlowIfRequired()` or `InitializeMobileAds()`.
      */
-    UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads")
+    UFUNCTION(BlueprintCallable, Category = "CAS Mobile Ads", meta = (ExpandBoolAsExecs = "ReturnValue"))
     static bool IsUserAdConsentRequired();
 
     /**
