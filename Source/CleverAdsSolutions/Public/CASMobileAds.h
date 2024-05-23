@@ -110,7 +110,7 @@ class CLEVERADSSOLUTIONS_API UCASMobileAds : public UBlueprintFunctionLibrary {
     static void SetUserAudienceForAds(ECASAudience Audience);
 
     /**
-     * Check if a Consent Flow is requred for the user.
+     * Check if a Consent Flow is required for the user.
      * Use this method before include Privacy Options button in application settings menu.
      * 
      * Note that the real status will only be determined 
