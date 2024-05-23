@@ -77,6 +77,7 @@ FJavaCASBridgeObject::FJavaCASBridgeObject()
       GetInitializationError(GetClassMethod("getInitializationError", SIG_STRING__VOID)),
       GetUserCountryCode(GetClassMethod("getUserCountryCode", SIG_STRING__VOID)),
       GetUserConsentForAds(GetClassMethod("getUserConsentForAds", SIG_INT__VOID)),
+      IsUserConsentRequired(GetClassMethod("isUserConsentRequired", SIG_BOOL__VOID)),
       AddTestDeviceId(GetClassMethod("addTestDeviceId", SIG_VOID__STRING)) {}
 
 FJavaCASBridgeObject::~FJavaCASBridgeObject() {}

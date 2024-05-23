@@ -120,6 +120,10 @@ void UCASMobileAds::SetUserAudienceForAds(ECASAudience Audience) {
     GetBridge()->CallMethod<void>(GetBridge()->SetUserAudienceForAds, static_cast<int>(Audience));
 }
 
+bool UCASMobileAds::IsUserAdConsentRequired() {
+    return GetBridge()->CallMethod<bool>(GetBridge()->IsUserConsentRequired);
+}
+
 void UCASMobileAds::SetUserConsentForAds(ECASUserConsentStatus ConsentStatus) {
     GetBridge()->CallMethod<void>(GetBridge()->SetUserConsentForAds, static_cast<int>(ConsentStatus));
 }

@@ -94,6 +94,11 @@ void UCASMobileAds::SetAdsMuted(bool Mute) { CAS_LOG_D("Setting Mute Ad sounds t
 
 void UCASMobileAds::SetTrialAdFreeInterval(int interval) {}
 
+bool UCASMobileAds::IsUserAdConsentRequired() {
+    const UCASDefaultConfig *DefaultConfig = UCASConfigContainer::GetConfig();
+    return DefaultConfig->UserDebugGeography == ECASUserDebugGeography::EEA;
+}
+
 void UCASMobileAds::SetUserAudienceForAds(ECASAudience Audience) {
     FString AudienceStr = UEnum::GetValueAsString(Audience);
     CAS_LOG_D("Setting User Audience to %s", *AudienceStr);

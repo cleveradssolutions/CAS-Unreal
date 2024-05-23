@@ -71,6 +71,7 @@ class FJavaCASBridgeObject : public FJavaClassObject {
     FJavaClassMethod GetInitializationError;
     FJavaClassMethod GetUserCountryCode;
     FJavaClassMethod GetUserConsentForAds;
+    FJavaClassMethod IsUserConsentRequired;
     FJavaClassMethod AddTestDeviceId;
 };
 #endif

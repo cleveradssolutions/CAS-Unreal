@@ -123,6 +123,10 @@ void UCASMobileAds::SetUserAudienceForAds(ECASAudience Audience) {
     [GetBridge() setUserAudienceForAds:static_cast<int>(Audience)];
 }
 
+bool UCASMobileAds::IsUserAdConsentRequired() {
+    return [GetBridge() isUserConsentRequired];
+}
+
 void UCASMobileAds::SetUserConsentForAds(ECASUserConsentStatus ConsentStatus) {
     [GetBridge() setUserConsentForAds:static_cast<int>(ConsentStatus)];
 }
