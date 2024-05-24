@@ -4,10 +4,7 @@
 
 #include "CASMobileAds.h"
 
-
 DEFINE_LOG_CATEGORY(LogCAS_AI);
-
-// MARK: Internal Dynamic events
 
 FCASImpressionEvent CASInternal::OnAdsImpression;
 
