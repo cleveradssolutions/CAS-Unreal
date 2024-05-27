@@ -32,6 +32,9 @@
 		<!-- End Init Mediation -->
 		<setBoolFromProperty result="UseAdvertisingId" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UseAdvertisingId" default="true"/>
 		<setStringFromProperty result="GoogleCustomAppId" ini="Engine" section="CASPluginBuildConfig" property="GoogleAppIdAndroid" default="$S(GoogleAppId)"/>
+		<setBoolIsEqual result="UEVersion4" arg1="$I(EngineMajorVersion)" arg2="4"/>
+		<setBoolIsLessEqual result="UEVersionMinor2" arg1="$I(EngineMinorVersion)" arg2="2"/>
+		<setBoolOr result="UE_5_2_OrLess" arg1="$B(UEVersion4)" arg2="$B(UEVersionMinor2)"/>
 	</init>
 	<minimumSDKAPI>
 		<insertValue value="21"/>
@@ -146,13 +149,6 @@
 	</AARImports>
 	<buildGradleAdditions>
 		<insert>
-android {
-	compileOptions {
-		sourceCompatibility 1.8
-		targetCompatibility 1.8
-	}
-}
-
 allprojects {
 	repositories {
 		<!-- Begin Repos -->
@@ -196,7 +192,15 @@ allprojects {
 		<!-- End Repos -->
 	}
 }
-
+		</insert>
+		<if condition="UE_5_2_OrLess"><true>
+			<insert>
+android {
+	compileOptions {
+		sourceCompatibility 1.8
+		targetCompatibility 1.8
+	}
+}
 dependencies {
 	// Prefer newer versions of Play Services, particularly for below UE 5.2
 	implementation "com.google.android.gms:play-services-auth:[16.0.1,)"
@@ -204,6 +208,7 @@ dependencies {
 	implementation "com.google.android.gms:play-services-nearby:[16.0.0,)"
 	implementation "com.google.android.gms:play-services-plus:[16.0.0,)"
 }
-		</insert>
+			</insert>
+		</true></if>
 	</buildGradleAdditions>
 </root>
