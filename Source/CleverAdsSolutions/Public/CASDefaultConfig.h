@@ -109,7 +109,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
     UPROPERTY(Config, EditDefaultsOnly, Category = "Privacy")
     FString PrivacyPolicyURL;
 
-    // MARK: Ads Solutions
+    // MARK: Dependencies
    public:
     UPROPERTY(
         Config,
@@ -177,8 +177,17 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include AudienceNetwork/Meta", ToolTip = "Required implementation of `Data processing options for Users in California`", EditCondition = "!IncludeOptimalAds"))
 	bool IncludeAudienceNetwork = false;
 
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include CASExchange (beta)"))
+	bool IncludeCASExchange = false;
+
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include StartIO (beta)"))
 	bool IncludeStartIO = false;
+
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Ogury (beta)"))
+	bool IncludeOgury = false;
+
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include LoopMe (beta)"))
+	bool IncludeLoopMe = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Madex (beta)", ToolTip = "Focused on RU region only. Geolocation permission will also be included."))
 	bool IncludeMadex = false;

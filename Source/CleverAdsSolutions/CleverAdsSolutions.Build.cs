@@ -327,7 +327,8 @@ public class CleverAdsSolutions : ModuleRules
 					if (EngineConfig.GetString(BuildConfigSection, BuildConfigGoogleAppId + PlatformName, out CustomGoogleAppId))
 					{
 						if (CustomGoogleAppId != AppId)
-							CancelBuild("You have specified the incorrect Google App ID in the Engine.ini file. Please ensure you have inserted the correct App ID: " + AppId);
+							CancelBuild("You have specified the incorrect Google App ID (" + CustomGoogleAppId + 
+								") in the Engine.ini file. Please ensure you have inserted the correct App ID: " + AppId);
 					}
 					return AppId;
 				}

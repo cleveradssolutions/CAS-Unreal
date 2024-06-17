@@ -128,16 +128,22 @@ def handle_upl_android(line, result):
                 result.append('\t\tmaven {\n')
                 result.append('\t\t\tname = "' + item['name'] + 'AdsRepo"\n')
                 result.append('\t\t\turl = "' + item['source'] + '"\n')
-                libs = item['libs']
-                if len(libs) == 2:
-                    depGroup = libs[1]['name'].split(':')[0]
-                    result.append('\t\t\tcontent { it.includeGroup("' + depGroup + '") }\n')
-                elif len(libs) > 2:
+                if 'sourceGroups' in item:
                     result.append('\t\t\tcontent {\n')
-                    for lib in libs[1:]:
-                        depGroup = lib['name'].split(':')[0]
-                        result.append('\t\t\t\tit.includeGroup("' + depGroup + '")\n')
+                    for group in item['sourceGroups']:
+                        result.append('\t\t\t\tit.includeGroup("' + group + '")\n')
                     result.append('\t\t\t}\n')
+                else:
+                    libs = item['libs']
+                    if len(libs) == 2:
+                        depGroup = libs[1]['name'].split(':')[0]
+                        result.append('\t\t\tcontent { it.includeGroup("' + depGroup + '") }\n')
+                    elif len(libs) > 2:
+                        result.append('\t\t\tcontent {\n')
+                        for lib in libs[1:]:
+                            depGroup = lib['name'].split(':')[0]
+                            result.append('\t\t\t\tit.includeGroup("' + depGroup + '")\n')
+                        result.append('\t\t\t}\n')
                 result.append('\t\t}\n')
                 print('[Android] Add maven repository: ' + item['source'])
         return True

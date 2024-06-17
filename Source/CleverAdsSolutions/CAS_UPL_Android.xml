@@ -4,7 +4,7 @@
 		<log text="[CAS.AI] UPL Android package modifications"/>
 		<!-- Begin Dynamic Config -->
 		<setString result="GoogleAppId" value="ca-app-pub-3940256099942544~3347511713"/>
-		<setString result="CASConfigResFile" value="cas_settings4o.json"/>
+		<setString result="CASConfigResFile" value="cas_settings.json"/>
 		<!-- End Dynamic Confi -->
 		<!-- Begin Init Mediation -->
 		<setBoolFromProperty result="IncludeOptimalAds" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeOptimalAds" default="false"/>
@@ -25,7 +25,10 @@
 		<setBoolFromProperty result="IncludeBigo" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeBigo" default="false"/>
 		<setBoolFromProperty result="IncludeYandexAds" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeYandexAds" default="false"/>
 		<setBoolFromProperty result="IncludeAudienceNetwork" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeAudienceNetwork" default="false"/>
+		<setBoolFromProperty result="IncludeCASExchange" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeCASExchange" default="false"/>
 		<setBoolFromProperty result="IncludeStartIO" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeStartIO" default="false"/>
+		<setBoolFromProperty result="IncludeOgury" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeOgury" default="false"/>
+		<setBoolFromProperty result="IncludeLoopMe" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeLoopMe" default="false"/>
 		<setBoolFromProperty result="IncludeMadex" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeMadex" default="false"/>
 		<setBoolFromProperty result="IncludeHyprMX" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeHyprMX" default="false"/>
 		<setBoolFromProperty result="IncludeSmaato" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeSmaato" default="false"/>
@@ -78,30 +81,30 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,3.7.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,3.8.0" /> <insertNewline/>
 		<if condition="IncludeOptimalAds"><true>
-		<insertValue value="com.cleveradssolutions,cas,3.7.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas,3.8.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeFamiliesAds"><true>
-		<insertValue value="com.cleveradssolutions,cas-families,3.7.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-families,3.8.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCrossPromotion"><true>
-		<insertValue value="com.cleveradssolutions,cas-promo,3.7.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-promo,3.8.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeIronSource"><true>
 		<insertValue value="com.cleveradssolutions,ironsource,8.1.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
-		<insertValue value="com.cleveradssolutions,unity,4.11.3.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,unity,4.12.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeGoogleAds"><true>
 		<insertValue value="com.cleveradssolutions,google,23.0.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeLiftoffMonetize"><true>
-		<insertValue value="com.cleveradssolutions,vungle,7.3.2.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,vungle,7.3.2.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeInMobi"><true>
-		<insertValue value="com.cleveradssolutions,inmobi,10.6.7.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,inmobi,10.7.4.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeChartboost"><true>
 		<insertValue value="com.cleveradssolutions,chartboost,9.7.0.0" /> <insertNewline/>
@@ -116,7 +119,7 @@
 		<insertValue value="com.cleveradssolutions,superawesome,9.3.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMintegral"><true>
-		<insertValue value="com.cleveradssolutions,mintegral,16.7.41.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mintegral,16.7.61.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
 		<insertValue value="com.cleveradssolutions,applovin,12.5.0.0" /> <insertNewline/>
@@ -125,22 +128,31 @@
 		<insertValue value="com.cleveradssolutions,pangle,5.9.0.6" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
-		<insertValue value="com.cleveradssolutions,bigo,4.7.4.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,bigo,4.8.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYandexAds"><true>
-		<insertValue value="com.cleveradssolutions,yandex,27.0.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,yandex,27.1.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAudienceNetwork"><true>
-		<insertValue value="com.cleveradssolutions,facebook,6.17.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,facebook,6.17.0.1" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeCASExchange"><true>
+		<insertValue value="com.cleveradssolutions,cas-exchange,3.8.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeStartIO"><true>
-		<insertValue value="com.cleveradssolutions,startio,4.11.5.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,startio,5.0.1.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeOgury"><true>
+		<insertValue value="com.cleveradssolutions,ogury,5.7.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeLoopMe"><true>
+		<insertValue value="com.cleveradssolutions,loopme,9.0.3.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMadex"><true>
-		<insertValue value="com.cleveradssolutions,madex,1.4.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,madex,1.4.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeHyprMX"><true>
-		<insertValue value="com.cleveradssolutions,hyprmx,6.4.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,hyprmx,6.4.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeSmaato"><true>
 		<insertValue value="com.cleveradssolutions,smaato,22.0.2.1" /> <insertNewline/>
@@ -175,6 +187,19 @@ allprojects {
 			name = "PangleAdsRepo"
 			url = "https://artifact.bytedance.com/repository/pangle"
 			content { it.includeGroup("com.pangle.global") }
+		}
+		maven {
+			name = "OguryAdsRepo"
+			url = "https://maven.ogury.co"
+			content {
+				it.includeGroup("co.ogury")
+				it.includeGroup("co.ogury.module")
+			}
+		}
+		maven {
+			name = "LoopMeAdsRepo"
+			url = ""https://jitpack.io""
+			content { it.includeGroup("com.github.loopme.android-united-sdk") }
 		}
 		maven {
 			name = "MadexAdsRepo"
