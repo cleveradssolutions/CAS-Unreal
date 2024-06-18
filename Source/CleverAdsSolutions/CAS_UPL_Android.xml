@@ -198,7 +198,7 @@ allprojects {
 		}
 		maven {
 			name = "LoopMeAdsRepo"
-			url = ""https://jitpack.io""
+			url = "https://jitpack.io"
 			content { it.includeGroup("com.github.loopme.android-united-sdk") }
 		}
 		maven {
