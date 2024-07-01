@@ -98,21 +98,6 @@ public class CleverAdsSolutions : ModuleRules
 		}
 	}
 
-	private static string OverrideIOSResourceBundle(string BundleName)
-	{
-		switch (BundleName)
-		{
-			case "CASBaseResources.bundle": return "CleverAdsSolutions";
-			case "PrivacyInfo.bundle": return "KidozSDK";
-			case "MobileAdsBundle.bundle": return "YandexMobileAds";
-			case "YandexMobileAds_PrivacyInfo.bundle": return "CASYandexAds"; //Use adapter framework for second bundle
-			case "Fyber_Marketplace_SDK.bundle": return "IASDKCore";
-			case "VungleAds.bundle": return "VungleAdsSDK";
-			case "Resources.bundle": return "SmaatoSDKInAppBidding";
-			default: return null; // Typically the bundle name starts with the framework name.
-		}
-	}
-
 	private static void LogDebug(string message)
 	{
 #if UE_5_0_OR_LATER
@@ -136,7 +121,7 @@ public class CleverAdsSolutions : ModuleRules
 
 	private static void LostRequiredFile(string File)
 	{
-		throw new BuildException("Lost required plugin component. Try reinstal CAS plugin and check file exists: " + File);
+		CancelBuild("Lost required plugin component. Try reinstal CAS plugin and check file exists: " + File);
 	}
 
 	private static string WrapInQuotes(string Line)
@@ -327,7 +312,7 @@ public class CleverAdsSolutions : ModuleRules
 					if (EngineConfig.GetString(BuildConfigSection, BuildConfigGoogleAppId + PlatformName, out CustomGoogleAppId))
 					{
 						if (CustomGoogleAppId != AppId)
-							CancelBuild("You have specified the incorrect Google App ID (" + CustomGoogleAppId + 
+							CancelBuild("You have specified the incorrect Google App ID (" + CustomGoogleAppId +
 								") in the Engine.ini file. Please ensure you have inserted the correct App ID: " + AppId);
 					}
 					return AppId;
@@ -910,16 +895,21 @@ public class CleverAdsSolutions : ModuleRules
 			Module.PrivateDependencyModuleNames.Add("Swift");
 #else
 			string XcodeRoot = Utils.RunLocalProcessAndReturnStdOut("/usr/bin/xcode-select", "--print-path");
-			string SwiftStandardLibraryLinkPath = XcodeRoot + "/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos";
-
 			// Enable Swift
 			Module.PublicSystemLibraryPaths.AddRange(
 				new string[] {
-					SwiftStandardLibraryLinkPath,
+					GetSwiftStandardLibraryLinkPath(XcodeRoot, ""),
+					GetSwiftStandardLibraryLinkPath(XcodeRoot, "-5.0"),
 					"/usr/lib/swift"
 				}
 			);
 #endif
+		}
+
+		private string GetSwiftStandardLibraryLinkPath(string Root, string Version)
+		{
+			// Root = /Applications/Xcode.app/Contents/Developer
+			return Root + "/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift" + Version + "/iphoneos";
 		}
 
 		private IEnumerable<string> FindBundles(string Extension, string dir, bool Recursive = true, string SkipExt = "..")
