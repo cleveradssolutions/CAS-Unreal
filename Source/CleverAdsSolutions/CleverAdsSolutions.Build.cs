@@ -894,22 +894,15 @@ public class CleverAdsSolutions : ModuleRules
 			// Add support for linking with Swift frameworks
 			Module.PrivateDependencyModuleNames.Add("Swift");
 #else
+			// XcodeRoot = /Applications/Xcode.app/Contents/Developer
 			string XcodeRoot = Utils.RunLocalProcessAndReturnStdOut("/usr/bin/xcode-select", "--print-path");
-			// Enable Swift
 			Module.PublicSystemLibraryPaths.AddRange(
 				new string[] {
-					GetSwiftStandardLibraryLinkPath(XcodeRoot, ""),
-					GetSwiftStandardLibraryLinkPath(XcodeRoot, "-5.0"),
+					XcodeRoot + "/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos",
 					"/usr/lib/swift"
 				}
 			);
 #endif
-		}
-
-		private string GetSwiftStandardLibraryLinkPath(string Root, string Version)
-		{
-			// Root = /Applications/Xcode.app/Contents/Developer
-			return Root + "/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift" + Version + "/iphoneos";
 		}
 
 		private IEnumerable<string> FindBundles(string Extension, string dir, bool Recursive = true, string SkipExt = "..")
