@@ -10,11 +10,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-
 #if UE_5_0_OR_LATER
 using System.Xml.Linq;
 using EpicGames.Core;
+#if UE_5_3_OR_LATER
 using Microsoft.Extensions.Logging;
+#endif
 #else
 using Tools.DotNETCommon;
 #endif
@@ -100,7 +101,7 @@ public class CleverAdsSolutions : ModuleRules
 
 	private static void LogDebug(string message)
 	{
-#if UE_5_0_OR_LATER
+#if UE_5_3_OR_LATER
 		Log.Logger.LogInformation(LogTag + message);
 #else
 		Log.TraceInformation(LogTag + message);
@@ -890,7 +891,7 @@ public class CleverAdsSolutions : ModuleRules
 		private void AddSwiftSupport(CleverAdsSolutions Module)
 		{
 			// Source: /Engine/Source/ThirdParty/Apple/Swift/Swift.Build.cs
-#if UE_5_0_OR_LATER
+#if UE_5_2_OR_LATER
 			// Add support for linking with Swift frameworks
 			Module.PrivateDependencyModuleNames.Add("Swift");
 #else

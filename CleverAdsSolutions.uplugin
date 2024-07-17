@@ -3,22 +3,26 @@
     "Category": "Advertising", 
     "CreatedBy": "CleverAdsSolutions LTD", 
     "CreatedByURL": "https://cas.ai", 
-    "Description": "CAS.AI Unreal Engine plugin for Android and iOS", 
+    "Description": "The CAS.AI Unreal Engine plugin allows you to easily monetize your apps for iOS and Android using lot of Ads SDKs in mediation.", 
     "DocsURL": "https://github.com/cleveradssolutions/CAS-Unreal/wiki", 
     "FileVersion": 3, 
-    "FriendlyName": "CAS.AI", 
-    "Installed": false, 
-    "IsBetaVersion": false, 
-    "IsExperimentalVersion": false, 
+    "FriendlyName": "Clever Ads Solutions", 
+    "Installed": true, 
     "MarketplaceURL": "", 
     "Modules": [
         {
             "LoadingPhase": "Default", 
             "Name": "CleverAdsSolutions", 
+            "PlatformAllowList": [
+                "Mac", 
+                "Win64", 
+                "IOS", 
+                "Android"
+            ], 
             "Type": "Runtime"
         }
     ], 
     "SupportURL": "https://github.com/cleveradssolutions/CAS-Unreal/issues", 
-    "Version": 3000, 
-    "VersionName": "3.8.1"
+    "Version": 30900, 
+    "VersionName": "3.9.0"
 }
