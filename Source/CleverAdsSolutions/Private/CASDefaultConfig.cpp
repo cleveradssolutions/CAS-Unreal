@@ -62,6 +62,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeMintegral = IncludeOptimalAds;
+			IncludeCASExchange = IncludeOptimalAds;
 			IncludeAudienceNetwork = IncludeOptimalAds;
 			IncludeAppLovin = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
@@ -77,6 +78,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeCASExchange = IncludeOptimalAds;
 			IncludeAudienceNetwork = IncludeOptimalAds;
 			IncludeAppLovin = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
