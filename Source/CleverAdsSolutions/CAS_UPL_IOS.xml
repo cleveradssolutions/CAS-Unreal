@@ -979,6 +979,14 @@
 					<key>SKAdNetworkIdentifier</key>
 					<string>vhf287vqwu.skadnetwork</string>
 				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
+					<string>55644vm79v.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
+					<string>55y65gfgn7.skadnetwork</string>
+				</dict>
 			</array>
 			<!-- End SKAdNetworkItems -->
 		</addElements>

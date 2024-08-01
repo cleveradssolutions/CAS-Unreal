@@ -192,7 +192,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include LoopMe (beta)"))
 	bool IncludeLoopMe = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Madex (beta)", ToolTip = "Focused on RU region only. Geolocation permission will also be included."))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Madex (beta)", ToolTip = "Focused on RU region only. Geolocation permission will also be included to manifest."))
 	bool IncludeMadex = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Smaato (beta)", ToolTip = "Support Banner only"))

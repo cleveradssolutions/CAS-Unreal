@@ -81,15 +81,15 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,3.9.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,3.9.2" /> <insertNewline/>
 		<if condition="IncludeOptimalAds"><true>
-		<insertValue value="com.cleveradssolutions,cas,3.9.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas,3.9.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeFamiliesAds"><true>
-		<insertValue value="com.cleveradssolutions,cas-families,3.9.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-families,3.9.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCrossPromotion"><true>
-		<insertValue value="com.cleveradssolutions,cas-promo,3.9.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-promo,3.9.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeIronSource"><true>
 		<insertValue value="com.cleveradssolutions,ironsource,8.2.1.1" /> <insertNewline/>
@@ -101,7 +101,7 @@
 		<insertValue value="com.cleveradssolutions,google,23.2.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeLiftoffMonetize"><true>
-		<insertValue value="com.cleveradssolutions,vungle,7.4.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,vungle,7.4.0.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeInMobi"><true>
 		<insertValue value="com.cleveradssolutions,inmobi,10.7.5.0" /> <insertNewline/>
@@ -119,19 +119,19 @@
 		<insertValue value="com.cleveradssolutions,superawesome,9.4.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMintegral"><true>
-		<insertValue value="com.cleveradssolutions,mintegral,16.7.91.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mintegral,16.8.11.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
 		<insertValue value="com.cleveradssolutions,applovin,12.6.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePangle"><true>
-		<insertValue value="com.cleveradssolutions,pangle,6.1.0.6" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,pangle,6.1.0.7" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
-		<insertValue value="com.cleveradssolutions,bigo,4.8.2.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,bigo,4.9.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYandexAds"><true>
-		<insertValue value="com.cleveradssolutions,yandex,27.2.0.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,yandex,27.2.0.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAudienceNetwork"><true>
 		<insertValue value="com.cleveradssolutions,facebook,6.17.0.1" /> <insertNewline/>
@@ -203,7 +203,7 @@ allprojects {
 		}
 		maven {
 			name = "MadexAdsRepo"
-			url = "https://sdkpkg.sspnet.tech"
+			url = "https://repsy.io/mvn/cleveradssolutions/proxy"
 			content {
 				it.includeGroup("sspnet.tech")
 				it.includeGroup("sspnet.tech.adapters")
@@ -236,4 +236,10 @@ dependencies {
 			</insert>
 		</true></if>
 	</buildGradleAdditions>
+	<!-- Uncomment the following lines if you need to override the path to AAPT2. -->
+	<!-- <gradleProperties>
+		<insert>
+android.aapt2FromMavenOverride=/full/path/to/AndroidSDK/build-tools/34.0.0/aapt2
+		</insert>
+	</gradleProperties> -->
 </root>
