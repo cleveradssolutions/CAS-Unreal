@@ -392,7 +392,7 @@ public class CleverAdsSolutions : ModuleRules
 				LogDebug("Configuration loaded for " + ManagerID);
 				if (FileReference.Exists(TempConfigFilePath))
 					FileUtils.ForceDeleteFile(TempConfigFilePath);
-				FileUtils.SetLastWriteTime(CacheConfigFile, DateTime.Now);
+				FileReference.SetLastWriteTime(CacheConfigFile, DateTime.Now);
 				return;
 			}
 			try
