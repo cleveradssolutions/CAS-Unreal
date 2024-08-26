@@ -6,7 +6,7 @@
 		<setString result="GoogleAppId" value="ca-app-pub-3940256099942544~1458002511"/>
 		<!-- End Dynamic Confi -->
 		<setBoolFromProperty result="IsAdvertisingIdUsed" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UseAdvertisingId" default="true"/>
-		<setStringFromProperty result="UserTrackingUsageDescription" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UserTrackingUsageDescription"/>
+		<setStringFromProperty result="UserTrackingUsageDescription" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UserTrackingUsageDescription" default="Your data will remain confidential and will only be used to provide you a better and personalised ad experience"/>
 		<setStringFromProperty result="GoogleCustomAppId" ini="Engine" section="CASPluginBuildConfig" property="GoogleAppIdIOS" default="$S(GoogleAppId)"/>
 	</init>
 	<iosPListUpdates>
