@@ -186,13 +186,14 @@ public class CleverAdsSolutions : ModuleRules
 		public virtual void ApplyToModule(CleverAdsSolutions Module, ReadOnlyTargetRules Target)
 		{
 			// module.ModuleDirectory = Plugins/CleverAdsSolutions/Source/CleverAdsSolutions
+			string ModuleDirectory = Module.ModuleDirectory;
 			PlatformName = Target.Platform.ToString();
 			LogDebug(PlatformName + " Plugin build configuration");
-			NativeDir = new DirectoryReference(Path.Combine(Module.ModuleDirectory, "..", "ThirdParty", PlatformName));
+			NativeDir = new DirectoryReference(Path.Combine(ModuleDirectory, "..", "ThirdParty", PlatformName));
 			ShippingMode = Target.Configuration == UnrealTargetConfiguration.Shipping;
 
 			string UPLFileName = "CAS_UPL_" + PlatformName + ".xml";
-			string UPLFilePath = Path.Combine(Module.ModuleDirectory, UPLFileName);
+			string UPLFilePath = Path.Combine(ModuleDirectory, UPLFileName);
 			if (!File.Exists(UPLFilePath))
 				LostRequiredFile(UPLFilePath);
 
@@ -201,11 +202,29 @@ public class CleverAdsSolutions : ModuleRules
 				LostRequiredFile(MediationListFile.FullName);
 
 			Module.PublicDefinitions.Add("WITH_CAS=1");
-			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(Module.ModuleDirectory, Target.RelativeEnginePath);
+
+			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
 			string ModuleDirectoryRelativeUPLFilePath = Path.Combine(ModuleDirectoryRelative, UPLFileName);
 			LogDebug("Apply UPL: " + ModuleDirectoryRelativeUPLFilePath);
 			Module.AdditionalPropertiesForReceipt.Add(PlatformName + "Plugin", ModuleDirectoryRelativeUPLFilePath);
 
+			// When building an application on a Windows machine, 
+			// it is crucial to ensure that your project folder is located on the same drive 
+			// as the Unreal Engine installation directory. (e.g., both on C: or both on D:)
+			if (ModuleDirectory[1] == ':' && ModuleDirectory[0] != Module.EngineDirectory[0])
+			{
+				string ErrorMessage = "The project folder msut be located on the same drive (" +
+					Module.EngineDirectory[0] + ":) as the Unreal Engine installation directory: " +
+					Module.EngineDirectory;
+				if (ShippingMode)
+				{
+					CancelBuild(ErrorMessage);
+				}
+				else
+				{
+					LogWarning(ErrorMessage);
+				}
+			}
 
 			JsonObject ConfigJson = JsonObject.Read(MediationListFile);
 			Version = ConfigJson.GetStringField("version");
@@ -491,7 +510,7 @@ public class CleverAdsSolutions : ModuleRules
 			if (FileReference.Exists(CacheConfigFile))
 			{
 				var ConfigFilePathForBuild = CacheConfigFile.ChangeExtension(null);
-				FileUtils.ForceMoveFile(CacheConfigFile, ConfigFilePathForBuild);
+				FileReference.Copy(CacheConfigFile, ConfigFilePathForBuild, true);
 				Module.AdditionalBundleResources.Add(new BundleResource(ConfigFilePathForBuild.FullName));
 			}
 
