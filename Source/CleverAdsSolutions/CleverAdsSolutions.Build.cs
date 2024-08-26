@@ -191,7 +191,6 @@ public class CleverAdsSolutions : ModuleRules
 			NativeDir = new DirectoryReference(Path.Combine(Module.ModuleDirectory, "..", "ThirdParty", PlatformName));
 			ShippingMode = Target.Configuration == UnrealTargetConfiguration.Shipping;
 
-			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(Module.ModuleDirectory, Target.RelativeEnginePath);
 			string UPLFileName = "CAS_UPL_" + PlatformName + ".xml";
 			string UPLFilePath = Path.Combine(Module.ModuleDirectory, UPLFileName);
 			if (!File.Exists(UPLFilePath))
@@ -202,7 +201,11 @@ public class CleverAdsSolutions : ModuleRules
 				LostRequiredFile(MediationListFile.FullName);
 
 			Module.PublicDefinitions.Add("WITH_CAS=1");
-			Module.AdditionalPropertiesForReceipt.Add(PlatformName + "Plugin", Path.Combine(ModuleDirectoryRelative, UPLFileName));
+			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(Module.ModuleDirectory, Target.RelativeEnginePath);
+			string ModuleDirectoryRelativeUPLFilePath = Path.Combine(ModuleDirectoryRelative, UPLFileName);
+			LogDebug("Apply UPL: " + ModuleDirectoryRelativeUPLFilePath);
+			Module.AdditionalPropertiesForReceipt.Add(PlatformName + "Plugin", ModuleDirectoryRelativeUPLFilePath);
+
 
 			JsonObject ConfigJson = JsonObject.Read(MediationListFile);
 			Version = ConfigJson.GetStringField("version");
@@ -260,6 +263,7 @@ public class CleverAdsSolutions : ModuleRules
 		private void UpdateUPLFile(string UPLFilePath)
 		{
 			var UPLFileFullPath = Path.GetFullPath(UPLFilePath);
+			LogDebug("Update UPL: " + UPLFileFullPath);
 			var UPLFile = new List<string>(256);
 			using (var Reader = File.OpenText(UPLFileFullPath))
 			{
@@ -360,11 +364,15 @@ public class CleverAdsSolutions : ModuleRules
 			var TempConfigFilePath = new FileReference(CacheConfigFile.FullName + ".temp");
 			if (FileReference.Exists(CacheConfigFile))
 			{
-				if (FileReference.GetLastWriteTime(CacheConfigFile).AddHours(12) > DateTime.Now)
+				var lastModifiedTime = FileReference.GetLastWriteTime(CacheConfigFile);
+				if (lastModifiedTime.AddHours(12) > DateTime.Now)
 				{
 					LogDebug("Configuration used from cache for " + ManagerID);
 					return;
 				}
+				LogDebug("Configuration cache found but out of date. Modified " +
+					lastModifiedTime.ToString() + ", Current " + DateTime.Now.ToString());
+
 				FileUtils.ForceMoveFile(CacheConfigFile, TempConfigFilePath);
 			}
 
@@ -384,6 +392,7 @@ public class CleverAdsSolutions : ModuleRules
 				LogDebug("Configuration loaded for " + ManagerID);
 				if (FileReference.Exists(TempConfigFilePath))
 					FileUtils.ForceDeleteFile(TempConfigFilePath);
+				FileUtils.SetLastWriteTime(CacheConfigFile, DateTime.Now);
 				return;
 			}
 			try
