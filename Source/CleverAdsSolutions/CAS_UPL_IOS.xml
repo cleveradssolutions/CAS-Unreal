@@ -42,8 +42,6 @@
 		<addElements once="true" tag="dict">
 			<key>GADDelayAppMeasurementInit</key>
 			<true/>
-			<key>MyTargetSDKAutoInitMode</key>
-			<false/>
 			<!-- Begin SKAdNetworkItems -->
 			<key>SKAdNetworkItems</key>
 			<array>

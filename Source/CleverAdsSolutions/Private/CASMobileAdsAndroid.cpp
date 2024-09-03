@@ -15,7 +15,7 @@ TSharedPtr<FJavaCASBridgeObject> GetBridge() {
         Bridge = MakeShared<FJavaCASBridgeObject, ESPMode::ThreadSafe>();
         const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
 
-        CAS_LOG_W("Apply Ads ID: %s", *DefaultConfig->CASAppID);
+        CAS_LOG_D("Apply Ads ID: %s", *DefaultConfig->CASAppID);
 
         if (DefaultConfig->Audience != ECASAudience::Undefined) {
             Bridge->CallMethod<void>(Bridge->SetUserAudienceForAds, static_cast<int>(DefaultConfig->Audience));
@@ -96,7 +96,7 @@ void UCASMobileAds::InitializeMobileAds() {
         return;
     }
 
-    CAS_LOG_W("Initialize Ads");
+    CAS_LOG_D("Initialize Ads");
     GetBridge()->CallMethod<void>(GetBridge()->InitializeMobileAds);
 }
 

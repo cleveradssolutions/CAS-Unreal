@@ -20,7 +20,7 @@ CASUBridge *GetBridge() {
     dispatch_once(&OnceToken, ^{
       const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
 
-      CAS_LOG_W("Apply Ads ID: %s", *DefaultConfig->CASAppID);
+      CAS_LOG_D("Apply Ads ID: %s", *DefaultConfig->CASAppID);
 
       // Framework Unreal info
       const FEngineVersion &EngineVersion = FEngineVersion::Current();
@@ -104,7 +104,7 @@ void UCASMobileAds::InitializeMobileAds() {
         return;
     }
 
-    CAS_LOG_W("Initialize Ads");
+    CAS_LOG_D("Initialize Ads");
 
     [GetBridge() initializeAds];
 }
