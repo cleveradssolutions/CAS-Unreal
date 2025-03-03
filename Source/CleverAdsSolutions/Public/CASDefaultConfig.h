@@ -189,9 +189,6 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Ogury (beta)"))
 	bool IncludeOgury = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include LoopMe (beta)"))
-	bool IncludeLoopMe = false;
-
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Madex (beta)", ToolTip = "Focused on RU region only."))
 	bool IncludeMadex = false;
 
