@@ -26,6 +26,18 @@ UCASLoadAdProxy* UCASLoadAdProxy::LoadRewardedAd(UObject* WorldContextObject, bo
     return Proxy;
 }
 
+
+UCASLoadAdProxy* UCASLoadAdProxy::LoadAppOpenAd(UObject* WorldContextObject, bool EventOnce) {
+    UCASLoadAdProxy* Proxy = NewObject<UCASLoadAdProxy>();
+    Proxy->PrivateFlag = 10 + kCASUType_APP_OPEN;
+    Proxy->IsOnceEvent = EventOnce;
+    Proxy->WorldContextObject = WorldContextObject;
+
+    // Invoke in any case to reset previously instance
+    CASInternal::KeepProxy(kCASUType_APP_OPEN, Proxy);
+    return Proxy;
+}
+
 void UCASLoadAdProxy::Activate() {
     bool NeedDestroy = true;
     if (PrivateFlag == 10 + kCASUType_INTER) {
@@ -50,6 +62,17 @@ void UCASLoadAdProxy::Activate() {
         }
 
         UCASMobileAds::LoadRewardedAd();
+    } else if (PrivateFlag == 10 + kCASUType_APP_OPEN) {
+        if (OnAdLoaded.IsBound()) {
+            NeedDestroy = false;
+            UCASMobileAds::OnAppOpenAdLoaded.AddUObject(this, &UCASLoadAdProxy::HandleAdLoaded);
+        }
+        if (OnAdFailed.IsBound()) {
+            NeedDestroy = false;
+            UCASMobileAds::OnAppOpenAdLoadFailed.AddUObject(this, &UCASLoadAdProxy::HandleAdFailed);
+        }
+
+        UCASMobileAds::LoadAppOpenAd();
     }
     if (NeedDestroy) {
         SetReadyToDestroy();

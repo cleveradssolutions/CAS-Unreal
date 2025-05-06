@@ -38,6 +38,13 @@ _REPO_ANDROID_DIR = os.path.join(_REPOS_DIR, 'CAS-Kotlin')
 _CONFIG_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'CASMediation.list')
 _BRIDGE_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'buildCAS', 'cas-unreal-plugin-release.aar')
                           
+iosOptimalSolutionContains = []
+iosFamiliesSolutionContains = []
+androidOptimalSolutionContains = []
+androidFamiliesSolutionContains = []
+mediation = {}
+adapterNames = {}
+                      
 def applyDynamicConfigDefaults(googleAppId, uplFile):
     uplFile.append('\t\t<setString result="GoogleAppId" value="' + googleAppId + '"/>\n')
 
@@ -118,7 +125,6 @@ def handle_upl_android(line, result):
         applyAndroidDependencyItem("repository $S(PluginDir)/../ThirdParty/Android/repository", result)
         applyAndroidDependencyItem("com.cleveradssolutions:cas-unreal-plugin:release", result)
         applyAndroidDependencyItem("com.cleveradssolutions:cas-sdk:" + mediation["version"], result)
-        applyAndroidDependency(mediation["simple"], result)
         applyAndroidDependency(mediation["adapters"], result)
         return True
     
@@ -133,17 +139,6 @@ def handle_upl_android(line, result):
                     for group in item['sourceGroups']:
                         result.append('\t\t\t\tit.includeGroup("' + group + '")\n')
                     result.append('\t\t\t}\n')
-                else:
-                    libs = item['libs']
-                    if len(libs) == 2:
-                        depGroup = libs[1]['name'].split(':')[0]
-                        result.append('\t\t\tcontent { it.includeGroup("' + depGroup + '") }\n')
-                    elif len(libs) > 2:
-                        result.append('\t\t\tcontent {\n')
-                        for lib in libs[1:]:
-                            depGroup = lib['name'].split(':')[0]
-                            result.append('\t\t\t\tit.includeGroup("' + depGroup + '")\n')
-                        result.append('\t\t\t}\n')
                 result.append('\t\t}\n')
                 print('[Android] Add maven repository: ' + item['source'])
         return True
@@ -190,10 +185,11 @@ def handle_window_config_header(line, result):
             if 'comment' in adapter:
                 meta.append('ToolTip = "' + adapter['comment'] + '"')
                 
-            includeOptimalIOS = adapterName in iosOptimalSolutionContains
-            includeFamiliesIOS = adapterName in iosFamiliesSolutionContains
-            includeOptimalAndroid = adapterName in androidOptimalSolutionContains
-            includeFamiliesAndroid = adapterName in androidFamiliesSolutionContains
+            adapterId = adapter['id']
+            includeOptimalIOS = adapterId in iosOptimalSolutionContains
+            includeFamiliesIOS = adapterId in iosFamiliesSolutionContains
+            includeOptimalAndroid = adapterId in androidOptimalSolutionContains
+            includeFamiliesAndroid = adapterId in androidFamiliesSolutionContains
             if includeOptimalIOS or includeFamiliesIOS or includeOptimalAndroid or includeFamiliesAndroid:
                 conditions = []
                 if includeOptimalIOS and includeOptimalAndroid:
@@ -224,21 +220,21 @@ def handle_window_config_header(line, result):
 def apply_solutions_config_impl(optimalSet, familiesSet, isOptimal, result):
     commonSet = optimalSet & familiesSet
     for adapter in commonSet:
-        result.append('\t\t\tInclude' + adapter + ' = IncludeOptimalAds || IncludeFamiliesAds;\n')
+        result.append('\t\t\tInclude' + adapterNames.get(adapter) + ' = IncludeOptimalAds || IncludeFamiliesAds;\n')
     
     if isOptimal:
         for adapter in optimalSet:
             if adapter not in commonSet:
-                result.append('\t\t\tInclude' + adapter + ' = IncludeOptimalAds;\n')
+                result.append('\t\t\tInclude' + adapterNames.get(adapter) + ' = IncludeOptimalAds;\n')
     else:
         for adapter in familiesSet:
             if adapter not in commonSet:
-                result.append('\t\t\tInclude' + adapter + ' = IncludeFamiliesAds;\n')
+                result.append('\t\t\tInclude' + adapterNames.get(adapter) + ' = IncludeFamiliesAds;\n')
 
 
 def handle_window_config_script(line, result):
     if "// Begin Families Ads" in line:
-        result.append('\t\tif(ConfigPlatformId == 1) {\n')
+        result.append('\t\tif (ConfigPlatformId == 1) {\n')
         apply_solutions_config_impl(androidOptimalSolutionContains, androidFamiliesSolutionContains, False, result)
         result.append('\t\t} else {\n')
         apply_solutions_config_impl(iosOptimalSolutionContains, iosFamiliesSolutionContains, False, result)
@@ -246,7 +242,7 @@ def handle_window_config_script(line, result):
         print('Updated: Default Config window Families Ads')
         return True
     if "// Begin Optimal Ads" in line:
-        result.append('\t\tif(ConfigPlatformId == 1) {\n')
+        result.append('\t\tif (ConfigPlatformId == 1) {\n')
         apply_solutions_config_impl(androidOptimalSolutionContains, androidFamiliesSolutionContains, True, result)
         result.append('\t\t} else {\n')
         apply_solutions_config_impl(iosOptimalSolutionContains, iosFamiliesSolutionContains, True, result)
@@ -273,10 +269,7 @@ def copy_source_file(source, destination):
     print("Updated: " + os.path.relpath(destination, _PLUGIN_ROOT_DIR))
     return True
 
-iosOptimalSolutionContains = []
-iosFamiliesSolutionContains = []
-androidOptimalSolutionContains = []
-androidFamiliesSolutionContains = []
+
 
 # Update iOS build config
 copy_source_file(_CONFIG_IOS_SOURCE, _CONFIG_IOS_DEST)
@@ -284,6 +277,8 @@ copy_source_file(_SKADNETWORK_SOURCE, _SKADNETWORK_DEST)
 with open(_CONFIG_IOS_DEST, 'r') as file:
     mediation = json.load(file)
     
+adapterNames = {adapter["id"]: adapter["name"] for adapter in mediation["adapters"]}
+
 for solution in mediation['simple']:
     if solution['name'] == 'OptimalAds':
         iosOptimalSolutionContains = set(solution['contains'])

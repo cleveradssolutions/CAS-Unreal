@@ -8,18 +8,18 @@
 #define SIG_VOID__VOID "()V"
 #define SIG_VOID__BOOL "(Z)V"
 #define SIG_VOID__INT "(I)V"
+#define SIG_VOID__INT_BOOL "(IZ)V"
 #define SIG_VOID__INT_INT_INT "(III)V"
 #define SIG_BOOL__VOID "()Z"
+#define SIG_BOOL__INT "(I)Z"
 #define SIG_INT__VOID "()I"
 #define SIG_INT__INT "(I)I"
 #define SIG_FLOAT__INT "(I)F"
 #define SIG_STRING__INT "(I)Ljava/lang/String;"
 #define SIG_STRING__VOID "()Ljava/lang/String;"
 #define SIG_VOID__STRING "(Ljava/lang/String;)V"
-#define SIG_VOID__BOOL_STRING "(ZLjava/lang/String;)V"
 #define SIG_VOID__BOOL_INT_STRING "(ZILjava/lang/String;)V"
 #define SIG_VOID__STRING_STRING "(Ljava/lang/String;Ljava/lang/String;)V"
-#define SIG_VOID__BOOL_BOOL_BOOL_BOOL "(ZZZZ)V"
 
 FJavaCASBridgeObject::FJavaCASBridgeObject()
     : FJavaClassObject(FName(BRIDGE_CLASS_NAME), SIG_VOID__ACTIVITY, FAndroidApplication::GetGameActivityThis()),
@@ -37,33 +37,14 @@ FJavaCASBridgeObject::FJavaCASBridgeObject()
       SetUserGenderForAds(GetClassMethod("setUserGenderForAds", SIG_VOID__INT)),
       SetLocationCollectionEnabled(GetClassMethod("setLocationCollectionEnabled", SIG_VOID__BOOL)),
       SetMetaDataProcessingOptions(GetClassMethod("setMetaDataProcessingOptions", SIG_VOID__INT)),
-      IsBannerAdReady(GetClassMethod("isBannerAdReady", SIG_BOOL__VOID)),
       LoadBannerAd(GetClassMethod("loadBannerAd", SIG_VOID__INT)),
-      ShowBannerAd(GetClassMethod("showBannerAd", SIG_VOID__VOID)),
-      HideBannerAd(GetClassMethod("hideBannerAd", SIG_VOID__VOID)),
       SetBannerAdPosition(GetClassMethod("setBannerAdPosition", SIG_VOID__INT_INT_INT)),
-      DestroyBannerAd(GetClassMethod("destroyBannerAd", SIG_VOID__VOID)),
       SetBannerAdRefreshInterval(GetClassMethod("setBannerAdRefreshInterval", SIG_VOID__INT)),
-      IsMRecAdReady(GetClassMethod("isMRecAdReady", SIG_BOOL__VOID)),
-      LoadMRecAd(GetClassMethod("loadMRecAd", SIG_VOID__VOID)),
-      ShowMRecAd(GetClassMethod("showMRecAd", SIG_VOID__VOID)),
-      HideMRecAd(GetClassMethod("hideMRecAd", SIG_VOID__VOID)),
       SetMRecAdPosition(GetClassMethod("setMRecAdPosition", SIG_VOID__INT_INT_INT)),
       SetMRecAdRefreshInterval(GetClassMethod("setMRecAdRefreshInterval", SIG_VOID__INT)),
-      DestroyMRecAd(GetClassMethod("destroyMRecAd", SIG_VOID__VOID)),
-      LoadInterstitialAd(GetClassMethod("loadInterstitialAd", SIG_VOID__VOID)),
-      IsInterstitialAdReady(GetClassMethod("isInterstitialAdReady", SIG_BOOL__VOID)),
-      ShowInterstitialAd(GetClassMethod("showInterstitialAd", SIG_VOID__VOID)),
       SetInterstitialAdMinimumInterval(GetClassMethod("setInterstitialAdMinimumInterval", SIG_VOID__INT)),
       RestartInterstitialAdInterval(GetClassMethod("restartInterstitialAdInterval", SIG_VOID__VOID)),
-      LoadRewardedAd(GetClassMethod("loadRewardedAd", SIG_VOID__VOID)),
-      IsRewardedAdReady(GetClassMethod("isRewardedAdReady", SIG_BOOL__VOID)),
-      ShowRewardedAd(GetClassMethod("showRewardedAd", SIG_VOID__VOID)),
-      ShowAdOnReturnToApp(GetClassMethod("showAdOnReturnToApp", SIG_VOID__VOID)),
-      SkipAdOnNextReturnToApp(GetClassMethod("skipAdOnNextReturnToApp", SIG_VOID__VOID)),
-      DestroyReturnToAppAd(GetClassMethod("destroyReturnToAppAd", SIG_VOID__VOID)),
       SetPluginConfig(GetClassMethod("setPluginConfig", SIG_VOID__STRING_STRING)),
-      SetAutoloadFormats(GetClassMethod("setAutoloadFormats", SIG_VOID__BOOL_BOOL_BOOL_BOOL)),
       SetTestAdModeForInit(GetClassMethod("setTestAdModeForInit", SIG_VOID__VOID)),
       SetInitializationExtras(GetClassMethod("setInitializationExtras", SIG_VOID__STRING_STRING)),
       SetConsentFlowEnabled(GetClassMethod("setConsentFlowEnabled", SIG_VOID__BOOL_INT_STRING)),
@@ -78,7 +59,16 @@ FJavaCASBridgeObject::FJavaCASBridgeObject()
       GetUserCountryCode(GetClassMethod("getUserCountryCode", SIG_STRING__VOID)),
       GetUserConsentForAds(GetClassMethod("getUserConsentForAds", SIG_INT__VOID)),
       IsUserConsentRequired(GetClassMethod("isUserConsentRequired", SIG_BOOL__VOID)),
-      AddTestDeviceId(GetClassMethod("addTestDeviceId", SIG_VOID__STRING)) {}
+      GetUserConsentFlowStatus(GetClassMethod("getUserConsentFlowStatus", SIG_INT__VOID)),
+      SetUserIDForAds(GetClassMethod("setUserIDForAds", SIG_VOID__STRING)),
+      AddTestDeviceId(GetClassMethod("addTestDeviceId", SIG_VOID__STRING)),
+      SetAutoloadEnabled(GetClassMethod("setAutoloadEnabled", SIG_VOID__INT_BOOL)),
+      SetAutoshowEnabled(GetClassMethod("setAutoshowEnabled", SIG_VOID__INT_BOOL)),
+      IsAdLoaded(GetClassMethod("isAdLoaded", SIG_BOOL__INT)),
+      LoadAd(GetClassMethod("loadAd", SIG_VOID__INT)),
+      ShowAd(GetClassMethod("showAd", SIG_VOID__INT)),
+      HideAd(GetClassMethod("hideAd", SIG_VOID__INT)),
+      DestroyAd(GetClassMethod("destroyAd", SIG_VOID__INT)) {}
 
 FJavaCASBridgeObject::~FJavaCASBridgeObject() {}
 

@@ -46,8 +46,8 @@ void CASInternal::HandleEventCallback(int AdType, int Callback, int Error) {
                     case kCASUType_REWARD:
                         info.PlacementType = CAS_FORMAT_REWARDED;
                         break;
-                    case kCASUType_APP_RETURN:
-                        info.PlacementType = CAS_FORMAT_RETURN_TO_APP;
+                    case kCASUType_APP_OPEN:
+                        info.PlacementType = CAS_FORMAT_APP_OPEN;
                         break;
                     case kCASUType_BANNER:
                         info.PlacementType = CAS_FORMAT_BANNER;
@@ -65,12 +65,13 @@ void CASInternal::HandleEventCallback(int AdType, int Callback, int Error) {
             switch (AdType) {
                 case kCASUType_INTER:
                     UCASMobileAds::OnInterstitialAdDisplayed.Broadcast();
+                    UCASMobileAds::OnReturnToAppAdDisplayed.Broadcast();
                     break;
                 case kCASUType_REWARD:
                     UCASMobileAds::OnRewardedAdDisplayed.Broadcast();
                     break;
-                case kCASUType_APP_RETURN:
-                    UCASMobileAds::OnReturnToAppAdDisplayed.Broadcast();
+                case kCASUType_APP_OPEN:
+                    UCASMobileAds::OnAppOpenAdDisplayed.Broadcast();
                     break;
             }
             break;
@@ -78,15 +79,17 @@ void CASInternal::HandleEventCallback(int AdType, int Callback, int Error) {
             switch (AdType) {
                 case kCASUType_INTER:
                     UCASMobileAds::OnInterstitialAdShowFailed.Broadcast(CasError);
+                    UCASMobileAds::OnReturnToAppAdShowFailed.Broadcast(CasError);
                     UCASMobileAds::OnInterstitialAdDismissed.Broadcast();
+                    UCASMobileAds::OnReturnToAppAdDismissed.Broadcast();
                     break;
                 case kCASUType_REWARD:
                     UCASMobileAds::OnRewardedAdShowFailed.Broadcast(CasError);
                     UCASMobileAds::OnRewardedAdDismissed.Broadcast();
                     break;
-                case kCASUType_APP_RETURN:
-                    UCASMobileAds::OnReturnToAppAdShowFailed.Broadcast(CasError);
-                    UCASMobileAds::OnReturnToAppAdDismissed.Broadcast();
+                case kCASUType_APP_OPEN:
+                    UCASMobileAds::OnAppOpenAdShowFailed.Broadcast(CasError);
+                    UCASMobileAds::OnAppOpenAdDismissed.Broadcast();
                     break;
             }
             break;
@@ -99,12 +102,13 @@ void CASInternal::HandleEventCallback(int AdType, int Callback, int Error) {
             switch (AdType) {
                 case kCASUType_INTER:
                     UCASMobileAds::OnInterstitialAdClicked.Broadcast();
+                    UCASMobileAds::OnReturnToAppAdClicked.Broadcast();
                     break;
                 case kCASUType_REWARD:
                     UCASMobileAds::OnRewardedAdClicked.Broadcast();
                     break;
-                case kCASUType_APP_RETURN:
-                    UCASMobileAds::OnReturnToAppAdClicked.Broadcast();
+                case kCASUType_APP_OPEN:
+                    UCASMobileAds::OnAppOpenAdClicked.Broadcast();
                     break;
                 case kCASUType_BANNER:
                     UCASMobileAds::OnBannerAdClicked.Broadcast();
@@ -118,12 +122,13 @@ void CASInternal::HandleEventCallback(int AdType, int Callback, int Error) {
             switch (AdType) {
                 case kCASUType_INTER:
                     UCASMobileAds::OnInterstitialAdDismissed.Broadcast();
+                    UCASMobileAds::OnReturnToAppAdDismissed.Broadcast();
                     break;
                 case kCASUType_REWARD:
                     UCASMobileAds::OnRewardedAdDismissed.Broadcast();
                     break;
-                case kCASUType_APP_RETURN:
-                    UCASMobileAds::OnReturnToAppAdDismissed.Broadcast();
+                    case kCASUType_APP_OPEN:
+                    UCASMobileAds::OnAppOpenAdDismissed.Broadcast();
                     break;
             }
             break;
@@ -134,6 +139,9 @@ void CASInternal::HandleEventCallback(int AdType, int Callback, int Error) {
                     break;
                 case kCASUType_REWARD:
                     UCASMobileAds::OnRewardedAdLoaded.Broadcast();
+                    break;
+                    case kCASUType_APP_OPEN:
+                    UCASMobileAds::OnAppOpenAdLoaded.Broadcast();
                     break;
                 case kCASUType_BANNER:
                     UCASMobileAds::OnBannerAdLoaded.Broadcast();
@@ -150,6 +158,9 @@ void CASInternal::HandleEventCallback(int AdType, int Callback, int Error) {
                     break;
                 case kCASUType_REWARD:
                     UCASMobileAds::OnRewardedAdLoadFailed.Broadcast(CasError);
+                    break;
+                    case kCASUType_APP_OPEN:
+                    UCASMobileAds::OnAppOpenAdLoadFailed.Broadcast(CasError);
                     break;
                 case kCASUType_BANNER:
                     UCASMobileAds::OnBannerAdFailed.Broadcast(CasError);

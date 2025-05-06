@@ -1,9 +1,10 @@
-﻿// Copyright CleverAdsSolutions LTD, CAS.AI. All Rights Reserved.
+// Copyright CleverAdsSolutions LTD, CAS.AI. All Rights Reserved.
 
 #pragma once
 
 #include "CASDefines.h"
 #include "UObject/Object.h"
+
 #include "CASDefaultConfig.generated.h"
 
 UCLASS(config = Engine, defaultconfig, perObjectConfig)
@@ -15,7 +16,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
         : CASAppID(TEXT("demo")),
           TestAdsMode(true),
           UserDebugGeography(ECASUserDebugGeography::EEA),
-          Audience(ECASAudience::NotChildren),
+          Audience(ECASAudience::Undefined),
           AutoConsentFlow(true),
           UseAdvertisingId(true),
           UserTrackingUsageDescription(TEXT(
@@ -44,6 +45,9 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 
     UPROPERTY(Config, EditDefaultsOnly, Category = "Integration")
     bool AutoloadRewardedAds;
+
+    UPROPERTY(Config, EditDefaultsOnly, Category = "Integration")
+    bool AutoloadAppOpenAds;
 
     UPROPERTY(
         Config,
@@ -129,9 +133,6 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
     bool IncludeFamiliesAds = false;
 
     // Begin Adapters - autogeneration tag
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
-	bool IncludeCrossPromotion = false;
-
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
 	bool IncludeIronSource = false;
 
@@ -177,8 +178,14 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include AudienceNetwork/Meta", ToolTip = "Required implementation of `Data processing options for Users in California`", EditCondition = "!IncludeOptimalAds"))
 	bool IncludeAudienceNetwork = false;
 
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
+	bool IncludeYsoNetwork = false;
+
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
 	bool IncludeCASExchange = false;
+
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
+	bool IncludeCrossPromotion = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
 	bool IncludeStartIO = false;
@@ -186,13 +193,16 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (ToolTip = "Focused on USA region only. Your apps must be approved for use"))
 	bool IncludeHyprMX = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Ogury (beta)"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
 	bool IncludeOgury = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Madex (beta)", ToolTip = "Focused on RU region only."))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Madex (beta)", ToolTip = "Focused on CIS region only."))
 	bool IncludeMadex = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Smaato (beta)", ToolTip = "Support Banner only"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Prado (beta)"))
+	bool IncludePrado = false;
+
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Smaato (beta)"))
 	bool IncludeSmaato = false;
 
     // End Adapters - autogeneration tag

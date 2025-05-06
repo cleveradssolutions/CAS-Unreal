@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "CASImpressionInfo.generated.h"
 
 USTRUCT(BlueprintType)

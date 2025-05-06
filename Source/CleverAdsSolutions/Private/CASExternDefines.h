@@ -6,8 +6,9 @@
 #define kCASUType_REWARD 2
 #define kCASUType_BANNER 3
 #define kCASUType_MREC 4
-#define kCASUType_APP_RETURN 5
+#define kCASUType_APP_OPEN 5
 #define kCASUType_MANAGER 6
+#define kCASUType_APP_RETURN 7
 
 #define kCASUCallback_SHOW 1
 #define kCASUCallback_PAY 2

@@ -11,9 +11,30 @@ UCASShowAdProxy* UCASShowAdProxy::ShowInterstitialAd(UObject* WorldContextObject
     return Proxy;
 }
 
+UCASShowAdProxy* UCASShowAdProxy::ShowAppOpenAd(UObject* WorldContextObject) {
+    UCASShowAdProxy* Proxy = NewObject<UCASShowAdProxy>();
+    Proxy->PrivateFlag = 10 + kCASUType_APP_OPEN;
+    Proxy->WorldContextObject = WorldContextObject;
+    return Proxy;
+}
+
+UCASShowAdProxy* UCASShowAdProxy::AutoshowInterstitialAd(UObject* WorldContextObject) {
+    UCASShowAdProxy* Proxy = NewObject<UCASShowAdProxy>();
+    Proxy->PrivateFlag = 20 + kCASUType_INTER;
+    Proxy->WorldContextObject = WorldContextObject;
+    return Proxy;
+}
+
+UCASShowAdProxy* UCASShowAdProxy::AutoshowAppOpenAd(UObject* WorldContextObject) {
+    UCASShowAdProxy* Proxy = NewObject<UCASShowAdProxy>();
+    Proxy->PrivateFlag = 20 + kCASUType_APP_OPEN;
+    Proxy->WorldContextObject = WorldContextObject;
+    return Proxy;
+}
+
 UCASShowAdProxy* UCASShowAdProxy::ShowAdOnReturnToApp(UObject* WorldContextObject) {
     UCASShowAdProxy* Proxy = NewObject<UCASShowAdProxy>();
-    Proxy->PrivateFlag = 10 + kCASUType_APP_RETURN;
+    Proxy->PrivateFlag = 20 + kCASUType_INTER;
     Proxy->WorldContextObject = WorldContextObject;
 
     // Invoke in any case to reset previously instance
@@ -23,7 +44,7 @@ UCASShowAdProxy* UCASShowAdProxy::ShowAdOnReturnToApp(UObject* WorldContextObjec
 
 void UCASShowAdProxy::Activate() {
     bool NeedDestroy = true;
-    if (PrivateFlag == 10 + kCASUType_INTER) {
+    if (PrivateFlag % 10 == kCASUType_INTER) {
         if (OnAdDisplayed.IsBound()) {
             NeedDestroy = false;
             UCASMobileAds::OnInterstitialAdDisplayed.AddUObject(this, &UCASShowAdProxy::HandleAdDisplayed);
@@ -42,26 +63,34 @@ void UCASShowAdProxy::Activate() {
             UCASMobileAds::OnInterstitialAdDismissed.AddUObject(this, &UCASShowAdProxy::HandleAdDismissed);
         }
 
-        UCASMobileAds::ShowInterstitialAd();
-    } else if (PrivateFlag == 10 + kCASUType_APP_RETURN) {
+        if (PrivateFlag == 20 + kCASUType_INTER) {
+            UCASMobileAds::AutoshowInterstitialAd();
+        } else {
+            UCASMobileAds::ShowInterstitialAd();
+        }
+    } else if (PrivateFlag % 10 == kCASUType_APP_OPEN) {
         if (OnAdDisplayed.IsBound()) {
             NeedDestroy = false;
-            UCASMobileAds::OnReturnToAppAdDisplayed.AddUObject(this, &UCASShowAdProxy::HandleAdDisplayed);
+            UCASMobileAds::OnAppOpenAdDisplayed.AddUObject(this, &UCASShowAdProxy::HandleAdDisplayed);
         }
         if (OnAdFailed.IsBound()) {
             NeedDestroy = false;
-            UCASMobileAds::OnReturnToAppAdShowFailed.AddUObject(this, &UCASShowAdProxy::HandleAdFailed);
+            UCASMobileAds::OnAppOpenAdShowFailed.AddUObject(this, &UCASShowAdProxy::HandleAdFailed);
         }
         if (OnAdClicked.IsBound()) {
             NeedDestroy = false;
-            UCASMobileAds::OnReturnToAppAdClicked.AddUObject(this, &UCASShowAdProxy::HandleAdClicked);
+            UCASMobileAds::OnAppOpenAdClicked.AddUObject(this, &UCASShowAdProxy::HandleAdClicked);
         }
         // Must be subscribe if bound another event to destroy on dismissed.
         if (!NeedDestroy || OnAdDismissed.IsBound()) {
             NeedDestroy = false;
-            UCASMobileAds::OnReturnToAppAdDismissed.AddUObject(this, &UCASShowAdProxy::HandleAdDismissed);
+            UCASMobileAds::OnAppOpenAdDismissed.AddUObject(this, &UCASShowAdProxy::HandleAdDismissed);
         }
-        UCASMobileAds::ShowAdOnReturnToApp();
+        if (PrivateFlag == 20 + kCASUType_APP_OPEN) {
+            UCASMobileAds::AutoshowAppOpenAd();
+        } else {
+            UCASMobileAds::ShowAppOpenAd();
+        }
     }
     if (NeedDestroy) {
         SetReadyToDestroy();
@@ -78,7 +107,7 @@ void UCASShowAdProxy::HandleAdClicked() { OnAdClicked.Broadcast(ECASError::OK); 
 
 void UCASShowAdProxy::HandleAdDismissed() {
     OnAdDismissed.Broadcast(ECASError::OK);
-    if (PrivateFlag != 10 + kCASUType_APP_RETURN) {
+    if (PrivateFlag < 20) {
         SetReadyToDestroy();
     }
 }

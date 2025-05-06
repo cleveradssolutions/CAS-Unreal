@@ -2,6 +2,8 @@
 
 #define USE_ENGNIE_INTERMEDIATE
 
+//#define CAS_VERBOSE_LOGS
+
 using UnrealBuildTool;
 using System;
 using System.IO;
@@ -58,11 +60,10 @@ public class CleverAdsSolutions : ModuleRules
 	public CleverAdsSolutions(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.NoSharedPCHs;
-
 		PrivatePCHHeaderFile = "Private/CleverAdsSolutionsPrivatePCH.h";
-
+		PrivateIncludePaths.Add("CleverAdsSolutions/Private");
+		PrivateIncludePathModuleNames.Add("Settings");
 		PublicDependencyModuleNames.Add("Core");
-
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -71,12 +72,6 @@ public class CleverAdsSolutions : ModuleRules
 				"Projects"
 			}
 		);
-
-		PrivateIncludePathModuleNames.Add("Settings");
-
-		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
-		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
-		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "PublicSubsystem"));
 
 #if UE_5_3_OR_LATER
 		PrivateDefinitions.Add("UE_5_3_OR_LATER=1");
@@ -149,7 +144,7 @@ public class CleverAdsSolutions : ModuleRules
 		public string CacheConfigFileName;
 		public FileReference CacheConfigFile;
 
-		public int RunProcess(string Name, params string[] Args)
+		public int RunProcess(string Name, bool Verbose, params string[] Args)
 		{
 			var ArgsLine = string.Join(" ", Args);
 			LogDebug("Run process: " + Name + " " + ArgsLine + " ...");
@@ -162,7 +157,12 @@ public class CleverAdsSolutions : ModuleRules
 
 			var LocalProcess = new Process();
 			LocalProcess.StartInfo = Info;
-			LocalProcess.OutputDataReceived += LocalProcessOutput;
+#if !CAS_VERBOSE_LOGS
+			if (Verbose)
+#endif
+			{
+				LocalProcess.OutputDataReceived += LocalProcessOutput;
+			}
 			// Some minor warnings will be received as errors. 
 			LocalProcess.ErrorDataReceived += LocalProcessOutput;
 			return Utils.RunLocalProcess(LocalProcess);
@@ -190,7 +190,8 @@ public class CleverAdsSolutions : ModuleRules
 			PlatformName = Target.Platform.ToString();
 			LogDebug(PlatformName + " Plugin build configuration");
 			NativeDir = new DirectoryReference(Path.Combine(ModuleDirectory, "..", "ThirdParty", PlatformName));
-			ShippingMode = Target.Configuration == UnrealTargetConfiguration.Shipping;
+			ShippingMode = Target.Configuration == UnrealTargetConfiguration.Shipping
+				&& Target.ProjectFile.GetFileName() != "HostProject.uproject";
 
 			string UPLFileName = "CAS_UPL_" + PlatformName + ".xml";
 			string UPLFilePath = Path.Combine(ModuleDirectory, UPLFileName);
@@ -577,7 +578,7 @@ public class CleverAdsSolutions : ModuleRules
 			CreatePodfile(Config);
 
 			string PodTool = CocoaPods.FindPodTool();
-			RunProcess(PodTool, "update");
+			RunProcess(PodTool, true, "update");
 
 			var XCWorkspacePath = Path.Combine(NativeDir.FullName, IOSFameworksWorkspace);
 			if (!Directory.Exists(XCWorkspacePath))
@@ -596,7 +597,7 @@ public class CleverAdsSolutions : ModuleRules
 				LogWarning(e.ToString());
 			}
 
-			RunProcess(PodTool, "deintegrate");
+			RunProcess(PodTool, false, "deintegrate");
 			FileUtils.ForceDeleteDirectory(XCWorkspacePath);
 			FileUtils.ForceDeleteFile(PodfileLock);
 			FileUtils.ForceDeleteDirectory(BuildDir);
@@ -604,7 +605,7 @@ public class CleverAdsSolutions : ModuleRules
 
 		private void BuildPods(string BuildDir)
 		{
-			RunProcess("xcodebuild", "build",
+			RunProcess("xcodebuild", false, "build",
 				"-workspace", IOSFameworksWorkspace,
 				"-scheme", IOSFrameworksName,
 				"-derivedDataPath", WrapInQuotes(BuildDir),
@@ -626,14 +627,18 @@ public class CleverAdsSolutions : ModuleRules
 				f.WriteLine("source 'https://github.com/cleveradssolutions/CAS-Specs.git'");
 				f.WriteLine("platform :ios, '" + IOSMinimumVersion + "'");
 				f.WriteLine("use_frameworks! :linkage => :static");
-				f.WriteLine("$cas_version = '" + Version + "'");
+				//f.WriteLine("warn_for_unused_master_specs_repo => false");
 				f.WriteLine();
 
 				f.WriteLine("target '" + IOSFrameworksName + "' do");
-				f.WriteLine("  pod 'CleverAdsSolutions-Base', $cas_version");
-				for (int i = 0; i < Config.Adapters.Length; i++)
+				f.WriteLine("  pod 'CleverAdsSolutions-Base', '" + Version + "'");
+				for (int adapterIndex = 0; adapterIndex < Config.Adapters.Length; adapterIndex++)
 				{
-					f.WriteLine("  pod '" + FindAdapter(Config.Adapters[i]).Libs[0].Name + "', $cas_version");
+					var adapter = FindAdapter(Config.Adapters[adapterIndex]);
+					for (int libIndex = 0; libIndex < adapter.Libs.Length; libIndex++)
+					{
+						f.WriteLine("  pod '" + adapter.Libs[libIndex].Name + "', '" + adapter.Libs[libIndex].Version + "'");
+					}
 				}
 				f.WriteLine("end");
 			}
@@ -667,10 +672,17 @@ public class CleverAdsSolutions : ModuleRules
 			Json.TryGetStringField("version", out Version);
 			Json.TryGetStringArrayField("embedPath", out EmbedPath);
 
-			JsonObject[] RawLibs = Json.GetObjectArrayField("libs");
-			Libs = new CASLib[RawLibs.Length];
-			for (int i = 0; i < RawLibs.Length; i++)
-				Libs[i] = new CASLib(RawLibs[i]);
+			JsonObject[] RawLibs;
+			if (Json.TryGetObjectArrayField("libs", out RawLibs))
+			{
+				Libs = new CASLib[RawLibs.Length];
+				for (int i = 0; i < RawLibs.Length; i++)
+					Libs[i] = new CASLib(RawLibs[i]);
+			}
+			else
+			{
+				Libs = new CASLib[0];
+			}
 
 			Included = false;
 		}
@@ -830,7 +842,7 @@ public class CleverAdsSolutions : ModuleRules
 						break;
 					}
 				}
-				if (Bundle == null)
+				if (Bundle == null || Bundle.bundle != null)
 				{
 					AdditResSet.Add(Resource);
 					Directory.Move(Item, Path.Combine(Handler.ResourcesDir.FullName, Resource));

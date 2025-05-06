@@ -28,6 +28,11 @@ class CLEVERADSSOLUTIONS_API UCASLoadAdProxy : public UBlueprintAsyncActionBase 
               meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject"))
     static UCASLoadAdProxy* LoadRewardedAd(UObject* WorldContextObject, bool EventOnce = true);
 
+    UFUNCTION(BlueprintCallable,
+        Category = "CAS Mobile Ads",
+        meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject"))
+    static UCASLoadAdProxy* LoadAppOpenAd(UObject* WorldContextObject, bool EventOnce = true);
+
     // UBlueprintAsyncActionBase interface
     virtual void Activate() override;
     // End of UBlueprintAsyncActionBase interface

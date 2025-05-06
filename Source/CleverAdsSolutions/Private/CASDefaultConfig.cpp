@@ -21,26 +21,26 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
         }
     } else if (PropertyName == GET_MEMBER_NAME_CHECKED(UCASDefaultConfig, IncludeFamiliesAds)) {
         // Begin Families Ads solution - autogeneration tag
-		if(ConfigPlatformId == 1) {
-			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+		if (ConfigPlatformId == 1) {
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeKidoz = IncludeFamiliesAds;
 			IncludeSuperAwesome = IncludeFamiliesAds;
 		} else {
-			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeKidoz = IncludeFamiliesAds;
 			IncludeSuperAwesome = IncludeFamiliesAds;
 		}
@@ -53,36 +53,36 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 #endif
     } else if (PropertyName == GET_MEMBER_NAME_CHECKED(UCASDefaultConfig, IncludeOptimalAds)) {
         // Begin Optimal Ads solution  - autogeneration tag
-		if(ConfigPlatformId == 1) {
-			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+		if (ConfigPlatformId == 1) {
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeMintegral = IncludeOptimalAds;
+			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeAppLovin = IncludeOptimalAds;
 			IncludeCASExchange = IncludeOptimalAds;
 			IncludeAudienceNetwork = IncludeOptimalAds;
-			IncludeAppLovin = IncludeOptimalAds;
-			IncludePangle = IncludeOptimalAds;
 			IncludeYandexAds = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
+			IncludeMintegral = IncludeOptimalAds;
+			IncludePangle = IncludeOptimalAds;
 		} else {
-			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeAppLovin = IncludeOptimalAds;
 			IncludeCASExchange = IncludeOptimalAds;
 			IncludeAudienceNetwork = IncludeOptimalAds;
-			IncludeAppLovin = IncludeOptimalAds;
-			IncludePangle = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
+			IncludePangle = IncludeOptimalAds;
 		}
         // End Optimal Ads solution
 

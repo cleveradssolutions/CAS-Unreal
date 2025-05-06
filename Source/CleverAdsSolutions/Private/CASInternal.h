@@ -24,6 +24,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogCAS_AI, Log, All);
 #define CAS_FORMAT_MREC TEXT("MediumRectangle")
 #define CAS_FORMAT_INTERSTITIAL TEXT("Interstitial")
 #define CAS_FORMAT_REWARDED TEXT("Rewarded")
+#define CAS_FORMAT_APP_OPEN TEXT("AppOpen")
 #define CAS_FORMAT_RETURN_TO_APP TEXT("Return To App")
 
 namespace CASInternal {

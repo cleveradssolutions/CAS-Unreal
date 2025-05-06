@@ -22,16 +22,32 @@ class CLEVERADSSOLUTIONS_API UCASShowAdProxy : public UBlueprintAsyncActionBase 
     UPROPERTY(BlueprintAssignable, Category = "CAS Mobile Ads")
     FCASResultEvent OnAdDismissed;
 
-    // Shows the login UI for the currently active online subsystem, if the subsystem supports a login UI.
     UFUNCTION(BlueprintCallable,
               Category = "CAS Mobile Ads",
               meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject"))
     static UCASShowAdProxy* ShowInterstitialAd(UObject* WorldContextObject);
 
-    // Shows the login UI for the currently active online subsystem, if the subsystem supports a login UI.
     UFUNCTION(BlueprintCallable,
               Category = "CAS Mobile Ads",
               meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject"))
+    static UCASShowAdProxy* ShowAppOpenAd(UObject* WorldContextObject);
+
+    UFUNCTION(BlueprintCallable,
+              Category = "CAS Mobile Ads",
+              meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject"))
+    static UCASShowAdProxy* AutoshowInterstitialAd(UObject* WorldContextObject);
+
+    UFUNCTION(BlueprintCallable,
+              Category = "CAS Mobile Ads",
+              meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject"))
+    static UCASShowAdProxy* AutoshowAppOpenAd(UObject* WorldContextObject);
+
+    UFUNCTION(BlueprintCallable,
+              Category = "CAS Mobile Ads",
+              meta = (BlueprintInternalUseOnly = "true",
+                      WorldContext = "WorldContextObject",
+                      DeprecatedFunction,
+                      DeprecationMessage = "Use new AutoshowInterstitialAd() or AutoshowAppOpenAd()"))
     static UCASShowAdProxy* ShowAdOnReturnToApp(UObject* WorldContextObject);
 
     // UBlueprintAsyncActionBase interface

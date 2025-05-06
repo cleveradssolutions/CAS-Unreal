@@ -1,10 +1,11 @@
-﻿// Copyright CleverAdsSolutions LTD, CAS.AI. All Rights Reserved.
+// Copyright CleverAdsSolutions LTD, CAS.AI. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "CASImpressionInfo.h"
+
 #include "CASDefines.generated.h"
 
 UENUM(BlueprintType)
@@ -21,7 +22,7 @@ enum class ECASAudience : uint8 {
      *
      * You could change the audience at runtime after determining the user's age.
      */
-    Undefined,
+    Undefined = 0,
     /**
      * Audiences under the age of 13 who subject of COPPA.
      *
@@ -37,11 +38,11 @@ enum class ECASAudience : uint8 {
      * - Compliance with all applicable legal regulations and industry standards relating to advertising to
      * children.</para>
      */
-    Children,
+    Children = 1,
     /**
      * Audiences over the age of 13 NOT subject to the restrictions of child protection laws.
      */
-    NotChildren
+    NotChildren = 2
 };
 
 UENUM(BlueprintType)
@@ -49,15 +50,15 @@ enum class ECASUserConsentStatus : uint8 {
     /**
      * Mediation ads network behavior
      */
-    Undefined,
+    Undefined = 0,
     /**
      * User consents to behavioral targeting in compliance with GDPR.
      */
-    Accepted,
+    Accepted = 1,
     /**
      * User does not consent to behavioral targeting in compliance with GDPR.
      */
-    Denied
+    Denied = 2
 };
 
 UENUM(BlueprintType)
@@ -65,15 +66,15 @@ enum class ECASUserCCPAStatus : uint8 {
     /**
      * Mediation ads network behavior
      */
-    Undefined,
+    Undefined = 0,
     /**
      * User does not consent to the sale of his or her personal information in compliance with CCPA.
      */
-    OptOutSale,
+    OptOutSale = 1,
     /**
      * User consents to the sale of his or her personal information in compliance with CCPA.
      */
-    OptInSale
+    OptInSale = 2
 };
 
 UENUM(BlueprintType)
@@ -84,15 +85,23 @@ enum class ECASUserDebugGeography : uint8 {
     /**
      * Debug geography disabled.
      */
-    Disabled,
+    Disabled = 0,
     /**
      * Geography appears as in European Economic Area.
      */
-    EEA,
+    EEA = 1,
     /**
-     * Geography appears as not in European Economic Area.
+     * Renamed to Other
      */
-    NotEEA
+    NotEEA = 2,
+    /**
+     * Geography appears as in a regulated US State for debug devices.
+     */
+    RegulatedUSState = 3,
+    /**
+     * Geography appears as in a region with no regulation in force.
+     */
+    Other = 4
 };
 
 /**
@@ -101,51 +110,69 @@ enum class ECASUserDebugGeography : uint8 {
  */
 UENUM(BlueprintType)
 enum class ECASError : uint8 {
+    /**
+     * Indicates an internal error occurred.
+     */
     Internal = 0,
     /**
-     * Loading ads cannot be successful without an internet connection.
+     * Indicates that ads are not ready to be shown.
+     * Ensure to call the appropriate ad loading method or use automatic load mode.
+     * If using automatic load mode, wait a little longer for ads to be ready.
      */
-    NoConnection = 2,
+    NotReady = 1,
     /**
-     * This means we are not able to serve ads to this person.
-     * Note that if you can see ads while you are testing with enabled Test Ads Mode,
-     * your implementation works correctly and people will be able to see ads in your app once it's live.
+     * Indicates that the device is rejected for services.
+     * Services may not be available for some devices that do not meet the requirements.
+     * For example, the country or version of the OS.
+     */
+    Rejected = 2,
+    /**
+     * Indicates that no ads are available to be served.
+     * If ads are visible in demo mode, your implementation is correct, and ads will be served once live.
      */
     NoFill = 3,
     /**
-     * A configuration error has been detected in one of the mediation ad networks.
-     * Please report error message to your manager support.
+     * Indicates that the ad creative has reached its daily cap for the user.
+     * This is typically relevant for cross-promotion ads only.
      */
-    Configuration = 6,
+    ReachedCap = 6,
     /**
-     * Ad are not ready to show.
-     * You need to call Load ads or use one of the automatic cache mode.
-     * If you are already using automatic cache mode then just wait a little longer.
-     * You can always check if ad is ready to show.
+     * Indicates that the CAS is not initialized.
      */
-    NotReady = 11,
+    NotInitialized = 7,
     /**
-     * The manager you want to use is not active at the moment.
+     * Indicates a timeout error occurred because the advertising source did not respond in time.
+     * The system will continue waiting for a response, which may delay ad loading or cause a loading error.
      */
-    ManagerIsDisabled = 12,
+    Timeout = 8,
     /**
-     * Ad creative has reached its daily cap for user.
-     * The reason is for cross promo only.
+     * Indicates that there is no internet connection available, which prevents ads from loading.
      */
-    ReachedCap = 14,
+    NoConnection = 9,
     /**
-     * The interval between impressions of Interstitial Ad has not yet passed.
+     * Indicates that there is a configuration error in one of the mediation ad sources.
+     * Report this error to your support manager for further assistance.
      */
-    IntervalNotYetPassed = 21,
+    Configuration = 10,
     /**
-     * You can not show ads because another fullscreen ad is being displayed at the moment.
-     * Please check your ad call logic to eliminate duplicate impressions.
+     * Indicates that the interval between impressions of interstitial ads has not yet passed.
+     * To change the interval, use the AdsSettings.interstitialInterval method.
+     * This error may also occur if a trial ad-free interval has been defined and has not yet passed since app start.
      */
-    AlreadyDisplayed = 22,
+    IntervalNotYetPassed = 11,
     /**
-     * Ads cannot be shown as the application is currently not visible to the user.
+     * Indicates that another fullscreen ad is currently being displayed, preventing new ads from showing.
+     * Review your ad display logic to avoid duplicate impressions.
      */
-    AppNotForeground = 23,
+    AlreadyDisplayed = 12,
+    /**
+     * Indicates that ads cannot be shown because the application is not currently in the foreground.
+     */
+    AppNotForeground = 13,
+    /**
+     * Deprecated name of NotInitialized
+     */
+    ManagerIsDisabled = NotInitialized,
     /**
      * Not Error status.
      */
@@ -214,7 +241,7 @@ enum class ECASConsentFlowStatus : uint8 {
      */
     NetworkError = 11,
     /**
-     * There was the app not foreground error. 
+     * There was the app not foreground error.
      */
     NotForegroundApp = 12,
     /**
@@ -228,7 +255,9 @@ struct FCASInitialConfig {
     GENERATED_BODY()
 
    public:
-    FCASInitialConfig() : UserConsentStatus(ECASUserConsentStatus::Undefined) {}
+    FCASInitialConfig()
+        : UserConsentStatus(ECASUserConsentStatus::Undefined),
+        ConsentFlowStatus(ECASConsentFlowStatus::Undefined) {}
 
     /**
      * Get the CAS initialization error, or empty if the initialization succses.
@@ -247,6 +276,12 @@ struct FCASInitialConfig {
      */
     UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
     ECASUserConsentStatus UserConsentStatus;
+
+    /**
+     * Get the consent flow status.
+     */
+    UPROPERTY(BlueprintReadOnly, Category = "CAS Mobile Ads")
+    ECASConsentFlowStatus ConsentFlowStatus;
 };
 
 // MARK: Multicast delegate
@@ -262,7 +297,3 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASResultEvent, const ECASError, Er
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASInitResultEvent, const FCASInitialConfig &, Config);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASImpressionEvent, const FCASImpressionInfo &, AdImpression);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FCASImpressionDelegate, const FCASImpressionInfo &, AdImpression);
-
-// MARK: Deprecated Dynamic Multicast Delegates
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASErrorEvent, FString, ErrorMessage);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCASImpressionInfoEvent, FCASImpressionInfo, ImpressionInfo);
