@@ -242,7 +242,7 @@ public:
 
     /**
      * Gets or sets whether autoloading of ads is enabled.
-     * You should call `LoadBannerAd()` once to create Ad Intance.
+     * You should call `LoadBannerAd()` once to create Ad Instance.
      *
      * If enabled, the ad will automatically load new content when the current ad
      * is dismissed or completed. Additionally, it will automatically retry
@@ -305,7 +305,7 @@ public:
 
     /**
      * Gets or sets whether autoloading of ads is enabled.
-     * You should call `LoadMRecAd()` once to create Ad Intance.
+     * You should call `LoadMRecAd()` once to create Ad Instance.
      *
      * If enabled, the ad will automatically load new content when the current ad
      * is dismissed or completed. Additionally, it will automatically retry
@@ -364,7 +364,7 @@ public:
 
     /**
      * Gets or sets whether autoloading of ads is enabled.
-     * You should call `LoadInterstitialAd()` once to create Ad Intance.
+     * You should call `LoadInterstitialAd()` once to create Ad Instance.
      *
      * If enabled, the ad will automatically load new content when the current ad
      * is dismissed or completed. Additionally, it will automatically retry
@@ -454,7 +454,7 @@ public:
 
     /**
      * Gets or sets whether autoloading of ads is enabled.
-     * You should call `LoadRewardedAd()` once to create Ad Intance.
+     * You should call `LoadRewardedAd()` once to create Ad Instance.
      *
      * If enabled, the ad will automatically load new content when the current ad
      * is dismissed or completed. Additionally, it will automatically retry
@@ -507,7 +507,7 @@ public:
 
     /**
      * Gets or sets whether autoloading of ads is enabled.
-     * You should call `LoadAppOpenAd()` once to create Ad Intance.
+     * You should call `LoadAppOpenAd()` once to create Ad Instance.
      *
      * If enabled, the ad will automatically load new content when the current ad
      * is dismissed or completed. Additionally, it will automatically retry

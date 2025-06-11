@@ -185,7 +185,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	bool IncludeCASExchange = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
-	bool IncludeCrossPromotion = false;
+	bool IncludeCrossPromo = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
 	bool IncludeStartIO = false;
