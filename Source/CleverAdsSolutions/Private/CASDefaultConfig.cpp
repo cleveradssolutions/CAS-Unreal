@@ -30,7 +30,6 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeKidoz = IncludeFamiliesAds;
-			IncludeSuperAwesome = IncludeFamiliesAds;
 		} else {
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
@@ -42,7 +41,6 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeKidoz = IncludeFamiliesAds;
-			IncludeSuperAwesome = IncludeFamiliesAds;
 		}
         // End Families Ads Solution
 
