@@ -82,27 +82,27 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,4.1.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,4.2.0" /> <insertNewline/>
 		<if condition="IncludeIronSource"><true>
-		<insertValue value="com.cleveradssolutions,ironsource,8.9.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ironsource,8.10.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
-		<insertValue value="com.cleveradssolutions,unity,4.15.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,unity,4.15.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeGoogleAds"><true>
-		<insertValue value="com.cleveradssolutions,google,24.4.0.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,google,24.4.0.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeLiftoffMonetize"><true>
 		<insertValue value="com.cleveradssolutions,vungle,7.5.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeInMobi"><true>
-		<insertValue value="com.cleveradssolutions,inmobi,10.8.3.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,inmobi,10.8.3.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeChartboost"><true>
-		<insertValue value="com.cleveradssolutions,chartboost,9.8.3.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,chartboost,9.9.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeDTExchange"><true>
-		<insertValue value="com.cleveradssolutions,fyber,8.3.7.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,fyber,8.3.7.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeKidoz"><true>
 		<insertValue value="com.cleveradssolutions,kidoz,10.0.4.0" /> <insertNewline/>
@@ -117,16 +117,16 @@
 		<insertValue value="com.cleveradssolutions,pangle,7.2.0.6" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
-		<insertValue value="com.cleveradssolutions,bigo,5.3.0.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,bigo,5.4.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYandexAds"><true>
-		<insertValue value="com.cleveradssolutions,yandex,27.14.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,yandex,27.14.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAudienceNetwork"><true>
 		<insertValue value="com.cleveradssolutions,facebook,6.20.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYsoNetwork"><true>
-		<insertValue value="com.cleveradssolutions,ysonetwork,1.2.9.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ysonetwork,1.2.9.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCASExchange"><true>
 		<insertValue value="com.cleveradssolutions,cas-exchange,4.1.0" /> <insertNewline/>
@@ -135,10 +135,10 @@
 		<insertValue value="com.cleveradssolutions,cas-promo,4.0.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeStartIO"><true>
-		<insertValue value="com.cleveradssolutions,startio,5.2.2.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,startio,5.2.3.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeHyprMX"><true>
-		<insertValue value="com.cleveradssolutions,hyprmx,6.4.2.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,hyprmx,6.4.3.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeOgury"><true>
 		<insertValue value="com.cleveradssolutions,ogury,6.0.1.0" /> <insertNewline/>
