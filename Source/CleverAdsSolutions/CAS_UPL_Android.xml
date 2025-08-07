@@ -32,6 +32,7 @@
 		<setBoolFromProperty result="IncludeMadex" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeMadex" default="false"/>
 		<setBoolFromProperty result="IncludePrado" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludePrado" default="false"/>
 		<setBoolFromProperty result="IncludeSmaato" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeSmaato" default="false"/>
+		<setBoolFromProperty result="IncludeMaticoo" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="IncludeMaticoo" default="false"/>
 		<!-- End Init Mediation -->
 		<setBoolFromProperty result="UseAdvertisingId" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UseAdvertisingId" default="true"/>
 		<setStringFromProperty result="GoogleCustomAppId" ini="Engine" section="CASPluginBuildConfig" property="GoogleAppIdAndroid" default="$S(GoogleAppId)"/>
@@ -82,45 +83,45 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,4.2.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,4.3.0" /> <insertNewline/>
 		<if condition="IncludeIronSource"><true>
 		<insertValue value="com.cleveradssolutions,ironsource,8.10.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
-		<insertValue value="com.cleveradssolutions,unity,4.15.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,unity,4.16.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeGoogleAds"><true>
-		<insertValue value="com.cleveradssolutions,google,24.4.0.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,google,24.5.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeLiftoffMonetize"><true>
 		<insertValue value="com.cleveradssolutions,vungle,7.5.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeInMobi"><true>
-		<insertValue value="com.cleveradssolutions,inmobi,10.8.3.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,inmobi,10.8.7.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeChartboost"><true>
-		<insertValue value="com.cleveradssolutions,chartboost,9.9.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,chartboost,9.9.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeDTExchange"><true>
-		<insertValue value="com.cleveradssolutions,fyber,8.3.7.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,fyber,8.3.8.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeKidoz"><true>
 		<insertValue value="com.cleveradssolutions,kidoz,10.0.4.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMintegral"><true>
-		<insertValue value="com.cleveradssolutions,mintegral,16.9.71.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mintegral,16.9.91.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
-		<insertValue value="com.cleveradssolutions,applovin,13.3.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,applovin,13.3.1.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePangle"><true>
-		<insertValue value="com.cleveradssolutions,pangle,7.2.0.6" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,pangle,7.3.0.5" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
-		<insertValue value="com.cleveradssolutions,bigo,5.4.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,bigo,5.5.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYandexAds"><true>
-		<insertValue value="com.cleveradssolutions,yandex,27.14.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,yandex,27.15.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAudienceNetwork"><true>
 		<insertValue value="com.cleveradssolutions,facebook,6.20.0.0" /> <insertNewline/>
@@ -129,28 +130,31 @@
 		<insertValue value="com.cleveradssolutions,ysonetwork,1.2.9.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCASExchange"><true>
-		<insertValue value="com.cleveradssolutions,cas-exchange,4.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-exchange,4.3.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCrossPromo"><true>
 		<insertValue value="com.cleveradssolutions,cas-promo,4.0.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeStartIO"><true>
-		<insertValue value="com.cleveradssolutions,startio,5.2.3.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,startio,5.2.3.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeHyprMX"><true>
 		<insertValue value="com.cleveradssolutions,hyprmx,6.4.3.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeOgury"><true>
-		<insertValue value="com.cleveradssolutions,ogury,6.0.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ogury,6.1.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMadex"><true>
-		<insertValue value="com.cleveradssolutions,madex,1.7.4.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,madex,1.7.5.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePrado"><true>
 		<insertValue value="com.cleveradssolutions,prado,10.0.4.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeSmaato"><true>
 		<insertValue value="com.cleveradssolutions,smaato,22.7.2.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeMaticoo"><true>
+		<insertValue value="com.cleveradssolutions,maticoo,1.8.6.1" /> <insertNewline/>
 		</true></if>
 		<!-- End Dependencies -->
 	</AARImports>
@@ -219,14 +223,6 @@ allprojects {
 		}
 		<!-- End Repos -->
 	}
-
-	// Uncomment the following lines if your min API level is 25 or below and you use the Advertising ID.
-	// Known issue: Crash in play-services-ads-identifier:18.2.0 on API levels below 26.
-	// configurations.all {
-    //    resolutionStrategy {
-    //      force 'com.google.android.gms:play-services-ads-identifier:18.1.0'
-    //    }
-    //}
 }
 		</insert>
 	</buildGradleAdditions>
