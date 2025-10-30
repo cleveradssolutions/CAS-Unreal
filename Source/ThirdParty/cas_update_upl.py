@@ -316,7 +316,7 @@ embed_bridge_framework('CASUnrealBridge')
 # Update Unreal Plugin manifest
 with open(_PLUGIN_MANIFEST, 'r') as file:
     data = json.load(file)
-versionCodeArray = reversed(map(int, (mediation["version"].split("."))))
+versionCodeArray = reversed(list(map(int, (mediation["version"].split(".")))))
 versionCodeArray = [(10 ** (index * 2) * ver) for index,ver in enumerate(versionCodeArray)] 
 data["Version"] = sum(versionCodeArray)
 print('Plugin version code: ' + str(data["Version"]))

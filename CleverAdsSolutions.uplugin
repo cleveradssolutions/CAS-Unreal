@@ -1,28 +1,28 @@
 {
-    "CanContainContent": false, 
-    "Category": "Advertising", 
-    "CreatedBy": "CleverAdsSolutions LTD", 
-    "CreatedByURL": "https://cas.ai", 
-    "Description": "The CAS.AI Unreal Engine plugin allows you to easily monetize your apps for iOS and Android using lot of Ads SDKs in mediation.", 
-    "DocsURL": "https://github.com/cleveradssolutions/CAS-Unreal/wiki", 
-    "FileVersion": 3, 
-    "FriendlyName": "Clever Ads Solutions", 
-    "Installed": true, 
-    "MarketplaceURL": "", 
+    "CanContainContent": false,
+    "Category": "Advertising",
+    "CreatedBy": "CleverAdsSolutions LTD",
+    "CreatedByURL": "https://cas.ai",
+    "Description": "The CAS.AI Unreal Engine plugin allows you to easily monetize your apps for iOS and Android using lot of Ads SDKs in mediation.",
+    "DocsURL": "https://github.com/cleveradssolutions/CAS-Unreal/wiki",
+    "FileVersion": 3,
+    "FriendlyName": "Clever Ads Solutions",
+    "Installed": true,
+    "MarketplaceURL": "",
     "Modules": [
         {
-            "LoadingPhase": "Default", 
-            "Name": "CleverAdsSolutions", 
+            "LoadingPhase": "Default",
+            "Name": "CleverAdsSolutions",
             "PlatformAllowList": [
-                "Mac", 
-                "Win64", 
-                "IOS", 
+                "Mac",
+                "Win64",
+                "IOS",
                 "Android"
-            ], 
+            ],
             "Type": "Runtime"
         }
-    ], 
-    "SupportURL": "https://github.com/cleveradssolutions/CAS-Unreal/issues", 
-    "Version": 40300, 
-    "VersionName": "4.3.0"
+    ],
+    "SupportURL": "https://github.com/cleveradssolutions/CAS-Unreal/issues",
+    "Version": 40401,
+    "VersionName": "4.4.1"
 }

@@ -38,7 +38,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeYangoAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeKidoz = IncludeFamiliesAds;
 		}
@@ -62,7 +62,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeAppLovin = IncludeOptimalAds;
 			IncludeCASExchange = IncludeOptimalAds;
 			IncludeAudienceNetwork = IncludeOptimalAds;
-			IncludeYandexAds = IncludeOptimalAds;
+			IncludeYangoAds = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
 			IncludeMintegral = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
@@ -74,7 +74,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeYandexAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeYangoAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeAppLovin = IncludeOptimalAds;
 			IncludeCASExchange = IncludeOptimalAds;
