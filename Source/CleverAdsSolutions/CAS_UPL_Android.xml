@@ -85,9 +85,9 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,4.4.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,4.4.2" /> <insertNewline/>
 		<if condition="IncludeIronSource"><true>
-		<insertValue value="com.cleveradssolutions,ironsource,9.0.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ironsource,9.0.0.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
 		<insertValue value="com.cleveradssolutions,unity,4.16.3.0" /> <insertNewline/>
@@ -117,7 +117,7 @@
 		<insertValue value="com.cleveradssolutions,mintegral,16.10.11.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
-		<insertValue value="com.cleveradssolutions,applovin,13.5.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,applovin,13.5.0.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePangle"><true>
 		<insertValue value="com.cleveradssolutions,pangle,7.7.0.2" /> <insertNewline/>
