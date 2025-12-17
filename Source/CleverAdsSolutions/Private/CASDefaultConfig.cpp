@@ -35,12 +35,16 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeAppLovin = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeCASExchange = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeAudienceNetwork = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeYangoAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeBigo = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeKidoz = IncludeFamiliesAds;
+			IncludePangle = IncludeOptimalAds || IncludeFamiliesAds;
 		}
         // End Families Ads Solution
 
@@ -71,16 +75,16 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeAppLovin = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeCASExchange = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeAudienceNetwork = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeDTExchange = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeYangoAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeBigo = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeAppLovin = IncludeOptimalAds;
-			IncludeCASExchange = IncludeOptimalAds;
-			IncludeAudienceNetwork = IncludeOptimalAds;
-			IncludeBigo = IncludeOptimalAds;
-			IncludePangle = IncludeOptimalAds;
+			IncludePangle = IncludeOptimalAds || IncludeFamiliesAds;
 		}
         // End Optimal Ads solution
 
