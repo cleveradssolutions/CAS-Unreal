@@ -87,7 +87,7 @@
 		<!-- Begin Dependencies -->
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,4.5.2" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,4.5.4" /> <insertNewline/>
 		<if condition="IncludeIronSource"><true>
 		<insertValue value="com.cleveradssolutions,ironsource,9.2.0.0" /> <insertNewline/>
 		</true></if>
@@ -116,13 +116,13 @@
 		<insertValue value="com.cleveradssolutions,superawesome,9.4.0.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMintegral"><true>
-		<insertValue value="com.cleveradssolutions,mintegral,17.0.41.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mintegral,17.0.51.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
 		<insertValue value="com.cleveradssolutions,applovin,13.5.1.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePangle"><true>
-		<insertValue value="com.cleveradssolutions,pangle,7.8.0.8" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,pangle,7.8.0.9" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
 		<insertValue value="com.cleveradssolutions,bigo,5.6.2.0" /> <insertNewline/>
