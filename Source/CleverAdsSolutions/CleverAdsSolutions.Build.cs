@@ -55,7 +55,7 @@ public class CleverAdsSolutions : ModuleRules
 	private const string IOSBridgeName = "CASUnrealBridge";
 	private const string IOSFrameworksName = "CASFrameworks";
 	private const string IOSFameworksWorkspace = IOSFrameworksName + ".xcworkspace";
-	private const string EngineConfigSection = "/Script/CleverAdsSolutions.CASDefaultConfig";
+	private const string EngineConfigSectionFormat = "CASPluginBuildConfig_{0}";
 
 	public CleverAdsSolutions(ReadOnlyTargetRules Target) : base(Target)
 	{
@@ -137,6 +137,7 @@ public class CleverAdsSolutions : ModuleRules
 		/// Platform names: Android, IOS
 		/// </summary>
 		public string PlatformName;
+		public string EngineConfigSection;
 		public DirectoryReference NativeDir;
 		public string ManagerID;
 		public bool TestAdMode;
@@ -193,6 +194,7 @@ public class CleverAdsSolutions : ModuleRules
 			ShippingMode = Target.Configuration == UnrealTargetConfiguration.Shipping
 				&& Target.ProjectFile.GetFileName() != "HostProject.uproject";
 
+			EngineConfigSection = string.Format(EngineConfigSectionFormat, PlatformName);
 			string UPLFileName = "CAS_UPL_" + PlatformName + ".xml";
 			string UPLFilePath = Path.Combine(ModuleDirectory, UPLFileName);
 			if (!File.Exists(UPLFilePath))
@@ -206,9 +208,7 @@ public class CleverAdsSolutions : ModuleRules
 
 			string ModuleDirectoryRelative = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
 			string ModuleDirectoryRelativeUPLFilePath = Path.Combine(ModuleDirectoryRelative, UPLFileName);
-			LogDebug("Apply UPL: " + ModuleDirectoryRelativeUPLFilePath);
-			Module.AdditionalPropertiesForReceipt.Add(PlatformName + "Plugin", ModuleDirectoryRelativeUPLFilePath);
-
+			
 			// When building an application on a Windows machine, 
 			// it is crucial to ensure that your project folder is located on the same drive 
 			// as the Unreal Engine installation directory. (e.g., both on C: or both on D:)
@@ -246,11 +246,11 @@ public class CleverAdsSolutions : ModuleRules
 			}
 			for (int i = 0; i < Solutions.Length; i++)
 			{
-				Solutions[i].Configure(EngineConfig);
+				Solutions[i].Configure(EngineConfig, EngineConfigSection);
 			}
 			for (int i = 0; i < Adapters.Length; i++)
 			{
-				Adapters[i].Configure(EngineConfig);
+				Adapters[i].Configure(EngineConfig, EngineConfigSection);
 			}
 
 			if (string.IsNullOrEmpty(CacheConfigFileName))
@@ -263,6 +263,10 @@ public class CleverAdsSolutions : ModuleRules
 
 			DownloadConfig(Target);
 			UpdateUPLFile(UPLFilePath);
+
+			// Apply UPL after update
+			LogDebug("Apply UPL: " + ModuleDirectoryRelativeUPLFilePath);
+			Module.AdditionalPropertiesForReceipt.Add(PlatformName + "Plugin", ModuleDirectoryRelativeUPLFilePath);
 		}
 
 		public CASNetwork FindAdapter(string Name)
@@ -687,9 +691,9 @@ public class CleverAdsSolutions : ModuleRules
 			Included = false;
 		}
 
-		public void Configure(ConfigHierarchy EngineConfig)
+		public void Configure(ConfigHierarchy EngineConfig, string Section)
 		{
-			EngineConfig.TryGetValue(EngineConfigSection, "Include" + Name, out Included);
+			EngineConfig.TryGetValue(Section, "Include" + Name, out Included);
 		}
 	}
 
@@ -891,7 +895,7 @@ public class CleverAdsSolutions : ModuleRules
 			}
 
 			bool UseAdvertisingId = true;
-			if (!Handler.EngineConfig.TryGetValue(EngineConfigSection, "UseAdvertisingId", out UseAdvertisingId) || UseAdvertisingId)
+			if (!Handler.EngineConfig.TryGetValue(Handler.EngineConfigSection, "UseAdvertisingId", out UseAdvertisingId) || UseAdvertisingId)
 			{
 				if (Array.IndexOf(SysFrameworks, "AdSupport") > -1)
 					Module.PublicFrameworks.Add("AdSupport");

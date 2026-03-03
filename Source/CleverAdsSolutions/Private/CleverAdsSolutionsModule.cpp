@@ -5,7 +5,7 @@
 #include "ISettingsModule.h"
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "CASConfigContainer.h"
+#include "CASDefaultConfig.h"
 
 #define LOCTEXT_NAMESPACE "FCleverAdsSolutionsModule"
 
@@ -14,12 +14,12 @@ void FCleverAdsSolutionsModule::StartupModule() {
     ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings");
     if (SettingsModule != nullptr) {
         
-        UCASDefaultConfig* CASSettinsIOS = UCASConfigContainer::Get()->GetIOS();
+        UCASDefaultConfig* CASSettinsIOS = UCASDefaultConfig::GetForPlatform(2);
         SettingsModule->RegisterSettings(
             "Project", "Plugins", "CleverAdsSolutionsIOS", LOCTEXT("CASSIOSettingsName", "CAS.AI Config - IOS"),
             LOCTEXT("CASSIOSettingsDescription", "Configure CAS.AI plugin for iOS Platform"), CASSettinsIOS);
 
-        UCASDefaultConfig* CASSettinsAndroid = UCASConfigContainer::Get()->GetAndroid();
+        UCASDefaultConfig* CASSettinsAndroid = UCASDefaultConfig::GetForPlatform(1);
         SettingsModule->RegisterSettings(
             "Project", "Plugins", "CleverAdsSolutionsAndroid",
             LOCTEXT("CASAndroidSettingsName", "CAS.AI Config - Android"),

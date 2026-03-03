@@ -10,7 +10,8 @@ import sys
 import json
 import shutil
 
-_CONFIG_SECTION = '/Script/CleverAdsSolutions.CASDefaultConfig'
+_CONFIG_SECTION_ANDROID = 'CASPluginBuildConfig_Android'
+# Test Google App ids
 _DEFAULT_GOOGLE_APP_ANDROID = 'ca-app-pub-3940256099942544~3347511713'
 _DEFAULT_GOOGLE_APP_IOS = 'ca-app-pub-3940256099942544~1458002511'
 
@@ -21,7 +22,6 @@ _PLUGIN_MANIFEST = os.path.abspath(os.path.join(_PLUGIN_ROOT_DIR, '..', 'CleverA
 
 _CONFIG_IOS_DEST = os.path.join(_ROOT_DIR, 'IOS', 'CASMediation.list')
 _BRIDGE_IOS_DEST_DIR = os.path.join(_ROOT_DIR, 'IOS', 'Plugin')
-_SKADNETWORK_DEST = os.path.join(_ROOT_DIR, 'IOS', 'CASSKAdNetworks.txt')
 
 _CONFIG_ANDROID_DEST = os.path.join(_ROOT_DIR, 'Android', 'CASMediation.list')
 _BRIDGE_ANDROID_DEST = os.path.join(_ROOT_DIR, 'Android', 'repository', 'com', 'cleveradssolutions', 'cas-unreal-plugin', 'release', 'cas-unreal-plugin-release.aar')
@@ -32,12 +32,13 @@ _REPOS_DIR = os.path.abspath(os.path.join(_ROOT_DIR, '..', '..', '..', '..', '..
 _REPO_IOS_DIR = os.path.join(_REPOS_DIR, 'CAS-Swift')
 _CONFIG_IOS_SOURCE = os.path.join(_REPO_IOS_DIR, 'CASMediation.list')
 _BRIDGE_IOS_SOURCE_DIR = os.path.join(_REPO_IOS_DIR, 'libs')
-_SKADNETWORK_SOURCE = os.path.join(_REPO_IOS_DIR, 'PublicSamplesRepo', 'SKAdNetworkCompact.txt')
+_SKADNETWORK_SOURCE = os.path.join(_REPO_IOS_DIR, 'PublicSamplesRepo', 'AdNetworkIdentifiers', 'SKAdNetworkCompact.txt')
+_ADATTRIBUTIONKIT_SOURCE = os.path.join(_REPO_IOS_DIR, 'PublicSamplesRepo', 'AdNetworkIdentifiers', 'AdNetworkCompact.txt')
 
 _REPO_ANDROID_DIR = os.path.join(_REPOS_DIR, 'CAS-Kotlin')
 _CONFIG_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'CASMediation.list')
 _BRIDGE_ANDROID_SOURCE = os.path.join(_REPO_ANDROID_DIR, 'buildCAS', 'cas-unreal-plugin-release.aar')
-                          
+
 iosOptimalSolutionContains = []
 iosFamiliesSolutionContains = []
 androidOptimalSolutionContains = []
@@ -54,7 +55,7 @@ def applyAndroidConfig(mediationArray, uplFile):
         uplFile.append(
             '\t\t<setBoolFromProperty result="' + itemName + 
             '" ini="Engine" section="' + 
-            _CONFIG_SECTION+'" property="' + itemName + 
+            _CONFIG_SECTION_ANDROID+'" property="' + itemName + 
             '" default="false"/>\n'
         )
         print("[Android] Init " + itemName)
@@ -93,11 +94,23 @@ def handle_upl_ios(line, result):
         print('[iOS] Reset dynamic config')
         return True
 
+    if "<!-- Begin AdAttributionKit" in line:
+        result.append("\t\t\t<key>AdNetworkIdentifiers</key>\n")
+        result.append("\t\t\t<array>\n")
+        itemsCount = 0
+        with open(_ADATTRIBUTIONKIT_SOURCE, 'r') as file:
+            for item in file:
+                result.append("\t\t\t\t<string>" + item.strip() + ".adattributionkit</string>\n")
+                itemsCount += 1
+        result.append("\t\t\t</array>\n")
+        print("[iOS] Updated: " + str(itemsCount) + " AdNetworkIdentifiers")
+        return True
+        
     if "<!-- Begin SKAdNetworkItems" in line:
         result.append("\t\t\t<key>SKAdNetworkItems</key>\n")
         result.append("\t\t\t<array>\n")
         itemsCount = 0
-        with open(_SKADNETWORK_DEST, 'r') as file:
+        with open(_SKADNETWORK_SOURCE, 'r') as file:
             for item in file:
                 result.append("\t\t\t\t<dict>\n")
                 result.append("\t\t\t\t\t<key>SKAdNetworkIdentifier</key>\n")
@@ -122,7 +135,6 @@ def handle_upl_android(line, result):
         return True
 
     elif "<!-- Begin Dependencies" in line:
-        applyAndroidDependencyItem("repository $S(PluginDir)/../ThirdParty/Android/repository", result)
         applyAndroidDependencyItem("com.cleveradssolutions:cas-unreal-plugin:release", result)
         applyAndroidDependencyItem("com.cleveradssolutions:cas-sdk:" + mediation["version"], result)
         applyAndroidDependency(mediation["adapters"], result)
@@ -273,7 +285,6 @@ def copy_source_file(source, destination):
 
 # Update iOS build config
 copy_source_file(_CONFIG_IOS_SOURCE, _CONFIG_IOS_DEST)
-copy_source_file(_SKADNETWORK_SOURCE, _SKADNETWORK_DEST)
 with open(_CONFIG_IOS_DEST, 'r') as file:
     mediation = json.load(file)
     
@@ -292,6 +303,9 @@ update_file(os.path.join(_PLUGIN_DIR, 'CAS_UPL_IOS.xml'),
 copy_source_file(_CONFIG_ANDROID_SOURCE, _CONFIG_ANDROID_DEST)
 with open(_CONFIG_ANDROID_DEST, 'r') as file:
     mediation = json.load(file)
+    
+adapterNames = {adapter["id"]: adapter["name"] for adapter in mediation["adapters"]}
+
 for solution in mediation['simple']:
     if solution['name'] == 'OptimalAds':
         androidOptimalSolutionContains = set(solution['contains'])

@@ -14,7 +14,7 @@ TSharedPtr<FJavaCASBridgeObject> GetBridge() {
 
     if (!Bridge.IsValid()) {
         Bridge = MakeShared<FJavaCASBridgeObject, ESPMode::ThreadSafe>();
-        const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
+        const UCASDefaultConfig *DefaultConfig = UCASDefaultConfig::GetForPlatform(1);
 
         CAS_LOG_D("Apply Ads ID: %s", *DefaultConfig->CASAppID);
 

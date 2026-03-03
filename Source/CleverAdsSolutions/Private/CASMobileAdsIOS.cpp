@@ -18,7 +18,7 @@ CASUBridge * GetBridge() {
     static dispatch_once_t OnceToken;
 
     dispatch_once(&OnceToken, ^{
-        const UCASDefaultConfig *DefaultConfig = GetDefault<UCASDefaultConfig>();
+        const UCASDefaultConfig *DefaultConfig = UCASDefaultConfig::GetForPlatform(2);
 
         CAS_LOG_D("Apply Ads ID: %s", *DefaultConfig->CASAppID);
 
@@ -57,7 +57,7 @@ CASUBridge * GetBridge() {
             [Bridge setTestDeviceIds:NewArray];
         }
 
-        UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
+        UIViewController *Controller = (UIViewController*)[IOSAppDelegate GetDelegate].IOSController;
 
         [Bridge setConsentFlowEnabled:DefaultConfig->AutoConsentFlow
                             geography:static_cast<int>(
@@ -101,7 +101,7 @@ void CASInternal::FillInitialConfig(FCASInitialConfig &Config) {
 }
 
 void CASInternal::ShowConsentFlow(bool ifRequired) {
-    UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
+    UIViewController *Controller = (UIViewController*)[IOSAppDelegate GetDelegate].IOSController;
 
     [GetBridge() showConsentFlowIfRequired:ifRequired controller:Controller];
 }
@@ -280,7 +280,7 @@ void UCASMobileAds::SetAutoloadInterstitialAd(bool Enabled) {
 }
 
 void UCASMobileAds::ShowInterstitialAd() {
-    UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
+    UIViewController *Controller = (UIViewController*)[IOSAppDelegate GetDelegate].IOSController;
 
     [GetBridge() showInterstitialAd:Controller];
 }
@@ -320,7 +320,7 @@ void UCASMobileAds::SetAutoloadRewardedAd(bool Enabled) {
 }
 
 void UCASMobileAds::ShowRewardedAd() {
-    UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
+    UIViewController *Controller = (UIViewController*)[IOSAppDelegate GetDelegate].IOSController;
 
     [GetBridge() showRewardedAd:Controller];
 }
@@ -344,7 +344,7 @@ void UCASMobileAds::SetAutoloadAppOpenAd(bool Enabled) {
 }
 
 void UCASMobileAds::ShowAppOpenAd() {
-    UIViewController *Controller = [IOSAppDelegate GetDelegate].IOSController;
+    UIViewController *Controller = (UIViewController*)[IOSAppDelegate GetDelegate].IOSController;
 
     [GetBridge() showAppOpenAd:Controller];
 }

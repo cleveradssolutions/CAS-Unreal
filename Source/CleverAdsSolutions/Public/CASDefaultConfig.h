@@ -54,7 +54,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
         EditDefaultsOnly,
         Category = "Integration",
         meta =
-            (DisplayName = "TestAdsMode (Not for Shipping build)",
+            (DisplayName = "Test Ads Mode (Not for Shipping build)",
              ToolTip =
                  "We strongly suggest that you enable test ads mode when you validate the integration or develop the app."))
     bool TestAdsMode;
@@ -139,7 +139,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
 	bool IncludeUnityAds = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include GoogleAds/AdMob", EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include GoogleAds/AdMob", EditCondition = "!IncludeOptimalAds || ConfigPlatformId != 1 && !IncludeFamiliesAds || ConfigPlatformId != 1"))
 	bool IncludeGoogleAds = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
@@ -151,10 +151,10 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
 	bool IncludeChartboost = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
 	bool IncludeDTExchange = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeFamiliesAds || ConfigPlatformId != 1"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeFamiliesAds"))
 	bool IncludeKidoz = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
@@ -163,25 +163,25 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
 	bool IncludeMintegral = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
 	bool IncludeAppLovin = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
 	bool IncludePangle = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
 	bool IncludeBigo = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
 	bool IncludeYangoAds = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include AudienceNetwork/Meta", ToolTip = "Required implementation of `Data Processing Options for US Users`", EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include AudienceNetwork/Meta", ToolTip = "Required implementation of `Data Processing Options for US Users`", EditCondition = "!IncludeOptimalAds"))
 	bool IncludeAudienceNetwork = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
 	bool IncludeYsoNetwork = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds || ConfigPlatformId != 2"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
 	bool IncludeCASExchange = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (ToolTip = "The app must be approved for inclusion"))
@@ -219,21 +219,35 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 
     // End Adapters - autogeneration tag
 
-#if WITH_EDITORONLY_DATA
    public:
     UPROPERTY(Transient)
     int32 ConfigPlatformId = 0;
-#endif
+
+   public:
+    /*
+        Known issue where UE 5.6 saves platform config to Game/Platforms/Android/Config/AndroidEngine.ini, 
+        but UPL reads only from Game/Config/Android/AndroidEngine.ini.
+        Therefore, we are forced to remove platform separation and instead store the configuration
+        in two different sections inside DefaultEngine.ini.
+        https://github.com/EpicGames/UnrealEngine/pull/14487
+    */
+    // virtual const TCHAR *GetConfigOverridePlatform() const override {
+    //     if (ConfigPlatformId == 0) {
+    //         return nullptr;
+    //     }
+    //     return ConfigPlatformId == 1 ? TEXT("Android") : TEXT("IOS");
+    // }
+
+    virtual void OverridePerObjectConfigSection(FString &SectionName) override {
+        SectionName = FString::Printf(
+            TEXT("CASPluginBuildConfig_%s"),
+            ConfigPlatformId == 1 ? TEXT("Android") : TEXT("IOS")
+        );
+    }
+
+    static UCASDefaultConfig* GetForPlatform(int32 ConfigPlatformId);
 
 #if WITH_EDITOR
-   public:
-    virtual const TCHAR *GetConfigOverridePlatform() const override {
-        if (ConfigPlatformId == 0) {
-            return nullptr;
-        }
-        return ConfigPlatformId == 1 ? TEXT("Android") : TEXT("IOS");
-    }
-    virtual void OverridePerObjectConfigSection(FString &SectionName) override;
     virtual void PostEditChangeProperty(FPropertyChangedEvent &PropertyChangedEvent) override;
 #endif
 };

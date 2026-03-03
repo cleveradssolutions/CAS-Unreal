@@ -5,8 +5,8 @@
 		<!-- Begin Dynamic Config -->
 		<setString result="GoogleAppId" value="ca-app-pub-3940256099942544~1458002511"/>
 		<!-- End Dynamic Confi -->
-		<setBoolFromProperty result="IsAdvertisingIdUsed" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UseAdvertisingId" default="true"/>
-		<setStringFromProperty result="UserTrackingUsageDescription" ini="Engine" section="/Script/CleverAdsSolutions.CASDefaultConfig" property="UserTrackingUsageDescription" default="Your data will remain confidential and will only be used to provide you a better and personalised ad experience"/>
+		<setBoolFromProperty result="IsAdvertisingIdUsed" ini="Engine" section="CASPluginBuildConfig_IOS" property="UseAdvertisingId" default="true"/>
+		<setStringFromProperty result="UserTrackingUsageDescription" ini="Engine" section="CASPluginBuildConfig_IOS" property="UserTrackingUsageDescription" default="Your data will remain confidential and will only be used to provide you a better and personalised ad experience"/>
 		<setStringFromProperty result="GoogleCustomAppId" ini="Engine" section="CASPluginBuildConfig" property="GoogleAppIdIOS" default="$S(GoogleAppId)"/>
 	</init>
 	<iosPListUpdates>
@@ -42,6 +42,17 @@
 		<addElements once="true" tag="dict">
 			<key>GADDelayAppMeasurementInit</key>
 			<true/>
+			<!-- Begin AdAttributionKit -->
+			<key>AdNetworkIdentifiers</key>
+			<array>
+				<string>6lz2ygh3q6.adattributionkit</string>
+				<string>77y3x8wds4.adattributionkit</string>
+				<string>m2jqnlggk3.adattributionkit</string>
+				<string>pg7ctvrt6f.adattributionkit</string>
+				<string>raa6f494kr.adattributionkit</string>
+				<string>thzdn4h5nc.adattributionkit</string>
+			</array>
+			<!-- End AdAttributionKit -->
 			<!-- Begin SKAdNetworkItems -->
 			<key>SKAdNetworkItems</key>
 			<array>
@@ -283,6 +294,10 @@
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
+					<string>77y3x8wds4.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
 					<string>7953jerfzd.skadnetwork</string>
 				</dict>
 				<dict>
@@ -499,6 +514,10 @@
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
+					<string>dcc9l689qj.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
 					<string>dd3a75yxkv.skadnetwork</string>
 				</dict>
 				<dict>
@@ -548,10 +567,6 @@
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
 					<string>eqhxz8m8av.skadnetwork</string>
-				</dict>
-				<dict>
-					<key>SKAdNetworkIdentifier</key>
-					<string>f2zub97jtl.skadnetwork</string>
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
@@ -691,6 +706,10 @@
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
+					<string>l9ufjr2u34.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
 					<string>ln5gz23vtd.skadnetwork</string>
 				</dict>
 				<dict>
@@ -764,10 +783,6 @@
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
 					<string>nrt9jy4kw9.skadnetwork</string>
-				</dict>
-				<dict>
-					<key>SKAdNetworkIdentifier</key>
-					<string>ns5j362hk7.skadnetwork</string>
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>

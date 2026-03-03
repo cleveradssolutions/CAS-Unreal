@@ -6,9 +6,9 @@
 #include "CASDefines.h"
 #include "CASImpressionInfo.h"
 #include "CASInternal.h"
+#include "CASDefaultConfig.h"
 
 #if !PLATFORM_ANDROID && !PLATFORM_IOS
-#include "CASConfigContainer.h"
 #include "Interfaces/IPluginManager.h"
 #endif
 
@@ -175,7 +175,7 @@ void CASUEventCallback(int adType, int callback, int error) {
 
 void CASInternal::ShowConsentFlow(bool ifRequired) {
     CAS_LOG_D("Manual Show Consent Flow with Privacy Policy: %s",
-              *UCASConfigContainer::GetConfig()->PrivacyPolicyURL);
+              *UCASDefaultConfig::GetForPlatform(1)->PrivacyPolicyURL);
     CASUEventCallback(kCASUType_MANAGER, kCASUCallback_CONSENT_FLOW_DISMISSED,
                       static_cast<int>(ECASConsentFlowStatus::Unavailable));
 }
@@ -194,7 +194,7 @@ void UCASMobileAds::InitializeMobileAds() {
     Initialized = true;
 
     if (notInitialized) {
-        const UCASDefaultConfig *DefaultConfig = UCASConfigContainer::GetConfig();
+        const UCASDefaultConfig *DefaultConfig = UCASDefaultConfig::GetForPlatform(1);
         CAS_LOG_D("Initialize Ads for %s", *DefaultConfig->CASAppID);
 
         AutoloadBannerAds = DefaultConfig->AutoloadBannerAds;
@@ -246,7 +246,7 @@ void UCASMobileAds::SetTrialAdFreeInterval(int interval) {
 }
 
 bool UCASMobileAds::IsUserAdConsentRequired() {
-    const UCASDefaultConfig *DefaultConfig = UCASConfigContainer::GetConfig();
+    const UCASDefaultConfig *DefaultConfig = UCASDefaultConfig::GetForPlatform(1);
 
     return DefaultConfig->UserDebugGeography == ECASUserDebugGeography::EEA;
 }
