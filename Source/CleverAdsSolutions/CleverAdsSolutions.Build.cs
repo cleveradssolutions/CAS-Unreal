@@ -927,6 +927,19 @@ public class CleverAdsSolutions : ModuleRules
 
 #if UE_5_2_OR_LATER
 			Module.bEnableObjCAutomaticReferenceCounting = true;
+#else
+			try
+			{
+				var arcProperty = Module.GetType().GetProperty("bEnableObjCAutomaticReferenceCounting");
+				if (arcProperty != null)
+				{
+					arcProperty.SetValue(Module, true);
+				}
+			}
+			catch (Exception e)
+			{
+				// ignore
+			}
 #endif
 
 			AddSwiftSupport(Module);
