@@ -54,21 +54,21 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 		if (ConfigPlatformId == 1) {
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeKidoz = IncludeFamiliesAds;
+			IncludeChartboost = IncludeFamiliesAds;
 		} else {
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeYangoAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeMintegral = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeKidoz = IncludeFamiliesAds;
+			IncludeChartboost = IncludeFamiliesAds;
 		}
         // End Families Ads Solution
 
@@ -82,7 +82,6 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 		if (ConfigPlatformId == 1) {
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
@@ -91,12 +90,14 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeAudienceNetwork = IncludeOptimalAds;
 			IncludeYangoAds = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
+			IncludeMonetriX = IncludeOptimalAds;
 			IncludeMintegral = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
+			IncludeYsoNetwork = IncludeOptimalAds;
+			IncludeMaticoo = IncludeOptimalAds;
 		} else {
 			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
-			IncludeChartboost = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeIronSource = IncludeOptimalAds || IncludeFamiliesAds;
@@ -107,6 +108,8 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeAudienceNetwork = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
+			IncludeYsoNetwork = IncludeOptimalAds;
+			IncludeMaticoo = IncludeOptimalAds;
 		}
         // End Optimal Ads solution
 
