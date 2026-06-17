@@ -38,6 +38,8 @@
 		<setBoolFromProperty result="IncludeMadex" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeMadex" default="false"/>
 		<setBoolFromProperty result="IncludePubMatic" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludePubMatic" default="false"/>
 		<setBoolFromProperty result="IncludeDisplayIO" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeDisplayIO" default="false"/>
+		<setBoolFromProperty result="IncludeBidease" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeBidease" default="false"/>
+		<setBoolFromProperty result="IncludeMoloco" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeMoloco" default="false"/>
 		<!-- End Init Mediation -->
 		<setBoolFromProperty result="UseAdvertisingId" ini="Engine" section="CASPluginBuildConfig_Android" property="UseAdvertisingId" default="true"/>
 		<setStringFromProperty result="GoogleCustomAppId" ini="Engine" section="CASPluginBuildConfig" property="GoogleAppIdAndroid" default="$S(GoogleAppId)"/>
@@ -88,21 +90,21 @@
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<!-- Begin Dependencies -->
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,4.7.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,4.7.4" /> <insertNewline/>
 		<if condition="IncludeIronSource"><true>
-		<insertValue value="com.cleveradssolutions,ironsource,9.4.3.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ironsource,9.4.3.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
 		<insertValue value="com.cleveradssolutions,unity,4.18.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeGoogleAds"><true>
-		<insertValue value="com.cleveradssolutions,google,25.2.0.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,google,25.2.0.4" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeLiftoffMonetize"><true>
-		<insertValue value="com.cleveradssolutions,vungle,7.7.4.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,vungle,7.7.4.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeInMobi"><true>
-		<insertValue value="com.cleveradssolutions,inmobi,11.3.0.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,inmobi,11.3.0.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeChartboost"><true>
 		<insertValue value="com.cleveradssolutions,chartboost,9.12.0.0" /> <insertNewline/>
@@ -117,13 +119,13 @@
 		<insertValue value="com.cleveradssolutions,superawesome,10.1.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMintegral"><true>
-		<insertValue value="com.cleveradssolutions,mintegral,17.1.61.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,mintegral,17.1.61.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
-		<insertValue value="com.cleveradssolutions,applovin,13.6.2.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,applovin,13.6.3.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePangle"><true>
-		<insertValue value="com.cleveradssolutions,pangle,8.1.0.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,pangle,8.1.0.4" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
 		<insertValue value="com.cleveradssolutions,bigo,5.9.0.0" /> <insertNewline/>
@@ -162,7 +164,7 @@
 		<insertValue value="com.cleveradssolutions,maticoo,1.8.6.3" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeVerve"><true>
-		<insertValue value="com.cleveradssolutions,verve,3.8.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,verve,3.8.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMonetriX"><true>
 		<insertValue value="com.cleveradssolutions,monetrix,1.2.0.2" /> <insertNewline/>
@@ -174,7 +176,13 @@
 		<insertValue value="com.cleveradssolutions,pubmatic,5.1.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeDisplayIO"><true>
-		<insertValue value="com.cleveradssolutions,displayio,5.7.1.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,displayio,5.7.2.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeBidease"><true>
+		<insertValue value="com.cleveradssolutions,bidease,2.2.0.0" /> <insertNewline/>
+		</true></if>
+		<if condition="IncludeMoloco"><true>
+		<insertValue value="com.cleveradssolutions,moloco,4.9.0.0" /> <insertNewline/>
 		</true></if>
 		<!-- End Dependencies -->
 	</AARImports>

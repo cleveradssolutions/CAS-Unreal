@@ -220,6 +220,12 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include DisplayIO (beta)"))
 	bool IncludeDisplayIO = false;
 
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Bidease (beta)"))
+	bool IncludeBidease = false;
+
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
+	bool IncludeMoloco = false;
+
     // End Adapters - autogeneration tag
 
    public:
