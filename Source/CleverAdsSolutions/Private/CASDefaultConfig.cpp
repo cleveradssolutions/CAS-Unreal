@@ -90,7 +90,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeAudienceNetwork = IncludeOptimalAds;
 			IncludeYangoAds = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
-			IncludeMonetriX = IncludeOptimalAds;
+			IncludeMonetrix = IncludeOptimalAds;
 			IncludeMintegral = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
 			IncludeYsoNetwork = IncludeOptimalAds;

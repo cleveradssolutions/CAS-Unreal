@@ -209,10 +209,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	bool IncludeVerve = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds || ConfigPlatformId != 1"))
-	bool IncludeMonetriX = false;
-
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Madex (beta)", ToolTip = "Focused on CIS region only"))
-	bool IncludeMadex = false;
+	bool IncludeMonetrix = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include PubMatic (beta)"))
 	bool IncludePubMatic = false;
@@ -223,7 +220,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Bidease (beta)"))
 	bool IncludeBidease = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Moloco (beta)"))
 	bool IncludeMoloco = false;
 
     // End Adapters - autogeneration tag

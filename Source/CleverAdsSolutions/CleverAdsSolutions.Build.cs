@@ -125,6 +125,12 @@ public class CleverAdsSolutions : ModuleRules
 		return "\"" + Line + "\"";
 	}
 
+	private string GetPathToEngine()
+	{
+		// UE 5.8 make this property static.
+		return EngineDirectory;
+	}
+
 	public abstract class BaseHandler
 	{
 		public string Version;
@@ -212,11 +218,12 @@ public class CleverAdsSolutions : ModuleRules
 			// When building an application on a Windows machine, 
 			// it is crucial to ensure that your project folder is located on the same drive 
 			// as the Unreal Engine installation directory. (e.g., both on C: or both on D:)
-			if (ModuleDirectory[1] == ':' && ModuleDirectory[0] != Module.EngineDirectory[0])
+			var EngineDirectory = Module.GetPathToEngine();
+			if (ModuleDirectory[1] == ':' && ModuleDirectory[0] != EngineDirectory[0])
 			{
 				string ErrorMessage = "The project folder msut be located on the same drive (" +
-					Module.EngineDirectory[0] + ":) as the Unreal Engine installation directory: " +
-					Module.EngineDirectory;
+					ModuleDirectory[0] + ":) as the Unreal Engine installation directory: " +
+					EngineDirectory;
 				if (ShippingMode)
 				{
 					CancelBuild(ErrorMessage);
@@ -501,7 +508,7 @@ public class CleverAdsSolutions : ModuleRules
 #endif
 
 #if USE_ENGNIE_INTERMEDIATE
-			FrameworksDir = new DirectoryReference(Path.Combine(Module.EngineDirectory, "Intermediate", "UnzippedFrameworks"));
+			FrameworksDir = new DirectoryReference(Path.Combine(Module.GetPathToEngine(), "Intermediate", "UnzippedFrameworks"));
 #else
 			FrameworksDir = DirectoryReference.Combine(NativeDir, "Frameworks");
 #endif
@@ -1069,7 +1076,7 @@ public class CleverAdsSolutions : ModuleRules
 		public string GetPath(IOSHandler Handler)
 		{
 			// FrameworkRules.Path = "FrameworkName.embeddedframework.zip"
-			// Path.Combine(Module.EngineDirectory, "Intermediate", "UnzippedFrameworks", FrameworkRules.Name, Path.GetFileNameWithoutExtension(FrameworkRules.Path))
+			// Path.Combine(Module.GetPathToEngine(), "Intermediate", "UnzippedFrameworks", FrameworkRules.Name, Path.GetFileNameWithoutExtension(FrameworkRules.Path))
 #if USE_ENGNIE_INTERMEDIATE
 			return Path.Combine(Handler.FrameworksDir.FullName, name, name + ".embeddedframework");
 #else

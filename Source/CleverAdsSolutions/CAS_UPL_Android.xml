@@ -9,6 +9,7 @@
 		<!-- Begin Init Mediation -->
 		<setBoolFromProperty result="IncludeOptimalAds" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeOptimalAds" default="false"/>
 		<setBoolFromProperty result="IncludeFamiliesAds" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeFamiliesAds" default="false"/>
+		<setBoolFromProperty result="IncludePublishingAds" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludePublishingAds" default="false"/>
 		<setBoolFromProperty result="IncludeIronSource" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeIronSource" default="false"/>
 		<setBoolFromProperty result="IncludeUnityAds" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeUnityAds" default="false"/>
 		<setBoolFromProperty result="IncludeGoogleAds" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeGoogleAds" default="false"/>
@@ -34,8 +35,7 @@
 		<setBoolFromProperty result="IncludeSmaato" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeSmaato" default="false"/>
 		<setBoolFromProperty result="IncludeMaticoo" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeMaticoo" default="false"/>
 		<setBoolFromProperty result="IncludeVerve" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeVerve" default="false"/>
-		<setBoolFromProperty result="IncludeMonetriX" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeMonetriX" default="false"/>
-		<setBoolFromProperty result="IncludeMadex" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeMadex" default="false"/>
+		<setBoolFromProperty result="IncludeMonetrix" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeMonetrix" default="false"/>
 		<setBoolFromProperty result="IncludePubMatic" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludePubMatic" default="false"/>
 		<setBoolFromProperty result="IncludeDisplayIO" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeDisplayIO" default="false"/>
 		<setBoolFromProperty result="IncludeBidease" ini="Engine" section="CASPluginBuildConfig_Android" property="IncludeBidease" default="false"/>
@@ -90,15 +90,15 @@
 		<insertValue value="repository $S(PluginDir)/../ThirdParty/Android/repository" /> <insertNewline/>
 		<!-- Begin Dependencies -->
 		<insertValue value="com.cleveradssolutions,cas-unreal-plugin,release" /> <insertNewline/>
-		<insertValue value="com.cleveradssolutions,cas-sdk,4.7.4" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,cas-sdk,4.8.0" /> <insertNewline/>
 		<if condition="IncludeIronSource"><true>
-		<insertValue value="com.cleveradssolutions,ironsource,9.4.3.1" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ironsource,9.5.0.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeUnityAds"><true>
 		<insertValue value="com.cleveradssolutions,unity,4.18.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeGoogleAds"><true>
-		<insertValue value="com.cleveradssolutions,google,25.2.0.4" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,google,25.4.0.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeLiftoffMonetize"><true>
 		<insertValue value="com.cleveradssolutions,vungle,7.7.4.1" /> <insertNewline/>
@@ -107,13 +107,13 @@
 		<insertValue value="com.cleveradssolutions,inmobi,11.3.0.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeChartboost"><true>
-		<insertValue value="com.cleveradssolutions,chartboost,9.12.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,chartboost,9.12.1.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeDTExchange"><true>
-		<insertValue value="com.cleveradssolutions,fyber,8.4.5.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,fyber,8.4.6.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeKidoz"><true>
-		<insertValue value="com.cleveradssolutions,kidoz,10.1.7.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,kidoz,10.1.8.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeSuperAwesome"><true>
 		<insertValue value="com.cleveradssolutions,superawesome,10.1.0.0" /> <insertNewline/>
@@ -122,22 +122,22 @@
 		<insertValue value="com.cleveradssolutions,mintegral,17.1.61.2" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAppLovin"><true>
-		<insertValue value="com.cleveradssolutions,applovin,13.6.3.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,applovin,13.6.3.3" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePangle"><true>
-		<insertValue value="com.cleveradssolutions,pangle,8.1.0.4" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,pangle,8.1.0.5" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBigo"><true>
-		<insertValue value="com.cleveradssolutions,bigo,5.9.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,bigo,5.10.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYangoAds"><true>
-		<insertValue value="com.cleveradssolutions,yango,8.1.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,yango,8.2.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeAudienceNetwork"><true>
 		<insertValue value="com.cleveradssolutions,facebook,6.21.0.1" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeYsoNetwork"><true>
-		<insertValue value="com.cleveradssolutions,ysonetwork,1.3.6.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,ysonetwork,1.3.7.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeCASExchange"><true>
 		<insertValue value="com.cleveradssolutions,cas-exchange,4.6.6" /> <insertNewline/>
@@ -161,25 +161,22 @@
 		<insertValue value="com.cleveradssolutions,smaato,23.1.0.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMaticoo"><true>
-		<insertValue value="com.cleveradssolutions,maticoo,1.8.6.3" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,maticoo,2.0.6.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeVerve"><true>
 		<insertValue value="com.cleveradssolutions,verve,3.8.2.0" /> <insertNewline/>
 		</true></if>
-		<if condition="IncludeMonetriX"><true>
-		<insertValue value="com.cleveradssolutions,monetrix,1.2.0.2" /> <insertNewline/>
-		</true></if>
-		<if condition="IncludeMadex"><true>
-		<insertValue value="com.cleveradssolutions,madex,1.7.7.1" /> <insertNewline/>
+		<if condition="IncludeMonetrix"><true>
+		<insertValue value="com.cleveradssolutions,monetrix,1.2.0.3" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludePubMatic"><true>
 		<insertValue value="com.cleveradssolutions,pubmatic,5.1.2.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeDisplayIO"><true>
-		<insertValue value="com.cleveradssolutions,displayio,5.7.2.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,displayio,5.7.3.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeBidease"><true>
-		<insertValue value="com.cleveradssolutions,bidease,2.2.0.0" /> <insertNewline/>
+		<insertValue value="com.cleveradssolutions,bidease,2.2.5.0" /> <insertNewline/>
 		</true></if>
 		<if condition="IncludeMoloco"><true>
 		<insertValue value="com.cleveradssolutions,moloco,4.9.0.0" /> <insertNewline/>
@@ -256,14 +253,6 @@ allprojects {
 			content {
 				it.includeGroup("net.pubnative")
 				it.includeGroup("com.verve")
-			}
-		}
-		maven {
-			name = "MadexAdsRepo"
-			url = "https://repo.repsy.io/mvn/cleveradssolutions/proxy"
-			content {
-				it.includeGroup("sspnet.tech")
-				it.includeGroup("sspnet.tech.adapters")
 			}
 		}
 		maven {
