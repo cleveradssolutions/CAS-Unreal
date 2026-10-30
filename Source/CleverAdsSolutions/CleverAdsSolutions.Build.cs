@@ -51,7 +51,7 @@ public class CleverAdsSolutions : ModuleRules
 	/// </summary>
 	private const string BuildConfigGoogleAppId = "GoogleAppId"; // + PlatformName;
 
-	private const string IOSMinimumVersion = "13.0";
+	private const string IOSMinimumVersion = "15.0";
 	private const string IOSBridgeName = "CASUnrealBridge";
 	private const string IOSFrameworksName = "CASFrameworks";
 	private const string IOSFameworksWorkspace = IOSFrameworksName + ".xcworkspace";

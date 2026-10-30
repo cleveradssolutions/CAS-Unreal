@@ -66,6 +66,10 @@
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
+					<string>23zd986j2c.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
 					<string>24t9a8vw3c.skadnetwork</string>
 				</dict>
 				<dict>
@@ -438,6 +442,10 @@
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
+					<string>apzhy3va96.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
 					<string>au67k4efj4.skadnetwork</string>
 				</dict>
 				<dict>
@@ -447,6 +455,10 @@
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
 					<string>axh5283zss.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
+					<string>b53axzn49s.skadnetwork</string>
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
@@ -574,7 +586,15 @@
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
+					<string>f2zub97jtl.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
 					<string>f38h382jlk.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
+					<string>f3h7jpbg97.skadnetwork</string>
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
@@ -607,6 +627,10 @@
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
 					<string>g2y4y55b64.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
+					<string>g3y426g9ed.skadnetwork</string>
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
@@ -763,6 +787,10 @@
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
 					<string>mtkv5xtk9e.skadnetwork</string>
+				</dict>
+				<dict>
+					<key>SKAdNetworkIdentifier</key>
+					<string>mwcgp9hppj.skadnetwork</string>
 				</dict>
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
@@ -1083,10 +1111,6 @@
 				<dict>
 					<key>SKAdNetworkIdentifier</key>
 					<string>zq492l623r.skadnetwork</string>
-				</dict>
-				<dict>
-					<key>SKAdNetworkIdentifier</key>
-					<string>apzhy3va96.skadnetwork</string>
 				</dict>
 			</array>
 			<!-- End SKAdNetworkItems -->

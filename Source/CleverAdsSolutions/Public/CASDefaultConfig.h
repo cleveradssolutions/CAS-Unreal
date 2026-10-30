@@ -142,6 +142,9 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include GoogleAds/AdMob", EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
 	bool IncludeGoogleAds = false;
 
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include GoogleAdsNext (beta)", EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
+	bool IncludeGoogleAdsNext = false;
+
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds && !IncludeFamiliesAds"))
 	bool IncludeLiftoffMonetize = false;
 
@@ -202,7 +205,7 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
 	bool IncludeSmaato = false;
 
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
 	bool IncludeMaticoo = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
@@ -211,17 +214,20 @@ class CLEVERADSSOLUTIONS_API UCASDefaultConfig : public UObject {
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds || ConfigPlatformId != 1"))
 	bool IncludeMonetrix = false;
 
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
+	bool IncludeBidease = false;
+
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (EditCondition = "!IncludeOptimalAds"))
+	bool IncludeMoloco = false;
+
+	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation")
+	bool IncludeBluesea = false;
+
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include PubMatic (beta)"))
 	bool IncludePubMatic = false;
 
 	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include DisplayIO (beta)"))
 	bool IncludeDisplayIO = false;
-
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Bidease (beta)"))
-	bool IncludeBidease = false;
-
-	UPROPERTY(Config, EditDefaultsOnly, AdvancedDisplay, Category = "Mediation", meta = (DisplayName = "Include Moloco (beta)"))
-	bool IncludeMoloco = false;
 
     // End Adapters - autogeneration tag
 

@@ -52,7 +52,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
     } else if (PropertyName == GET_MEMBER_NAME_CHECKED(UCASDefaultConfig, IncludeFamiliesAds)) {
         // Begin Families Ads solution - autogeneration tag
 		if (ConfigPlatformId == 1) {
-			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeGoogleAdsNext = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
@@ -60,7 +60,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeKidoz = IncludeFamiliesAds;
 			IncludeChartboost = IncludeFamiliesAds;
 		} else {
-			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeGoogleAdsNext = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
@@ -80,7 +80,7 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
     } else if (PropertyName == GET_MEMBER_NAME_CHECKED(UCASDefaultConfig, IncludeOptimalAds)) {
         // Begin Optimal Ads solution  - autogeneration tag
 		if (ConfigPlatformId == 1) {
-			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeGoogleAdsNext = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
@@ -88,15 +88,15 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeAppLovin = IncludeOptimalAds;
 			IncludeCASExchange = IncludeOptimalAds;
 			IncludeAudienceNetwork = IncludeOptimalAds;
+			IncludeMoloco = IncludeOptimalAds;
 			IncludeYangoAds = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
 			IncludeMonetrix = IncludeOptimalAds;
 			IncludeMintegral = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
 			IncludeYsoNetwork = IncludeOptimalAds;
-			IncludeMaticoo = IncludeOptimalAds;
 		} else {
-			IncludeGoogleAds = IncludeOptimalAds || IncludeFamiliesAds;
+			IncludeGoogleAdsNext = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeLiftoffMonetize = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeUnityAds = IncludeOptimalAds || IncludeFamiliesAds;
 			IncludeInMobi = IncludeOptimalAds || IncludeFamiliesAds;
@@ -106,10 +106,10 @@ void UCASDefaultConfig::PostEditChangeProperty(FPropertyChangedEvent &PropertyCh
 			IncludeAppLovin = IncludeOptimalAds;
 			IncludeCASExchange = IncludeOptimalAds;
 			IncludeAudienceNetwork = IncludeOptimalAds;
+			IncludeMoloco = IncludeOptimalAds;
 			IncludeBigo = IncludeOptimalAds;
 			IncludePangle = IncludeOptimalAds;
 			IncludeYsoNetwork = IncludeOptimalAds;
-			IncludeMaticoo = IncludeOptimalAds;
 		}
         // End Optimal Ads solution
 
