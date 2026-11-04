@@ -114,6 +114,33 @@ def list_package_adapters(version, cache_dir):
         return json.load(file)["adapters"]
 
 
+def extra_package_of(entry):
+    """An SDK that is listed with the solutions but is not a part of the CAS package,
+    such as the attribution SDK of Tenjin, says where its own Swift package is.
+
+    It can also name the system frameworks it links, because a package that ships only a
+    binary declares nothing for the linker and its CocoaPods spec was the only place that
+    said so.
+    """
+    spm = entry.get("spm")
+    if spm is None:
+        return None
+    url = spm.get("url")
+    version = spm.get("version") or entry.get("version")
+    products = spm.get("products") or [lib["name"] for lib in entry.get("libs", [])]
+    if not url or not version or not products:
+        fail(
+            entry["name"] + " has an incomplete Swift package description in "
+            + MEDIATION_LIST + ": a url, a version and the products are required"
+        )
+    return {
+        "fetch": [url, version] + list(products),
+        "sysFrameworks": spm.get("sysFrameworks", []),
+        "sysWeakFrameworks": spm.get("sysWeakFrameworks", []),
+        "sysLibs": spm.get("sysLibs", []),
+    }
+
+
 def resolve_adapters(mediation, selected, available):
     """Turns what the publisher selected into the adapter names of the package.
 
@@ -131,6 +158,7 @@ def resolve_adapters(mediation, selected, available):
     known = {name.lower(): name for name in available}
 
     result = []
+    packages = []
     missing_named = []
     missing_in_solutions = []
 
@@ -158,13 +186,17 @@ def resolve_adapters(mediation, selected, available):
 
         contained = solution.get("contains")
         if not contained:
-            # A third party SDK, such as TenjinMMP, is listed among the solutions but is
-            # not a part of the CAS Swift package: the list says which pod it came from
-            # and not which Swift package, so there is nothing to ask for here.
-            log_info(
-                "Skip " + name + ": it is not a part of the CAS Swift package. "
-                + "Add that SDK to the project by itself."
-            )
+            # A third party SDK is listed among the solutions, and it is distributed by
+            # its own vendor rather than as a part of the CAS package.
+            package = extra_package_of(solution)
+            if package is None:
+                fail(
+                    name + " is not a part of the CAS Swift package and " + MEDIATION_LIST
+                    + " does not say where its own package is. Deselect it, or add that "
+                    + "SDK to the project by itself."
+                )
+            log_info(name + " comes from its own package: " + package["fetch"][0])
+            packages.append(package)
             continue
 
         for identifier in contained:
@@ -187,14 +219,14 @@ def resolve_adapters(mediation, selected, available):
     if not result:
         # Without a single ad source the build still needs the SDK itself
         log_info("No adapters selected, only the CAS framework is prepared")
-        return [BASE_TARGET]
-    return result
+        result = [BASE_TARGET]
+    return result, packages
 
 
 # MARK: - Fetch
 
 
-def fetch_frameworks(version, adapters, fetch_dir, cache_dir, report_path):
+def fetch_frameworks(version, adapters, packages, fetch_dir, cache_dir, report_path):
     script = os.path.join(ROOT_DIR, FETCH_SCRIPT)
     if not os.path.isfile(script):
         fail("Fetch script not found: " + script)
@@ -209,10 +241,14 @@ def fetch_frameworks(version, adapters, fetch_dir, cache_dir, report_path):
         "--json", report_path,
         "--platform", args.platform,
         "--retries", str(args.retries),
-        "--adapters",
-    ] + adapters
+    ]
+    for package in packages:
+        command.append("--extra-package")
+        command.extend(package["fetch"])
     if args.silent:
         command.append("--silent")
+    command.append("--adapters")
+    command.extend(adapters)
 
     log_step("Download the frameworks of: " + ", ".join(adapters))
     if subprocess.call(command) != 0:
@@ -335,17 +371,32 @@ def arrange(report, fetch_dir, frameworks_dir, resources_dir):
 # MARK: - Config for the plugin build
 
 
-def build_config(version, selected, resolved, report, frameworks, resources):
+def build_config(version, selected, resolved, packages, report, frameworks, resources):
+    """Everything the plugin build needs to link what was prepared.
+
+    The system dependencies come from the package manifests, and from the list for a
+    package that declares none of its own.
+    """
+    system_frameworks = set(report.get("sysFrameworks", []))
+    system_libs = set(report.get("sysLibs", []))
+    # Swift Package Manager has no notion of a weakly linked framework, so the only ones
+    # are those the list names
+    weak_frameworks = set()
+    for package in packages:
+        system_frameworks.update(package["sysFrameworks"])
+        system_libs.update(package["sysLibs"])
+        weak_frameworks.update(package["sysWeakFrameworks"])
+    weak_frameworks -= system_frameworks
+
     return {
         "Version": version,
         "Frameworks": frameworks,
         # What the publisher selected, which is what the plugin build compares against
         "Adapters": selected,
         "Resolved": resolved,
-        "SysLibs": report.get("sysLibs", []),
-        "SysFrameworks": report.get("sysFrameworks", []),
-        # Swift Package Manager has no notion of a weakly linked framework
-        "SysWeakFrameworks": [],
+        "SysLibs": sorted(system_libs),
+        "SysFrameworks": sorted(system_frameworks),
+        "SysWeakFrameworks": sorted(weak_frameworks),
         "AdditionalResources": resources,
         "Script": SCRIPT_VERSION,
     }
@@ -414,15 +465,19 @@ def main():
 
     log_step("CAS " + version + " for Unreal")
     available = list_package_adapters(version, cache_dir)
-    resolved = resolve_adapters(mediation, args.adapters, available)
+    resolved, packages = resolve_adapters(mediation, args.adapters, available)
 
     if args.dry_run:
         log_step("Would prepare " + str(len(resolved)) + " adapters")
         for name in resolved:
             log_info(name)
+        for package in packages:
+            log_info("and the package " + " ".join(package["fetch"][:2]))
         return
 
-    report = fetch_frameworks(version, resolved, fetch_dir, cache_dir, report_path)
+    report = fetch_frameworks(
+        version, resolved, packages, fetch_dir, cache_dir, report_path
+    )
 
     frameworks, resources = arrange(
         report,
@@ -431,7 +486,9 @@ def main():
         os.path.join(root, RESOURCES_DIR),
     )
 
-    config = build_config(version, args.adapters, resolved, report, frameworks, resources)
+    config = build_config(
+        version, args.adapters, resolved, packages, report, frameworks, resources
+    )
     config_path = os.path.join(root, CONFIG_NAME)
     if args.format == "xml":
         write_config_xml(config, config_path)

@@ -465,6 +465,27 @@ def collect_external_link_settings(work_dir, products, frameworks, libraries):
                     queue.append(dependency["byName"][0])
 
 
+def add_extra_packages(dependencies, products):
+    """Packages that are not dependencies of the CAS package, asked for on the command
+    line. An SDK that CAS supports without an adapter of its own, such as an attribution
+    SDK, is distributed by its own vendor and is fetched the same way."""
+    for entry in args.extra_package or []:
+        if len(entry) < 3:
+            fail(
+                "--extra-package takes a url, a version and at least one product: "
+                + " ".join(entry)
+            )
+        url, version = entry[0], entry[1]
+        identity = url.rstrip("/").split("/")[-1]
+        if identity.endswith(".git"):
+            identity = identity[: -len(".git")]
+        identity = identity.lower()
+
+        dependencies[identity] = (url, version)
+        products.setdefault(identity, set()).update(entry[2:])
+        log_info("Added package " + url + " " + version + ": " + ", ".join(entry[2:]))
+
+
 def find_source_packages(work_dir):
     """The packages that ship sources instead of a binary require a build,
     so the frameworks of those packages cannot be downloaded."""
@@ -530,13 +551,13 @@ def mode_fetch():
 
     log_step("Resolve the adapters: " + ", ".join(args.adapters))
     binaries, products, system = collect_requirements(manifest, args.adapters)
+    dependencies = find_dependencies(manifest)
+    add_extra_packages(dependencies, products)
     log_info(str(len(binaries)) + " CAS frameworks, " + str(len(products)) + " Ad Source packages")
 
     fetch_dir = os.path.join(work_dir, "fetch")
     os.makedirs(fetch_dir, exist_ok=True)
-    write_fetch_package(
-        fetch_dir, binaries, products, find_dependencies(manifest), args.platform
-    )
+    write_fetch_package(fetch_dir, binaries, products, dependencies, args.platform)
     resolve_package(fetch_dir)
 
     log_step("Copy the frameworks to " + args.output)
@@ -614,6 +635,10 @@ arg_parser.add_argument("--platform", default="15", help="Minimum iOS version of
 arg_parser.add_argument("--cache", help="Directory to keep the downloads between the runs")
 arg_parser.add_argument("--json", help="Path to write the JSON report of the result")
 arg_parser.add_argument("--retries", type=int, default=1, help="Repeat the download on a network error. Default: 1")
+arg_parser.add_argument("--extra-package", nargs="+", action="append", metavar="ARG", help=(
+    "A package that is not a dependency of CAS, as a url, a version and the products "
+    "to take from it: --extra-package https://github.com/vendor/sdk.git 1.2.3 VendorSDK"
+))
 arg_parser.add_argument("--silent", action="store_true", help="Print nothing but the errors")
 
 args = arg_parser.parse_args()

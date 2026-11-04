@@ -42,6 +42,30 @@ Useful arguments:
 
 Requires `python3`, `swift` and `git`. The Swift toolchain comes with Xcode.
 
+## SDKs that are not a part of the CAS package
+
+An SDK that CAS supports without an adapter of its own, such as the attribution SDK of
+Tenjin, is distributed by its vendor and comes from the vendor's own Swift package.
+`CASMediation.list` says where it is:
+
+```json
+{
+  "name": "TenjinMMP",
+  "spm": {
+    "url": "https://github.com/tenjin/tenjin-ios-sdk.git",
+    "version": "1.19.1",
+    "products": ["TenjinSDK"],
+    "sysFrameworks": ["AdSupport", "AppTrackingTransparency", "StoreKit"],
+    "sysWeakFrameworks": ["AdServices"]
+  }
+}
+```
+
+The system frameworks are there because a package that ships nothing but a binary
+declares nothing for the linker: with CocoaPods that list came from the pod spec, and
+with Swift Package Manager it has to be written down. For the packages that do declare
+their own, it is read from the manifest and nothing is needed here.
+
 ## What to expect in the result
 
 - An ad network whose SDK is distributed as sources, rather than as a framework, cannot
