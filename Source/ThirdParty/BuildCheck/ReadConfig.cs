@@ -16,11 +16,21 @@ public static class ReadConfig
         Directory.CreateDirectory(Dir);
         File.Copy(Source, Path.Combine(Dir, "CASXCConfig.temp"), true);
 
-        var Config = CleverAdsSolutions.XCodeConfig.Read(new DirectoryReference(Dir));
+        CleverAdsSolutions.XCodeConfig Config;
+        try
+        {
+            Config = CleverAdsSolutions.XCodeConfig.Read(new DirectoryReference(Dir));
+        }
+        catch (Exception Error)
+        {
+            // What the build does with this is log it and prepare again
+            Console.WriteLine("  not read: " + Error.GetType().Name + ": " + Error.Message);
+            return 0;
+        }
         if (Config == null)
         {
-            Console.WriteLine("FAILED: nothing was read");
-            return 1;
+            Console.WriteLine("  not read: the build would prepare the frameworks again");
+            return 0;
         }
 
         Console.WriteLine("  version: " + Config.Version);

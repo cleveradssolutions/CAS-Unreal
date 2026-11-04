@@ -415,7 +415,12 @@ def escape(value):
 def write_config_xml(config, path):
     """Unreal Engine 5 reads the config as XML."""
     lines = ['<?xml version="1.0" encoding="utf-8"?>']
-    lines.append('<XCodeConfig version="' + escape(config["Version"]) + '">')
+    lines.append(
+        '<XCodeConfig version="' + escape(config["Version"])
+        # The build reads this to tell a config of its own making from one an older
+        # plugin left behind, which describes a layout that no longer exists
+        + '" script="' + escape(config["Script"]) + '">'
+    )
     lines.append("  <bundles>")
     for framework in config["Frameworks"]:
         lines.append(

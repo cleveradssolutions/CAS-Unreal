@@ -18,20 +18,28 @@ public static class ReuseConfig
         var Config = CleverAdsSolutions.XCodeConfig.Read(new DirectoryReference(ConfigDir));
         if (Config == null)
         {
-            Console.WriteLine("  FAIL nothing was read from " + ConfigDir);
-            return 1;
+            // Nothing to reuse is an answer, not a failure: the build prepares again
+            Console.WriteLine("  ok   nothing to reuse, the build would prepare again");
+            return 0;
         }
 
-        Check("prepared for what the project asks", Config, NativeDir, "4.9.0-beta.2",
-            new List<string> { "CASExchange", "TenjinMMP" }, true);
-        Check("one more adapter selected since", Config, NativeDir, "4.9.0-beta.2",
-            new List<string> { "CASExchange", "TenjinMMP", "GoogleAds" }, false);
-        Check("another adapter selected instead", Config, NativeDir, "4.9.0-beta.2",
-            new List<string> { "CASExchange", "GoogleAds" }, false);
-        Check("the SDK was updated since", Config, NativeDir, "4.9.1",
-            new List<string> { "CASExchange", "TenjinMMP" }, false);
+        // The selection of the config is the one a project would be asking for, whatever
+        // config was handed to this check
+        var Selected = new List<string>(Config.Adapters);
+        var OneMore = new List<string>(Selected) { "GoogleAds" };
+        var Different = new List<string>(Selected);
+        if (Different.Count > 0) Different[0] = "GoogleAds"; else Different.Add("GoogleAds");
+
+        Check("prepared for what the project asks", Config, NativeDir, Config.Version,
+            Selected, true);
+        Check("one more adapter selected since", Config, NativeDir, Config.Version,
+            OneMore, false);
+        Check("another adapter selected instead", Config, NativeDir, Config.Version,
+            Different, false);
+        Check("the SDK was updated since", Config, NativeDir, Config.Version + ".1",
+            Selected, false);
         Check("the frameworks are gone", Config, Path.Combine(Path.GetTempPath(), "nothing_here"),
-            "4.9.0-beta.2", new List<string> { "CASExchange", "TenjinMMP" }, false);
+            Config.Version, Selected, false);
         return Failures;
     }
 

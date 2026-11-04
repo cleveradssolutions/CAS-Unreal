@@ -689,6 +689,13 @@ public class CleverAdsSolutions : ModuleRules
 	{
 		public const string FILE_NAME = "CASXCConfig.temp";
 
+		/// <summary>
+		/// Version of what writes the config, which is the preparation script. A config
+		/// without it was left by an older plugin, describes a layout that no longer
+		/// exists, and is prepared again rather than read.
+		/// </summary>
+		public const string SCRIPT_VERSION = "1.0";
+
 		public string Version;
 		public List<XCodeBundle> Frameworks = new List<XCodeBundle>();
 		public string[] Adapters;
@@ -710,25 +717,39 @@ public class CleverAdsSolutions : ModuleRules
 				return null;
 #if UE_5_0_OR_LATER
 			XElement Xml = XElement.Load(ConfigPath.FullName);
+			var ScriptAttribute = Xml.Attribute("script");
+			if (ScriptAttribute == null)
+			{
+				LogDebug(FILE_NAME + " was written by an older plugin and is ignored");
+				return null;
+			}
 			return new XCodeConfig
 			{
 				Version = Xml.Attribute("version").Value,
+				Script = ScriptAttribute.Value,
 				Frameworks = Xml.Element("bundles").Elements("bundle").Select(b =>
 					new XCodeBundle(b.Attribute("name").Value)
 					{
 						bundle = b.Attribute("bundle").Value,
-						dynamic = b.Attribute("dynamic").Value == "true"
+						dynamic = (string)b.Attribute("dynamic") == "true"
 					}
 				).ToList(),
 				Adapters = Xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
-				Resolved = Xml.Element("resolved").Elements("adapter").Select(e => e.Value).ToArray(),
+				Resolved = Xml.Element("resolved") == null ? new string[0]
+					: Xml.Element("resolved").Elements("adapter").Select(e => e.Value).ToArray(),
 				SysLibs = Xml.Element("sysLibs").Elements("lib").Select(e => e.Value).ToArray(),
 				SysFrameworks = Xml.Element("sysFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
 				SysWeakFrameworks = Xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
 				AdditionalResources = Xml.Element("additRes").Elements("res").Select(e => e.Value).ToArray()
 			};
 #else
-			return Json.Deserialize<XCodeConfig>(FileReference.ReadAllText(ConfigPath));
+			var Config = Json.Deserialize<XCodeConfig>(FileReference.ReadAllText(ConfigPath));
+			if (Config != null && string.IsNullOrEmpty(Config.Script))
+			{
+				LogDebug(FILE_NAME + " was written by an older plugin and is ignored");
+				return null;
+			}
+			return Config;
 #endif
 		}
 

@@ -14,6 +14,29 @@ ANDROID_SDK = "/Users/stratos/Documents/Environment/AndroidSDK"
 ANDROID_NDK_VERSION = "27.2.12479018"
 JAVA_HOME = "/Applications/Android Studio.app/Contents/jbr"
 
+# What the preparation script leaves in the plugin: frameworks of whatever adapters were
+# selected while packaging, which have no business in the package a publisher downloads.
+IOS_PREPARED = [
+    "IOS/Frameworks",
+    "IOS/Resources",
+    "IOS/Temp",
+    "IOS/.cas_spm_cache",
+    "IOS/CASXCConfig.temp",
+    "IOS/CASFrameworks.json",
+]
+
+
+def clean_prepared_ios():
+    for name in IOS_PREPARED:
+        path = os.path.join(THIRD_PARTY, name)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+            print("Removed: " + name)
+        elif os.path.isfile(path):
+            os.remove(path)
+            print("Removed: " + name)
+
+
 def package_for_ue(version, platforms=None):
     cmd = [
         ENGINES + version + RUN_UAT,
@@ -28,6 +51,8 @@ def package_for_ue(version, platforms=None):
     env["ANDROID_HOME"] = ANDROID_SDK
     env["NDKROOT"] = f"{ANDROID_SDK}/ndk/{ANDROID_NDK_VERSION}"
     env["JAVA_HOME"] = JAVA_HOME
+
+    clean_prepared_ios()
 
     if os.path.exists(OUTPUT_DIR):
         shutil.rmtree(OUTPUT_DIR)
