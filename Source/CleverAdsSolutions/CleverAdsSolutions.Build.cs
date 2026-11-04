@@ -807,13 +807,25 @@ public class CleverAdsSolutions : ModuleRules
 				Module.PublicWeakFrameworks.AddRange(SysWeakFrameworks);
 			}
 
+			// The SDK asks for the tracking authorization by class name, so the framework
+			// has to be linked for that lookup to find anything, and the ad sources do not
+			// all ask for it. Added here when nothing else did, and left alone when the
+			// publisher excluded it on purpose.
+			//
+			// AdSupport is not added: the advertising id is the ad sources' own business
+			// now, and whoever needs it declares it.
 			bool UseAdvertisingId = true;
 			if (!Handler.EngineConfig.TryGetValue(Handler.EngineConfigSection, "UseAdvertisingId", out UseAdvertisingId) || UseAdvertisingId)
 			{
-				if (Array.IndexOf(SysFrameworks, "AdSupport") > -1)
-					Module.PublicFrameworks.Add("AdSupport");
-				if (Array.IndexOf(SysFrameworks, "AppTrackingTransparency") > -1)
-					Module.PublicFrameworks.Add("AppTrackingTransparency");
+				const string TrackingFramework = "AppTrackingTransparency";
+				bool IsExcluded = ExcludeFrameworks != null && ExcludeFrameworks.Contains(TrackingFramework);
+				if (!IsExcluded
+					&& Array.IndexOf(SysFrameworks, TrackingFramework) < 0
+					&& Array.IndexOf(SysWeakFrameworks, TrackingFramework) < 0)
+				{
+					LogDebug("Add " + TrackingFramework + " for the tracking authorization request");
+					Module.PublicFrameworks.Add(TrackingFramework);
+				}
 			}
 
 			foreach (var Framework in Frameworks)

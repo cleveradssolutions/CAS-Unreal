@@ -15,7 +15,12 @@ Both branches are compiled: Unreal Engine 5, which keeps the core types in
 `EpicGames.Core` and reads the config as XML, and Unreal Engine 4, which keeps them in
 `Tools.DotNETCommon` and reads it as JSON.
 
-With a config given, two things run for real:
+`ApplyConfig` runs on every invocation: it applies a config to a module and checks what
+the build would link, for the cases that decide it. The tracking framework is the one that
+needs deciding, because the SDK asks for the tracking authorization by class name and the
+framework has to be loaded for that lookup to find anything.
+
+With a config given, two more things run for real:
 
 - `ReadConfig` reads it with `XCodeConfig.Read` and prints what the build would see,
   which is how the writer of the config and this reader are kept in step. The JSON stand-in

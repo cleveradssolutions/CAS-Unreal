@@ -35,7 +35,10 @@ for BRANCH in "Unreal Engine 5" "Unreal Engine 4"; do
         UbtStubs.cs CoreStubs.cs "$MODULE" ReadConfig.cs
     csc -nologo $DEFINES -r:System.Xml.Linq.dll -out:"$OUT/reuse.exe" \
         UbtStubs.cs CoreStubs.cs "$MODULE" ReuseConfig.cs
+    csc -nologo $DEFINES -r:System.Xml.Linq.dll -out:"$OUT/apply.exe" \
+        UbtStubs.cs CoreStubs.cs "$MODULE" ApplyConfig.cs
     echo "    compiles"
+    mono "$OUT/apply.exe"
 
     if [ "$GIVEN_FORMAT" = "$FORMAT" ]; then
         CONFIG_DIR="$OUT/$FORMAT"
