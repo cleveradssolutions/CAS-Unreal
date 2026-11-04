@@ -596,7 +596,20 @@ public class CleverAdsSolutions : ModuleRules
 				);
 			}
 
-			var Config = XCodeConfig.Read(NativeDir);
+			XCodeConfig Config = null;
+			try
+			{
+				Config = XCodeConfig.Read(NativeDir);
+			}
+			catch (Exception e)
+			{
+				// The file is written by the script that has just run, so an unreadable
+				// one is a defect rather than something to recover from by running again.
+				CancelBuild(
+					"Preparation of the iOS frameworks wrote a " + XCodeConfig.FILE_NAME +
+					" that this engine cannot read: " + e.Message
+				);
+			}
 			if (Config == null)
 				CancelBuild("Preparation of the iOS frameworks left no " + XCodeConfig.FILE_NAME);
 			if (!Config.IsSetupReady(this))
@@ -708,6 +721,7 @@ public class CleverAdsSolutions : ModuleRules
 					}
 				).ToList(),
 				Adapters = Xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
+				Resolved = Xml.Element("resolved").Elements("adapter").Select(e => e.Value).ToArray(),
 				SysLibs = Xml.Element("sysLibs").Elements("lib").Select(e => e.Value).ToArray(),
 				SysFrameworks = Xml.Element("sysFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
 				SysWeakFrameworks = Xml.Element("sysWeakFrameworks").Elements("lib").Select(e => e.Value).ToArray(),
