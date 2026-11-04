@@ -284,8 +284,15 @@ def find_device_slice(xcframework):
 
 def place_framework(name, slice_dir, library, frameworks_dir):
     """Unreal takes a framework as a directory `<Name>/<Name>.framework`, so every
-    framework gets a directory of its own, named after it."""
+    framework gets a directory of its own, named after it.
+
+    With the engine layout there is one more level, `<Name>.embeddedframework`, which is
+    where Unreal Build Tool unpacks a framework archive of its own accord. The plugin
+    build chooses the layout, see USE_ENGNIE_INTERMEDIATE in CleverAdsSolutions.Build.cs.
+    """
     destination_dir = os.path.join(frameworks_dir, name)
+    if args.layout == "engine":
+        destination_dir = os.path.join(destination_dir, name + ".embeddedframework")
     destination = os.path.join(destination_dir, name + ".framework")
     os.makedirs(destination_dir, exist_ok=True)
     if os.path.exists(destination):
@@ -487,7 +494,7 @@ def main():
     frameworks, resources = arrange(
         report,
         fetch_dir,
-        os.path.join(root, FRAMEWORKS_DIR),
+        os.path.abspath(args.frameworks_dir or os.path.join(root, FRAMEWORKS_DIR)),
         os.path.join(root, RESOURCES_DIR),
     )
 
@@ -535,6 +542,14 @@ arg_parser.add_argument("--format", choices=["xml", "json"], default="xml", help
     "Format of " + CONFIG_NAME + ": xml for Unreal Engine 5, json for Unreal Engine 4. Default: xml"
 ))
 arg_parser.add_argument("--platform", default="15", help="Minimum iOS version. Default: 15")
+arg_parser.add_argument("--frameworks-dir", help=(
+    "Where the frameworks go. Default: the Frameworks directory next to this script"
+))
+arg_parser.add_argument("--layout", choices=["plugin", "engine"], default="plugin", help=(
+    "plugin: <dir>/<Name>/<Name>.framework, which is what the plugin build expects. "
+    "engine: <dir>/<Name>/<Name>.embeddedframework/<Name>.framework, the shape Unreal "
+    "Build Tool unpacks a framework archive into. Default: plugin"
+))
 arg_parser.add_argument("--cache", help="Directory to keep the downloads between the runs")
 arg_parser.add_argument("--keep-cache", action="store_true", help="Do not remove the downloads afterwards")
 arg_parser.add_argument("--retries", type=int, default=1, help="Repeat the download on a network error. Default: 1")

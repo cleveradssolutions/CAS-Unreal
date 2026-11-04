@@ -66,6 +66,23 @@ declares nothing for the linker: with CocoaPods that list came from the pod spec
 with Swift Package Manager it has to be written down. For the packages that do declare
 their own, it is read from the manifest and nothing is needed here.
 
+## If Unreal Build Tool refuses the frameworks
+
+The frameworks live in this directory, and the build points Unreal at them where they
+are. That is what lets the preparation run without an engine, which is the whole point of
+the publisher being able to run it in advance.
+
+Should a version of Unreal Build Tool refuse a framework given as a directory here, the
+plugin has the other layout ready: define `USE_ENGNIE_INTERMEDIATE` at the top of
+`CleverAdsSolutions.Build.cs`, and the build will ask the script for the shape Unreal
+unpacks a framework archive into, inside the engine Intermediate directory. Nothing else
+changes, and the standalone run then needs the same arguments:
+
+```bash
+python3 cas_unreal_prepare.py --adapters OptimalAds \
+    --layout engine --frameworks-dir <Engine>/Intermediate/UnzippedFrameworks
+```
+
 ## What to expect in the result
 
 - An ad network whose SDK is distributed as sources, rather than as a framework, cannot

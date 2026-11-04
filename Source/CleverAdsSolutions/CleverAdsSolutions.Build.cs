@@ -584,6 +584,11 @@ public class CleverAdsSolutions : ModuleRules
 				"--format", "json",
 #endif
 				"--platform", IOSMinimumVersion,
+#if USE_ENGNIE_INTERMEDIATE
+				// The frameworks go where Unreal Build Tool unpacks framework archives
+				"--layout", "engine",
+				"--frameworks-dir", WrapInQuotes(FrameworksDir.FullName),
+#endif
 				"--adapters"
 			};
 			Arguments.AddRange(IncludedAdapters);
