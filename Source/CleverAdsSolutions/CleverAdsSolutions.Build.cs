@@ -1,6 +1,8 @@
 // Copyright CleverAdsSolutions LTD, CAS.AI. All Rights Reserved.
 
-#define USE_ENGNIE_INTERMEDIATE
+// The frameworks are prepared by a script that can be run without the engine, by the
+// publisher, so they live in the plugin directory rather than in the engine Intermediate.
+//#define USE_ENGNIE_INTERMEDIATE
 
 //#define CAS_VERBOSE_LOGS
 
@@ -53,8 +55,7 @@ public class CleverAdsSolutions : ModuleRules
 
 	private const string IOSMinimumVersion = "15.0";
 	private const string IOSBridgeName = "CASUnrealBridge";
-	private const string IOSFrameworksName = "CASFrameworks";
-	private const string IOSFameworksWorkspace = IOSFrameworksName + ".xcworkspace";
+	private const string IOSPrepareScript = "cas_unreal_prepare.py";
 	private const string EngineConfigSectionFormat = "CASPluginBuildConfig_{0}";
 
 	public CleverAdsSolutions(ReadOnlyTargetRules Target) : base(Target)
@@ -490,7 +491,6 @@ public class CleverAdsSolutions : ModuleRules
 		public DirectoryReference ResourcesDir;
 		public string BridgeFrameworkPath;
 		public List<string> IncludedAdapters = new List<string>();
-		public HashSet<string> SupportedDynamicFrameworks = new HashSet<string>();
 
 		public override void ApplyToModule(CleverAdsSolutions Module, ReadOnlyTargetRules Target)
 		{
@@ -534,14 +534,7 @@ public class CleverAdsSolutions : ModuleRules
 			for (int i = 0; i < Adapters.Length; i++)
 			{
 				if (Adapters[i].Included)
-				{
 					IncludedAdapters.Add(Adapters[i].Name);
-					if (Adapters[i].EmbedPath != null)
-					{
-						foreach (var embedLib in Adapters[i].EmbedPath)
-							SupportedDynamicFrameworks.Add(Path.GetFileNameWithoutExtension(embedLib));
-					}
-				}
 			}
 
 			try
@@ -562,98 +555,73 @@ public class CleverAdsSolutions : ModuleRules
 				LogWarning(e.ToString());
 			}
 
-			InstallPods(Module);
+			PrepareFrameworks(Module);
 		}
 
-		private void InstallPods(CleverAdsSolutions Module)
+		/// <summary>
+		/// Runs the preparation script, which downloads the frameworks of the included
+		/// adapters from the Swift Package Manager dependencies and describes the result
+		/// in <see cref="XCodeConfig"/>.
+		///
+		/// The same script can be run by the publisher before the build, in which case
+		/// the build finds the result ready and does not run it again. Unreal calls this
+		/// module several times in a row, and the written config is what keeps the
+		/// preparation to once.
+		/// </summary>
+		private void PrepareFrameworks(CleverAdsSolutions Module)
 		{
-			var FrameworkProj = Path.Combine(NativeDir.FullName, IOSFrameworksName + ".xcodeproj");
-			if (!Directory.Exists(FrameworkProj))
-				LostRequiredFile(FrameworkProj);
+			var Script = Path.Combine(NativeDir.FullName, IOSPrepareScript);
+			if (!File.Exists(Script))
+				LostRequiredFile(Script);
 
-			var BuildDir = Path.Combine(NativeDir.FullName, "Temp");
-			var PodfileLock = FileReference.Combine(NativeDir, "Podfile.lock");
-			FileUtils.ForceDeleteFile(PodfileLock);
-			FileUtils.ForceDeleteDirectory(BuildDir);
-			FileUtils.ForceDeleteDirectory(ResourcesDir);
-			FileUtils.CreateDirectoryTree(ResourcesDir);
-#if !USE_ENGNIE_INTERMEDIATE
-			FileUtils.ForceDeleteDirectory(FrameworksDir);
-			FileUtils.CreateDirectoryTree(FrameworksDir);
+			var Arguments = new List<string>
+			{
+				WrapInQuotes(Script),
+				"--version", Version,
+#if UE_5_0_OR_LATER
+				"--format", "xml",
+#else
+				"--format", "json",
 #endif
+				"--platform", IOSMinimumVersion,
+				"--adapters"
+			};
+			Arguments.AddRange(IncludedAdapters);
 
-			var Config = new XCodeConfig();
-			Config.Version = Version;
-			Config.Adapters = IncludedAdapters.ToArray();
+			LogDebug("Prepare the iOS frameworks of: " + string.Join(", ", IncludedAdapters));
+			if (RunProcess(FindPython(Module), true, Arguments.ToArray()) != 0)
+			{
+				CancelBuild(
+					"Preparation of the iOS frameworks failed. Fix the errors in the console logs and try again."
+				);
+			}
 
-			CreatePodfile(Config);
+			var Config = XCodeConfig.Read(NativeDir);
+			if (Config == null)
+				CancelBuild("Preparation of the iOS frameworks left no " + XCodeConfig.FILE_NAME);
+			if (!Config.IsSetupReady(this))
+			{
+				CancelBuild(
+					"Preparation of the iOS frameworks did not cover the selected adapters. " +
+					"See the console logs above."
+				);
+			}
 
-			string PodTool = CocoaPods.FindPodTool();
-			RunProcess(PodTool, true, "update");
-
-			var XCWorkspacePath = Path.Combine(NativeDir.FullName, IOSFameworksWorkspace);
-			if (!Directory.Exists(XCWorkspacePath))
-				CancelBuild("Pod installation failed. Fix errors in console logs and try again.");
-
-			BuildPods(BuildDir);
-
-			Config.FindDependencies(this, BuildDir);
 			Config.ApplyToModule(Module, this);
-			try
-			{
-				Config.Save(NativeDir);
-			}
-			catch (Exception e)
-			{
-				LogWarning(e.ToString());
-			}
-
-			RunProcess(PodTool, false, "deintegrate");
-			FileUtils.ForceDeleteDirectory(XCWorkspacePath);
-			FileUtils.ForceDeleteFile(PodfileLock);
-			FileUtils.ForceDeleteDirectory(BuildDir);
 		}
 
-		private void BuildPods(string BuildDir)
+		/// <summary>
+		/// The engine ships a python of its own, which is there whether or not the
+		/// machine has one on the PATH.
+		/// </summary>
+		private string FindPython(CleverAdsSolutions Module)
 		{
-			RunProcess("xcodebuild", false, "build",
-				"-workspace", IOSFameworksWorkspace,
-				"-scheme", IOSFrameworksName,
-				"-derivedDataPath", WrapInQuotes(BuildDir),
-				"-sdk", "iphoneos",
-				"-destination", WrapInQuotes("generic/platform=iOS"),
-				"-configuration", "Release",
-				"IPHONEOS_DEPLOYMENT_TARGET=" + IOSMinimumVersion,
-				"GCC_GENERATE_DEBUGGING_SYMBOLS=NO"
+			var EnginePython = Path.Combine(
+				Module.GetPathToEngine(), "Binaries", "ThirdParty", "Python3", "Mac", "bin", "python3"
 			);
-		}
-
-		private void CreatePodfile(XCodeConfig Config)
-		{
-			var Path = FileReference.Combine(NativeDir, "Podfile");
-			using (StreamWriter f = File.CreateText(Path.FullName))
-			{
-				//f.WriteLine("source 'https://cdn.cocoapods.org/'");
-				f.WriteLine("source 'https://github.com/CocoaPods/Specs.git'");
-				f.WriteLine("source 'https://github.com/cleveradssolutions/CAS-Specs.git'");
-				f.WriteLine("platform :ios, '" + IOSMinimumVersion + "'");
-				f.WriteLine("use_frameworks! :linkage => :static");
-				//f.WriteLine("warn_for_unused_master_specs_repo => false");
-				f.WriteLine();
-
-				f.WriteLine("target '" + IOSFrameworksName + "' do");
-				f.WriteLine("  pod 'CleverAdsSolutions-Base', '" + Version + "'");
-				for (int adapterIndex = 0; adapterIndex < Config.Adapters.Length; adapterIndex++)
-				{
-					var adapter = FindAdapter(Config.Adapters[adapterIndex]);
-					for (int libIndex = 0; libIndex < adapter.Libs.Length; libIndex++)
-					{
-						f.WriteLine("  pod '" + adapter.Libs[libIndex].Name + "', '" + adapter.Libs[libIndex].Version + "'");
-					}
-				}
-				f.WriteLine("end");
-			}
-			LogDebug("Created " + Path);
+			if (File.Exists(EnginePython))
+				return EnginePython;
+			return "python3";
 		}
 	}
 
@@ -706,11 +674,17 @@ public class CleverAdsSolutions : ModuleRules
 
 	public class XCodeConfig
 	{
-		private const string FILE_NAME = "CASXCConfig.temp";
+		public const string FILE_NAME = "CASXCConfig.temp";
 
 		public string Version;
 		public List<XCodeBundle> Frameworks = new List<XCodeBundle>();
 		public string[] Adapters;
+		/// <summary>
+		/// What the selection resolved to in the Swift package, for the logs: a solution
+		/// is a set of adapters and the package names them its own way.
+		/// </summary>
+		public string[] Resolved;
+		public string Script;
 		public string[] SysLibs;
 		public string[] SysFrameworks;
 		public string[] SysWeakFrameworks;
@@ -729,7 +703,8 @@ public class CleverAdsSolutions : ModuleRules
 				Frameworks = Xml.Element("bundles").Elements("bundle").Select(b =>
 					new XCodeBundle(b.Attribute("name").Value)
 					{
-						bundle = b.Attribute("bundle").Value
+						bundle = b.Attribute("bundle").Value,
+						dynamic = b.Attribute("dynamic").Value == "true"
 					}
 				).ToList(),
 				Adapters = Xml.Element("adapters").Elements("adapter").Select(e => e.Value).ToArray(),
@@ -740,30 +715,6 @@ public class CleverAdsSolutions : ModuleRules
 			};
 #else
 			return Json.Deserialize<XCodeConfig>(FileReference.ReadAllText(ConfigPath));
-#endif
-		}
-
-		public void Save(DirectoryReference NativePath)
-		{
-			var ConfigPath = FileReference.Combine(NativePath, FILE_NAME);
-#if UE_5_0_OR_LATER
-			var Xml = new XElement("XCodeConfig",
-				new XAttribute("version", Version),
-				new XElement("bundles", Frameworks.Select(b =>
-					new XElement("bundle",
-						new XAttribute("name", b.name),
-						new XAttribute("bundle", b.bundle)
-					)
-				)),
-				new XElement("adapters", Adapters.Select(a => new XElement("adapter", a))),
-				new XElement("sysLibs", SysLibs.Select(l => new XElement("lib", l))),
-				new XElement("sysFrameworks", SysFrameworks.Select(f => new XElement("lib", f))),
-				new XElement("sysWeakFrameworks", SysWeakFrameworks.Select(w => new XElement("lib", w))),
-				new XElement("additRes", AdditionalResources.Select(w => new XElement("res", w)))
-			);
-			Xml.Save(ConfigPath.FullName);
-#else
-			FileReference.WriteAllText(ConfigPath, Json.Serialize(this, JsonSerializeOptions.None));
 #endif
 		}
 
@@ -806,65 +757,6 @@ public class CleverAdsSolutions : ModuleRules
 
 			LogDebug(LogPrefix + "apply from cache");
 			return true;
-		}
-
-		public void FindDependencies(IOSHandler Handler, string BuildDir)
-		{
-			string DataPath = Path.Combine(BuildDir, "Build", "Products", "Release-iphoneos");
-			string BuildMainDir = Path.Combine(DataPath, IOSFrameworksName + ".framework");
-			if (!Directory.Exists(BuildMainDir))
-				CancelBuild("Build XCProject corrupted. Fix errors in console and try again.\n" + BuildMainDir);
-
-			foreach (var Item in FindBundles(".framework", DataPath))
-			{
-				if (Item.EndsWith(IOSFrameworksName + ".framework")) continue;
-				var Bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(Item));
-				LogDebug("Framework found: " + Bundle.name);
-				Directory.Move(Item, Bundle.GetFrameworkPath(Handler, true));
-				Frameworks.Add(Bundle);
-			}
-
-			foreach (var Item in FindBundles(".a", DataPath, SkipExt: ".framework"))
-			{
-				var Bundle = new XCodeBundle(Path.GetFileNameWithoutExtension(Item).Substring(3));
-				LogDebug("Library found: " + Bundle.name);
-				string Destination = Bundle.GetFrameworkPath(Handler, true);
-				Directory.CreateDirectory(Destination);
-				File.Move(Item, Path.Combine(Destination, Bundle.name));
-				Frameworks.Add(Bundle);
-			}
-
-			var PodsXCConfig = FileReference.Combine(Handler.NativeDir, "Pods", "Target Support Files", "Pods-" + IOSFrameworksName, "Pods-" + IOSFrameworksName + ".release.xcconfig");
-			if (!FileReference.Exists(PodsXCConfig))
-				CancelBuild("Build XCProject corrupted. Not found required build file: " + PodsXCConfig);
-			FindSystemDependencies(PodsXCConfig.FullName);
-
-			var AdditResSet = new HashSet<string>();
-			foreach (var Item in FindBundles(".bundle", BuildMainDir))
-			{
-				var Resource = Path.GetFileName(Item);
-				LogDebug("Resources found: " + Resource);
-				XCodeBundle Bundle = null;
-				foreach (var Framework in Frameworks)
-				{
-					if (Resource.StartsWith(Framework.name))
-					{
-						Bundle = Framework;
-						break;
-					}
-				}
-				if (Bundle == null || Bundle.bundle != null)
-				{
-					AdditResSet.Add(Resource);
-					Directory.Move(Item, Path.Combine(Handler.ResourcesDir.FullName, Resource));
-				}
-				else
-				{
-					Bundle.bundle = Resource;
-					Directory.Move(Item, Bundle.GetResourcesPath(Handler));
-				}
-			}
-			AdditionalResources = AdditResSet.ToArray();
 		}
 
 		public void ApplyToModule(CleverAdsSolutions Module, IOSHandler Handler)
@@ -919,7 +811,8 @@ public class CleverAdsSolutions : ModuleRules
 				}
 
 				var Resources = string.IsNullOrEmpty(Framework.bundle) ? null : Framework.bundle;
-				bool CopyFramework = Handler.SupportedDynamicFrameworks.Contains(Framework.name);
+				// A dynamic framework is embedded in the application, a static one is linked only
+				bool CopyFramework = Framework.dynamic;
 				Module.PublicAdditionalFrameworks.Add(
 					new Framework(Framework.name, Framework.GetPath(Handler), Resources, CopyFramework)
 				);
@@ -970,99 +863,13 @@ public class CleverAdsSolutions : ModuleRules
 #endif
 		}
 
-		private IEnumerable<string> FindBundles(string Extension, string dir, bool Recursive = true, string SkipExt = "..")
-		{
-			string[] files = Directory.GetFiles(dir);
-			foreach (string file in files)
-			{
-				if (file.EndsWith(Extension))
-					yield return file;
-			}
-
-			string[] dirs = Directory.GetDirectories(dir);
-			foreach (string subdirectory in dirs)
-			{
-				if (subdirectory.EndsWith(Extension))
-				{
-					yield return subdirectory;
-				}
-				else if (Recursive && !subdirectory.EndsWith(SkipExt))
-				{
-					foreach (var item in FindBundles(Extension, subdirectory, Recursive, SkipExt))
-						yield return item;
-				}
-			}
-		}
-
-		private void FindSystemDependencies(string PodsXCConfig)
-		{
-			string[] OtherLDFlags = null;
-			using (var Reader = File.OpenText(PodsXCConfig))
-			{
-				string Line;
-				while ((Line = Reader.ReadLine()) != null)
-				{
-					if (Line.StartsWith("OTHER_LDFLAGS"))
-					{
-						OtherLDFlags = Line.Split('-');
-						break;
-					}
-				}
-			}
-			if (OtherLDFlags == null)
-				CancelBuild("Build XCProject corrupted. Not found OTHER_LDFLAGS field in build file: " + PodsXCConfig);
-
-			var SysLibs = new List<string>();
-			var SysFrameworks = new HashSet<string>();
-			var SysWeakFrameworks = new List<string>();
-			var FrameworkSet = new HashSet<string>();
-			for (int i = 0; i < Frameworks.Count; i++)
-				FrameworkSet.Add(Frameworks[i].name);
-
-			for (int i = 0; i < OtherLDFlags.Length; i++)
-			{
-				var Lib = OtherLDFlags[i].Trim(' ');
-				if (Lib.StartsWith("l"))
-				{
-					Lib = Lib.Substring(2, Lib.Length - 1 - 2);
-					if (!FrameworkSet.Contains(Lib))
-					{
-						SysLibs.Add(Lib);
-					}
-				}
-				else if (Lib.StartsWith("framework"))
-				{
-					// Substring name from: '-framework "CleverAdsSolutions"'
-					// 11 = "framework \"".Length
-					Lib = Lib.Substring(11, Lib.Length - 1 - 11);
-					if (!FrameworkSet.Contains(Lib))
-					{
-						SysFrameworks.Add(Lib);
-					}
-				}
-			}
-			for (int i = 0; i < OtherLDFlags.Length; i++)
-			{
-				var Lib = OtherLDFlags[i].Trim(' ');
-				if (Lib.StartsWith("weak_framework"))
-				{
-					// Substring name from: '-weak_framework "AdSupport"'
-					// 16 = "weak_framework \"".Length
-					Lib = Lib.Substring(16, Lib.Length - 1 - 16);
-					if (!FrameworkSet.Contains(Lib) && !SysFrameworks.Contains(Lib))
-						SysWeakFrameworks.Add(Lib);
-				}
-			}
-			this.SysLibs = SysLibs.ToArray();
-			this.SysFrameworks = SysFrameworks.ToArray();
-			this.SysWeakFrameworks = SysWeakFrameworks.ToArray();
-		}
 	}
 
 	public class XCodeBundle
 	{
 		public string name;
 		public string bundle;
+		public bool dynamic;
 
 		// Serialization constructor
 		public XCodeBundle() { }
@@ -1101,94 +908,6 @@ public class CleverAdsSolutions : ModuleRules
 		public string GetResourcesPath(IOSHandler Handler)
 		{
 			return Path.Combine(GetPath(Handler), bundle);
-		}
-	}
-
-	public static class CocoaPods
-	{
-		public static string FindPodTool()
-		{
-			const string POD_EXECUTABLE = "pod";
-			var SearchPaths = new string[] {
-				"/opt/homebrew/bin",
-				"/usr/local/bin",
-				"/usr/bin",
-			};
-			foreach (string Root in SearchPaths)
-			{
-				string PodPath = Path.Combine(Root, POD_EXECUTABLE);
-				if (File.Exists(PodPath))
-					return PodPath;
-			}
-			var Environment = ReadGemsEnvironment();
-			if (Environment != null)
-			{
-				const string ExecutableDir = "EXECUTABLE DIRECTORY";
-				foreach (string environmentVariable in new[] { ExecutableDir, "GEM PATHS" })
-				{
-					List<string> Paths;
-					if (Environment.TryGetValue(environmentVariable, out Paths))
-					{
-						foreach (var Root in Paths)
-						{
-							var BinPath = Root.EndsWith("bin") ? Root : Path.Combine(Root, "bin");
-							var PodPath = Path.Combine(BinPath, POD_EXECUTABLE);
-							if (File.Exists(PodPath))
-								return PodPath;
-						}
-					}
-				}
-			}
-			LogWarning("Pod command not found. You can install CocoaPods with the Ruby gem package manager: " +
-					" > sudo gem install -n /usr/local/bin cocoapods");
-			return POD_EXECUTABLE;
-		}
-
-		private static Dictionary<string, List<string>> ReadGemsEnvironment()
-		{
-			int ExitCode;
-			var Result = Utils.RunLocalProcessAndReturnStdOut("gem", "environment", out ExitCode);
-			if (ExitCode != 0) return null;
-			// gem environment outputs YAML for all config variables.  Perform some very rough YAML
-			// parsing to get the environment into a usable form.
-			var GEMEnvironment = new Dictionary<string, List<string>>();
-			const string ListItemPrefix = "- ";
-			int PreviousIndentSize = 0;
-			List<string> CurrentList = null;
-			char[] ListToken = new char[] { ':' };
-			foreach (var Line in Result.Split(new char[] { '\r', '\n' }))
-			{
-				var TrimmedLine = Line.Trim();
-				var IndentSize = Line.Length - TrimmedLine.Length;
-				if (IndentSize < PreviousIndentSize) CurrentList = null;
-
-				if (TrimmedLine.StartsWith(ListItemPrefix))
-				{
-					TrimmedLine = TrimmedLine.Substring(ListItemPrefix.Length).Trim();
-					if (CurrentList == null)
-					{
-						var Vokens = TrimmedLine.Split(ListToken);
-						CurrentList = new List<string>();
-						GEMEnvironment[Vokens[0].Trim()] = CurrentList;
-						var Value = Vokens.Length == 2 ? Vokens[1].Trim() : null;
-						if (!string.IsNullOrEmpty(Value))
-						{
-							CurrentList.Add(Value);
-							CurrentList = null;
-						}
-					}
-					else if (IndentSize >= PreviousIndentSize)
-					{
-						CurrentList.Add(TrimmedLine);
-					}
-				}
-				else
-				{
-					CurrentList = null;
-				}
-				PreviousIndentSize = IndentSize;
-			}
-			return GEMEnvironment;
 		}
 	}
 }

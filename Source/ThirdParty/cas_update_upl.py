@@ -21,6 +21,9 @@ _PLUGIN_DIR = os.path.join(_PLUGIN_ROOT_DIR, 'CleverAdsSolutions')
 _PLUGIN_MANIFEST = os.path.abspath(os.path.join(_PLUGIN_ROOT_DIR, '..', 'CleverAdsSolutions.uplugin'))
 
 _CONFIG_IOS_DEST = os.path.join(_ROOT_DIR, 'IOS', 'CASMediation.list')
+# The script that downloads the frameworks from the Swift Package Manager dependencies.
+# It belongs to the iOS repository, the plugin ships a copy of it.
+_FETCH_SCRIPT_DEST = os.path.join(_ROOT_DIR, 'IOS', 'cas_spm_setup.py')
 _BRIDGE_IOS_DEST_DIR = os.path.join(_ROOT_DIR, 'IOS', 'Plugin')
 
 _CONFIG_ANDROID_DEST = os.path.join(_ROOT_DIR, 'Android', 'CASMediation.list')
@@ -31,6 +34,7 @@ _REPOS_DIR = os.path.abspath(os.path.join(_ROOT_DIR, '..', '..', '..', '..', '..
 
 _REPO_IOS_DIR = os.path.join(_REPOS_DIR, 'CAS-Swift')
 _CONFIG_IOS_SOURCE = os.path.join(_REPO_IOS_DIR, 'CASMediation.list')
+_FETCH_SCRIPT_SOURCE = os.path.join(_REPO_IOS_DIR, 'Scripts', 'cas_spm_setup.py')
 _BRIDGE_IOS_SOURCE_DIR = os.path.join(_REPO_IOS_DIR, 'libs')
 _SKADNETWORK_SOURCE = os.path.join(_REPO_IOS_DIR, 'PublicSamplesRepo', 'AdNetworkIdentifiers', 'SKAdNetworkCompact.txt')
 _ADATTRIBUTIONKIT_SOURCE = os.path.join(_REPO_IOS_DIR, 'PublicSamplesRepo', 'AdNetworkIdentifiers', 'AdNetworkCompact.txt')
@@ -285,6 +289,7 @@ def copy_source_file(source, destination):
 
 # Update iOS build config
 copy_source_file(_CONFIG_IOS_SOURCE, _CONFIG_IOS_DEST)
+copy_source_file(_FETCH_SCRIPT_SOURCE, _FETCH_SCRIPT_DEST)
 with open(_CONFIG_IOS_DEST, 'r') as file:
     mediation = json.load(file)
     
